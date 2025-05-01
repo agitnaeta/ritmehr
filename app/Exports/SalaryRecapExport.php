@@ -68,7 +68,7 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
     public function map($row): array
     {
         if(!isset($row->user)){
-            return $row;
+            return [];
         }
         return[
             $row->user->name,
