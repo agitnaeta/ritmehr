@@ -8,6 +8,7 @@ use App\Services\TransactionService;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Support\Facades\Route;
 use Prologue\Alerts\Facades\Alert;
+use App\Services\SalaryService;
 
 trait SetPaymentOperation
 {
@@ -26,6 +27,12 @@ trait SetPaymentOperation
             'operation' => 'setPayment',
         ]);
 
+        Route::get($segment.'/{id}/recalculate-salary', [
+            'as'        => $routeName.'.recalculateSalary',
+            'uses'      => $controller.'@recalculateSalary',
+            'operation' => 'recalculateSalary',
+        ]);
+
     }
 
     /**
@@ -36,6 +43,7 @@ trait SetPaymentOperation
         CRUD::allowAccess('setPayment');
         CRUD::allowAccess('set_payment_cash');
         CRUD::allowAccess('set_payment_transfer');
+        CRUD::allowAccess('recalculate_salary');
 
         CRUD::operation('setPayment', function () {
             CRUD::loadDefaultOperationSettingsFromConfig();
@@ -45,6 +53,7 @@ trait SetPaymentOperation
             // CRUD::addButton('top', 'set_payment', 'view', 'crud::buttons.set_payment');
              CRUD::addButton('line', 'set_payment_cash', 'view', 'crud::buttons.set_payment_cash');
              CRUD::addButton('line', 'set_payment_transfer', 'view', 'crud::buttons.set_payment_transfer');
+             CRUD::addButton('line', 'recalculate_salary', 'view', 'crud::buttons.recalculate_salary');
         });
     }
 
@@ -72,6 +81,14 @@ trait SetPaymentOperation
         (new TransactionService($acc, $accTransaction))->updateRecordSalaryToACC($recap);
 
         Alert::add('success', '<strong>Berhasil</strong><br>Berhasil bayar secara '.$recap->method)->flash();
+        return redirect(route('salary-recap.index'));
+    }
+
+
+    public function recalculateSalary(){
+        $recap = $this->crud->getCurrentEntry();
+        (new SalaryService())->calculateSalaryRecap($recap);
+        Alert::add('success', '<strong>Berhasil</strong><br>Berhasil update perhitungan gaji')->flash();
         return redirect(route('salary-recap.index'));
     }
 
