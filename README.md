@@ -23,6 +23,7 @@ Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 - [Dokumentasi](#dokumentasi)
 - [Catatan penerapan](#catatan-penerapan)
 - [Rencana pengembangan](#rencana-pengembangan)
+- [Melaporkan bug](#melaporkan-bug)
 - [Kontribusi](#kontribusi)
 - [Lisensi](#lisensi)
 
@@ -311,6 +312,37 @@ sendiri dari portal, karena route dokumen di `/my` belum ada.
 
 ---
 
+## Melaporkan bug
+
+Laporkan bug dan usulan fitur lewat **[GitHub Issues](https://github.com/agitnaeta/absensi/issues)**.
+
+Agar laporannya bisa langsung ditindaklanjuti, sertakan:
+
+| Yang dibutuhkan | Contoh |
+|---|---|
+| **Peran** saat kejadian | super_admin, hr_admin, manager, atau employee |
+| **Halaman atau menu** | `/admin/salary-recap`, atau "Cuti & Izin → Saldo Cuti" |
+| **Langkah** sampai muncul | "Buka Add, langsung klik Simpan tanpa mengisi apa pun" |
+| **Yang terjadi** vs **yang diharapkan** | "Muncul layar 500" vs "Muncul pesan validasi di bawah field" |
+| **Pesan galat**, bila ada | salin utuh, termasuk kode SQLSTATE |
+
+Dua hal yang sangat membantu:
+
+- **Sebutkan perannya.** Sebagian besar bug yang sudah ditemukan di proyek ini
+  hanya muncul pada peran tertentu — beberapa hanya kelihatan sebagai manager,
+  satu bahkan hanya muncul bagi pengunjung **tanpa login**.
+- **Periksa dulu apakah memang bug.** Beberapa perilaku sering disalahartikan,
+  dan sudah didaftar di
+  [bug-list/README.md](docs/bug-list/README.md#yang-bukan-bug--sudah-diverifikasi)
+  — misalnya kartu penggajian yang menunjukkan Rp 0 di pertengahan bulan, atau
+  karyawan yang dialihkan dari `/admin` ke `/my`.
+
+Bug yang sudah dikonfirmasi dicatat di [docs/bug-list/](docs/bug-list/README.md)
+beserta akar masalah dan perbaikannya — silakan dilihat lebih dulu untuk
+memastikan temuanmu belum pernah dilaporkan.
+
+---
+
 ## Kontribusi
 
 1. Buat branch dari `master`
@@ -321,8 +353,10 @@ sendiri dari portal, karena route dokumen di `/my` belum ada.
 3. Jalankan kedua lapis pengujian sampai hijau
 4. Tulis pesan commit yang menjelaskan **mengapa**, bukan hanya apa
 
-Temuan bug sebaiknya dicatat di [docs/bug-list/](docs/bug-list/README.md) dengan
-langkah reproduksi dan akar masalahnya, mengikuti format berkas yang sudah ada.
+Bila perbaikanmu menutup sebuah bug, tambahkan catatannya di
+[docs/bug-list/](docs/bug-list/README.md) mengikuti format berkas yang sudah
+ada: langkah reproduksi, akar masalah bertautan ke `file:baris`, dan cara
+memverifikasinya.
 
 ---
 
