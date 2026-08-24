@@ -42,6 +42,11 @@ class SalaryCrudController extends CrudController
         CRUD::setModel(\App\Models\Salary::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/salary');
         CRUD::setEntityNameStrings('Gaji', 'Gaji');
+
+        // Manager boleh melihat komponen gaji, tidak boleh mengubahnya.
+        if (! backpack_user()->can('salary.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupShowOperation()

@@ -10,6 +10,7 @@ class Presence extends Model
 {
     use CrudTrait;
     use HasFactory;
+    use \App\Traits\Auditable;
     protected $fillable = [
         'in',
         'out',
@@ -21,11 +22,14 @@ class Presence extends Model
         'lng',
         'outside',
         'extra_time',
+        'branch_id',
     ];
 
-    protected $guarded =[];
-
     public function user(){
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function branch(){
+        return $this->belongsTo(Branch::class);
     }
 }

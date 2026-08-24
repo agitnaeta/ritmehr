@@ -25,9 +25,11 @@ class LoanRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|string',
-            'amount' => 'required|integer',
-            'date' => 'required|date',
+            'user_id' => 'required|exists:users,id',
+            // min:1 — tanpa ini nominal nol dan negatif ikut tersimpan, dan
+            // kasbon negatif justru menambah gaji lewat kolom `loan_cut`.
+            'amount'  => 'required|integer|min:1',
+            'date'    => 'required|date',
         ];
     }
 
@@ -51,12 +53,13 @@ class LoanRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_id.required' => 'Kolom user ID harus diisi.',
-            'user_id.string' => 'Kolom user ID harus berupa teks.',
-            'amount.required' => 'Kolom amount harus diisi.',
-            'amount.integer' => 'Kolom amount harus berupa bilangan bulat.',
-            'date.required' => 'Kolom date harus diisi.',
-            'date.date' => 'Kolom date harus berupa tanggal.',
+            'user_id.required' => 'Karyawan harus dipilih.',
+            'user_id.exists'   => 'Karyawan tidak ditemukan.',
+            'amount.required'  => 'Nominal kasbon harus diisi.',
+            'amount.integer'   => 'Nominal kasbon harus berupa bilangan bulat.',
+            'amount.min'       => 'Nominal kasbon minimal Rp 1.',
+            'date.required'    => 'Tanggal kasbon harus diisi.',
+            'date.date'        => 'Tanggal kasbon tidak valid.',
         ];
     }
 }

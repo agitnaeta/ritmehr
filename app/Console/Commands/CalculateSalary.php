@@ -25,12 +25,16 @@ class CalculateSalary extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(SalaryService $salaryService)
     {
         $recaps = SalaryRecap::all();
+
+        $this->info("Calculating {$recaps->count()} salary recap(s)...");
+
         foreach ($recaps as $recap) {
-            (new SalaryService())->calculateSalaryRecap($recap);
+            $salaryService->calculateSalaryRecap($recap);
         }
+
         return $this->info("Done");
     }
 }

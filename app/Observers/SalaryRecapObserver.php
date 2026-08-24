@@ -8,9 +8,9 @@ use App\Services\SalaryService;
 class SalaryRecapObserver
 {
     protected $salaryService;
-    public function __construct()
+    public function __construct(SalaryService $salaryService)
     {
-        $this->salaryService = new SalaryService();
+        $this->salaryService = $salaryService;
     }
 
     /**

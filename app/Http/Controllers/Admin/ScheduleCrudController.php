@@ -37,6 +37,11 @@ class ScheduleCrudController extends CrudController
         CRUD::setModel(\App\Models\Schedule::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/schedule');
         CRUD::setEntityNameStrings('Jadwal', 'Jadwal');
+
+        // Manager boleh melihat jadwal, tidak boleh mengubahnya.
+        if (! backpack_user()->can('schedule.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     /**

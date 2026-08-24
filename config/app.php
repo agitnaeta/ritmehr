@@ -185,4 +185,22 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Office Coordinates
+    |--------------------------------------------------------------------------
+    |
+    | Latitude and longitude of the office for geofencing presence checks.
+    |
+    */
+
+    // Cast to float here rather than at each call site — these have been
+    // known to carry stray characters (e.g. a trailing semicolon) in .env.
+    'office_lat' => (float) env('LAT', 0),
+    'office_lng' => (float) env('LNG', 0),
+
+    // Fallback geofence radius in metres, used when a branch has no
+    // coordinates of its own. Branches override this per site.
+    'office_radius' => env('OFFICE_RADIUS', 100),
+
 ];

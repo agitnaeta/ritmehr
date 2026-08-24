@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class NationalHolidayRequest extends FormRequest
 {
@@ -24,8 +25,15 @@ class NationalHolidayRequest extends FormRequest
      */
     public function rules()
     {
+        // Backpack mengirim id pada update; abaikan baris itu sendiri saat cek unique.
+        $id = $this->input('id');
+
         return [
-            // 'name' => 'required|min:5|max:255'
+            'date' => [
+                'required', 'date',
+                Rule::unique('national_holidays', 'date')->ignore($id),
+            ],
+            'info' => 'required|string|max:255',
         ];
     }
 
@@ -37,7 +45,8 @@ class NationalHolidayRequest extends FormRequest
     public function attributes()
     {
         return [
-            //
+            'date' => 'tanggal libur',
+            'info' => 'keterangan',
         ];
     }
 
@@ -49,7 +58,10 @@ class NationalHolidayRequest extends FormRequest
     public function messages()
     {
         return [
-            //
+            'date.required' => 'Tanggal libur wajib diisi.',
+            'date.date'     => 'Tanggal libur tidak valid.',
+            'date.unique'   => 'Tanggal libur ini sudah terdaftar.',
+            'info.required' => 'Keterangan libur wajib diisi.',
         ];
     }
 }

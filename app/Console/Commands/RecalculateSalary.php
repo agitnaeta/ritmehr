@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\User;
-use App\Models\Presence;
 use App\Models\SalaryRecap;
 use App\Services\SalaryService;
 
@@ -15,37 +13,54 @@ class RecalculateSalary extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:recalculate';
+    protected $signature = 'salary:recalculate
+        {--month= : Recap month in mm-YYYY format (default: all months)}
+        {--user=* : Specific user IDs (default: all users)}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Recalculate Salary for specific users';
+    protected $description = 'Recalculate salary for specific users and/or months';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(SalaryService $salaryService)
     {
-        $userIds = collect([
-            '14',// Ahmad Saepulon 
-            '12', // Risma Apriliani
-            '10',//Agung Widianto
-            '8',//Muhamad Farhan Fadillah
-            '5' // Exka Taufikurohman
-        ]);
+        $month = $this->option('month');
+        $userIds = $this->option('user');
 
-        $recaps = SalaryRecap::where('recap_month','04-2025')->
-        whereIn('user_id',$userIds)->get();
+        $query = SalaryRecap::query();
+
+        if ($month) {
+            $query->where('recap_month', $month);
+        }
+
+        if (!empty($userIds)) {
+            $query->whereIn('user_id', $userIds);
+        }
+
+        $recaps = $query->get();
+
+        if ($recaps->isEmpty()) {
+            $this->warn('No salary recaps found matching the criteria.');
+            return;
+        }
+
+        $this->info("Recalculating {$recaps->count()} salary recap(s)...");
+
+        $bar = $this->output->createProgressBar($recaps->count());
+        $bar->start();
 
         foreach ($recaps as $recap) {
-            $this->info("Update Salary for : ". $recap->user->name);
-            (new SalaryService())->calculateSalaryRecap($recap);
+            $salaryService->calculateSalaryRecap($recap);
+            $bar->advance();
         }
-        return $this->info("Done");
 
-
+        $bar->finish();
+        $this->newLine();
+        $this->info("Done — {$recaps->count()} recap(s) recalculated.");
     }
 }

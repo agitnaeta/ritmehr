@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\UserExport;
 use App\Http\Requests\UserRequest;
+use App\Models\Branch;
 use App\Models\CompanyProfile;
+use App\Models\Department;
+use App\Models\Position;
 use App\Models\Schedule;
 use App\Models\User;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
@@ -25,6 +28,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  */
 class UserCrudController extends CrudController
 {
+    use \App\Traits\HasSimpleFilters;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
@@ -42,6 +46,19 @@ class UserCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/user');
         CRUD::setEntityNameStrings('user', 'users');
         $this->crud->addClause('with','schedule');
+
+        $me = backpack_user();
+
+        if (! $me->can('user.view')) {
+            abort(403, 'Anda tidak berhak melihat data karyawan.');
+        }
+
+        // Manager hanya melihat bawahan langsungnya; HR dan super admin semuanya.
+        $this->crud->addClause('visibleTo', $me);
+
+        if (! $me->can('user.create')) CRUD::denyAccess(['create']);
+        if (! $me->can('user.edit'))   CRUD::denyAccess(['update']);
+        if (! $me->can('user.delete')) CRUD::denyAccess(['delete']);
     }
 
     protected function setupShowOperation()
@@ -111,6 +128,8 @@ class UserCrudController extends CrudController
             'model' => Schedule::class, // the related model
         ]);
 
+        $this->orgListColumns();
+
         $this->crud->addButtonFromView('line','user-print','user-print','end');
         $this->crud->allowAccess("user_export");
         $this->crud->addButtonFromView('top','user_export','user_export','end');
@@ -168,7 +187,156 @@ class UserCrudController extends CrudController
                 'path' => 'uploads', // the path inside the disk where file will be stored
             ]);
 
+        $this->orgFields();
+    }
 
+    /**
+     * setFromDb() would list every new org column as raw text/ids, which makes
+     * the table unreadable. Swap in relationship columns and drop the noise.
+     */
+    private function orgListColumns(): void
+    {
+        foreach (['manager_id', 'department_id', 'branch_id', 'position_id',
+                  'address', 'employment_status'] as $col) {
+            $this->crud->removeColumn($col);
+        }
+
+        $this->crud->column([
+            'name'      => 'department_id',
+            'label'     => 'Departemen',
+            'type'      => 'select',
+            'entity'    => 'department',
+            'attribute' => 'name',
+            'model'     => Department::class,
+        ]);
+
+        $this->crud->column([
+            'name'      => 'position_id',
+            'label'     => 'Jabatan',
+            'type'      => 'select',
+            'entity'    => 'position',
+            'attribute' => 'name',
+            'model'     => Position::class,
+        ]);
+
+        $this->crud->column([
+            'name'      => 'branch_id',
+            'label'     => 'Cabang',
+            'type'      => 'select',
+            'entity'    => 'branch',
+            'attribute' => 'name',
+            'model'     => Branch::class,
+        ]);
+
+        $this->crud->column([
+            'name'     => 'employment_status',
+            'label'    => 'Status',
+            'type'     => 'closure',
+            'function' => fn (User $entry) => $entry->employmentStatusLabel(),
+        ]);
+
+        $this->applySimpleFilters([
+            [
+                'name'    => 'department_id',
+                'label'   => 'Departemen',
+                'type'    => 'select',
+                'options' => Department::orderBy('name')->pluck('name', 'id')->toArray(),
+            ],
+            [
+                'name'    => 'branch_id',
+                'label'   => 'Cabang',
+                'type'    => 'select',
+                'options' => Branch::orderBy('name')->pluck('name', 'id')->toArray(),
+            ],
+            [
+                'name'    => 'employment_status',
+                'label'   => 'Status',
+                'type'    => 'select',
+                'options' => [
+                    User::STATUS_ACTIVE     => 'Aktif',
+                    User::STATUS_PROBATION  => 'Masa Percobaan',
+                    User::STATUS_RESIGNED   => 'Resign',
+                    User::STATUS_TERMINATED => 'Diberhentikan',
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Organisation fields (M1). setFromDb() picks these columns up as plain
+     * inputs, so replace them with proper relationship/enum widgets.
+     */
+    private function orgFields(): void
+    {
+        CRUD::field([
+            'name'        => 'department_id',
+            'label'       => 'Departemen',
+            'type'        => 'select',
+            'entity'      => 'department',
+            'attribute'   => 'name',
+            'model'       => Department::class,
+            'allows_null' => true,
+        ]);
+
+        CRUD::field([
+            'name'        => 'branch_id',
+            'label'       => 'Cabang',
+            'type'        => 'select',
+            'entity'      => 'branch',
+            'attribute'   => 'name',
+            'model'       => Branch::class,
+            'allows_null' => true,
+        ]);
+
+        CRUD::field([
+            'name'        => 'position_id',
+            'label'       => 'Jabatan',
+            'type'        => 'select',
+            'entity'      => 'position',
+            'attribute'   => 'name',
+            'model'       => Position::class,
+            'allows_null' => true,
+        ]);
+
+        CRUD::field([
+            'name'        => 'manager_id',
+            'label'       => 'Atasan Langsung',
+            'type'        => 'select',
+            'entity'      => 'manager',
+            'attribute'   => 'name',
+            'model'       => User::class,
+            'allows_null' => true,
+            'hint'        => 'Dipakai sebagai approver default pada alur persetujuan.',
+        ]);
+
+        CRUD::field([
+            'name'  => 'employee_id',
+            'label' => 'NIK / NIP',
+            'type'  => 'text',
+        ]);
+
+        CRUD::field([
+            'name'  => 'join_date',
+            'label' => 'Tanggal Bergabung',
+            'type'  => 'date',
+        ]);
+
+        CRUD::field([
+            'name'        => 'employment_status',
+            'label'       => 'Status Kepegawaian',
+            'type'        => 'select_from_array',
+            'options'     => [
+                User::STATUS_ACTIVE     => 'Aktif',
+                User::STATUS_PROBATION  => 'Masa Percobaan',
+                User::STATUS_RESIGNED   => 'Resign',
+                User::STATUS_TERMINATED => 'Diberhentikan',
+            ],
+            'allows_null' => false,
+            'default'     => User::STATUS_ACTIVE,
+        ]);
+
+        CRUD::field(['name' => 'phone', 'label' => 'No. Telepon', 'type' => 'text']);
+        CRUD::field(['name' => 'address', 'label' => 'Alamat', 'type' => 'textarea']);
     }
 
     public function update()

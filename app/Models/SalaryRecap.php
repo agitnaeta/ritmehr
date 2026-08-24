@@ -10,13 +10,14 @@ class SalaryRecap extends Model
 {
     use CrudTrait;
     use HasFactory;
+    use \App\Traits\Auditable;
     protected $fillable = [
         'user_id', 'recap_month', 'work_day', 'late_day', 'salary_amount', 'overtime_amount',
         'loan_cut', 'late_cut', 'abstain_cut', 'received','abstain_count','desc','paid','method'
     ];
 
     public function user(){
-        return $this->hasOne(User::class,'id','user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function getPaidStatusAttribute(){
