@@ -47,7 +47,14 @@ class PresenceCrudController extends CrudController
         CRUD::setEntityNameStrings('Kehadiran', 'Kehadiran');
         $this->crud->addClause('with','user');
 
-        $me = backpack_user();
+        // Controller ini juga melayani route PUBLIK `/scan` dan `POST /presence/record`
+        // (pemindai QR di pintu masuk, tanpa login). Di sana tidak ada pengguna
+        // terautentikasi, jadi pemeriksaan izin harus dilewati — bukan meledak.
+        $me = backpack_auth()->check() ? backpack_user() : null;
+
+        if (! $me) {
+            return;
+        }
 
         if (! $me->can('presence.view')) {
             abort(403, 'Anda tidak berhak melihat data kehadiran.');

@@ -291,6 +291,30 @@ for (const x of [
     : record(x.mod, x.id, 'FAIL', `${x.label}: ${r.status()} — ${titleOf(await r.text().catch(() => ''))}`);
 }
 
+// ------------------------- 11. Route PUBLIK tanpa login (regresi BUG-012)
+// Kedua suite selalu login lebih dulu, sehingga jalur anonim dulu tidak teruji
+// dan `/scan` sempat 500 karena backpack_user() bernilai null di setup().
+const anon = await browser.newContext();
+const anonPage = await anon.newPage();
+for (const [id, url, label] of [
+  ['scan/R-anon', '/scan', 'Halaman scan publik'],
+  ['root/R-anon', '/', 'Halaman muka (mengarah ke /scan)'],
+]) {
+  const r = await anonPage.goto(BASE + url);
+  r.status() === 200
+    ? record('Absensi', id, 'PASS', `${label}: 200 tanpa login`)
+    : record('Absensi', id, 'FAIL', `${label}: ${r.status()} tanpa login`);
+}
+const scanEls = await anonPage.goto(`${BASE}/scan`).then(() => anonPage.evaluate(() => ({
+  preview: !!document.querySelector('#preview'),
+  ok: !!document.querySelector('#audioPlayer'),
+  fail: !!document.querySelector('#audioPlayerFailed'),
+})));
+scanEls.preview && scanEls.ok && scanEls.fail
+  ? record('Absensi', 'scan/R-elements', 'PASS', 'elemen scanner lengkap tanpa login')
+  : record('Absensi', 'scan/R-elements', 'FAIL', `elemen kurang: ${JSON.stringify(scanEls)}`);
+await anon.close();
+
 await browser.close();
 const out = summary();
 fs.writeFileSync('/tmp/crud-results.json', JSON.stringify(out.results, null, 2));
