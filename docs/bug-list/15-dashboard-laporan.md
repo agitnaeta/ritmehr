@@ -87,8 +87,6 @@ akan menghasilkan kebocoran yang **muncul-hilang** dan sangat sulit dilacak.
 | `/admin/notification/unread-count` | ✅ 200 JSON |
 | Employee dialihkan ke `/my` | ✅ |
 
-Tangkapan layar: [dashboard-super-admin.png](../screenshots/dashboard-super-admin.png),
-[dashboard-manager.png](../screenshots/dashboard-manager.png)
 
 ---
 

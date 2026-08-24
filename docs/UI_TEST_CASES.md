@@ -66,8 +66,7 @@ node tests/browser/ui-test.mjs
 ```
 
 Hasil terakhir: **19 PASS / 2 FAIL** — kedua kegagalan adalah **DEF-01** dan
-**DEF-04** yang memang belum diperbaiki. Tangkapan layar tersimpan di
-[docs/screenshots/](screenshots/).
+**DEF-04** yang memang belum diperbaiki.
 
 ---
 
@@ -97,7 +96,7 @@ Sisanya terbuka untuk MGR — lihat **DEF-03**.
 | TC-AUTH-01 | Login super_admin | `/admin/login` → `siti@demo.test` / `password` | ✅ Masuk `/admin/dashboard`, sidebar tampil penuh termasuk dropdown **Pengaturan** |
 | TC-AUTH-02 | Login hr_admin | `rina@demo.test` | ✅ Masuk dashboard, dropdown **Pengaturan** **tidak** muncul |
 | TC-AUTH-03 | Login manager | `budi@demo.test` | ✅ Masuk dashboard, **Pengaturan** tidak muncul |
-| TC-AUTH-04 | Login employee | `ahmad@demo.test` | 🌐 Dialihkan ke `/my`, bukan panel admin — [portal-employee.png](screenshots/portal-employee.png) |
+| TC-AUTH-04 | Login employee | `ahmad@demo.test` | 🌐 Dialihkan ke `/my`, bukan panel admin |
 | TC-AUTH-05 | Password salah | Email benar, password `salah` | Kembali ke form dengan pesan error, tidak ada sesi |
 | TC-AUTH-06 | Akses admin tanpa login | Buka `/admin/user` di incognito | Dialihkan ke `/admin/login` |
 | TC-AUTH-07 | Akses portal tanpa login | Buka `/my` di incognito | Dialihkan ke halaman login |
@@ -123,8 +122,6 @@ Sisanya terbuka untuk MGR — lihat **DEF-03**.
 | TC-DASH-08 | Cache 5 menit | Ubah data presensi → refresh | Angka hari ini boleh tertinggal ≤5 menit (perilaku benar, bukan bug) |
 | TC-DASH-09 | Dashboard sebagai MGR | Login `budi@` | 🌐 200 — cek apakah angka sudah ter-scope tim (lihat DEF-03) |
 
-Tangkapan layar: [dashboard-super-admin.png](screenshots/dashboard-super-admin.png),
-[dashboard-manager.png](screenshots/dashboard-manager.png)
 
 ---
 
@@ -165,7 +162,7 @@ Field form: `name`, `email`, `password`, `phone`, `address`, `image`,
 | TC-SCAN-01 | Halaman scan admin | Buka `/admin/presence/scan` | ✅ 200 |
 | TC-SCAN-02 | Halaman scan publik | Buka `/scan` tanpa login | ✅ 200 — memang publik |
 | TC-SCAN-03 | Root redirect | Buka `/` | ✅ 302 → `/scan` |
-| TC-SCAN-04 | Elemen scanner | Buka `/scan` di browser | 🌐 `#preview`, `#audioPlayer`, `#audioPlayerFailed` ketiganya ada; kamera ditolak (headless) **tidak membuat halaman crash** — lihat [scan-public.png](screenshots/scan-public.png) |
+| TC-SCAN-04 | Elemen scanner | Buka `/scan` di browser | 🌐 `#preview`, `#audioPlayer`, `#audioPlayerFailed` ketiganya ada; kamera ditolak (headless) **tidak membuat halaman crash** |
 | TC-SCAN-05 | Scan QR valid | 🖱️ Scan QR karyawan | Absen tercatat, audio sukses (`#audioPlayer`) berbunyi, jam tampil di `#time` |
 | TC-SCAN-06 | Scan QR tidak dikenal | 🖱️ Scan QR asal | Ditolak, audio gagal (`#audioPlayerFailed`) berbunyi |
 | TC-SCAN-07 | Scan kedua = check-out | 🖱️ Scan ulang karyawan yang sama | Terisi kolom `out`, bukan baris baru |
@@ -202,7 +199,7 @@ Field: `user_id`, `in`, `out`, `is_late`, `late_minute`, `is_overtime`,
 | ID | Skenario | Langkah | Expected |
 |---|---|---|---|
 | TC-PRES-01 | List termuat | Buka `/admin/presence` | 🌐 "Menampilkan 1 hingga 10 dari **110** masukan." — paginasi 10/halaman |
-| TC-PRES-02 | Status geofence | Amati kolom radius | 🌐 **Nol** teks "Di Luar Radius" di halaman; seluruh 110 baris `outside=0`. Regresi lama (semua di luar radius) tidak muncul lagi — [presence-list.png](screenshots/presence-list.png) |
+| TC-PRES-02 | Status geofence | Amati kolom radius | 🌐 **Nol** teks "Di Luar Radius" di halaman; seluruh 110 baris `outside=0`. Regresi lama (semua di luar radius) tidak muncul lagi |
 | TC-PRES-03 | Input manual | Create presensi baru | Tersimpan; observer menghitung geofence saat **create**, bukan hanya update |
 | TC-PRES-04 | Edit jam masuk | Ubah `in` ke jam terlambat | `is_late` dan `late_minute` terhitung ulang otomatis |
 | TC-PRES-05 | Hitung lembur | Set `out` melewati `over_in` | `is_overtime` / `extra_time` terisi |
@@ -287,7 +284,7 @@ Field: `user_id`, `amount`, `overtime_amount`, `overtime_type`, `extra_time`,
 | TC-REC-06 | Set-payment tanpa method | Ketik `/admin/salary-recap/1/set-payment` langsung di address bar | ⚠️ **500** saat ini — lihat **DEF-02** |
 | TC-REC-07 | Hitung ulang gaji | Tombol **Recalculate** | ✅ 302 kembali ke list, angka diperbarui |
 | TC-REC-08 | Export Excel | `/admin/salary-recap/export` | ✅ 200, `.xlsx` (~6.8 KB) |
-| TC-REC-09 | Cetak slip PDF | Klik tombol **Print** pada baris | ⚠️ **GAGAL** — 🌐 HTTP **500** di browser, `getimagesize()` gagal. Lihat **DEF-01** dan [DEF-01-print-500.png](screenshots/DEF-01-print-500.png) |
+| TC-REC-09 | Cetak slip PDF | Klik tombol **Print** pada baris | ⚠️ **GAGAL** — 🌐 HTTP **500** di browser, `getimagesize()` gagal. Lihat **DEF-01**. |
 | TC-REC-10 | Cuti berbayar tidak dipotong | Lihat rekap Ahmad (3 hari cuti berbayar disetujui) | Tidak dihitung absen, **tidak** dipotong |
 | TC-REC-11 | Absen tanpa keterangan dipotong | Lihat rekap Dewi (2 hari absen tanpa pengajuan) | Dihitung absen **dan** dipotong |
 | TC-REC-12 | Cuti tidak berbayar | Rekap dengan cuti unpaid disetujui | Tidak dihitung absen, tetapi **dipotong** |
