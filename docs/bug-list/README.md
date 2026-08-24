@@ -6,19 +6,23 @@ terhadap aplikasi berjalan dengan data demo.
 | | |
 |---|---|
 | **Harness** | [tests/browser/crud-suite.mjs](../../tests/browser/crud-suite.mjs) |
-| **Hasil browser** | 114 PASS / 29 FAIL → **143 PASS / 0 FAIL** setelah perbaikan |
+| **Hasil browser** | 114 PASS / 29 FAIL → **146 PASS / 0 FAIL** setelah perbaikan |
 | **Hasil PHPUnit** | 149 lulus / 1 gagal → **150 lulus / 0 gagal** |
-| **Bug unik** | **10** — 7 dari suite, 3 dari pemeriksaan manual area yang belum teruji |
+| **Bug unik** | **12** — 7 dari suite, 4 dari pemeriksaan manual area belum teruji, 1 regresi yang tertangkap saat aplikasi dinyalakan ulang |
 | **Cara jalankan** | `php artisan serve` lalu `node tests/browser/crud-suite.mjs` |
 
 Test case sumbernya ada di [../test-cases/](../test-cases/README.md).
 
 ---
 
-## Status: **seluruh 11 bug sudah diperbaiki** ✅
+## Status: **seluruh 12 bug sudah diperbaiki** ✅
 
 BUG-008 s/d BUG-011 ditemukan pada putaran kedua dan ketiga, dengan memeriksa
 area yang sebelumnya belum pernah diuji — bukan dari kegagalan suite.
+
+BUG-012 ditemukan setelah aplikasi dinyalakan ulang: sebuah **regresi dari
+perbaikan BUG-003 sendiri** yang lolos kedua suite karena keduanya selalu
+login lebih dulu, sehingga jalur anonim tidak pernah teruji.
 
 | ID | Judul | Severity | Status | Berkas |
 |---|---|---|---|---|
@@ -26,6 +30,7 @@ area yang sebelumnya belum pernah diuji — bukan dari kegagalan suite.
 | **BUG-008** | Nominal kasbon menerima nol dan negatif | 🟠 Tinggi | ✅ **Diperbaiki** | [03-kasbon.md](03-kasbon.md) |
 | **BUG-009** | Pembayaran kasbon bisa melebihi sisa tagihan | 🟠 Tinggi | ✅ **Diperbaiki** | [03-kasbon.md](03-kasbon.md) |
 | **BUG-011** | Hapus kasbon bercicilan membuat karyawan terjebak | 🟠 Tinggi | ✅ **Diperbaiki** | [03-kasbon.md](03-kasbon.md) |
+| **BUG-012** | Halaman scan publik 500 — halaman muka aplikasi mati | 🔴 Kritis | ✅ **Diperbaiki** | [02-absensi.md](02-absensi.md) |
 | **BUG-003** | Manager punya akses tulis penuh tanpa permission | 🔴 Kritis | ✅ **Diperbaiki** | [lintas-modul.md](lintas-modul.md) |
 | **BUG-005** | 8 entity tanpa validasi server → HTTP 500 | 🔴 Kritis | ✅ **Diperbaiki** | [lintas-modul.md](lintas-modul.md) |
 | **BUG-001** | Cetak slip gaji selalu 500 bila logo kosong | 🔴 Kritis | ✅ **Diperbaiki** | [04-penggajian.md](04-penggajian.md) |
@@ -48,6 +53,7 @@ area yang sebelumnya belum pernah diuji — bukan dari kegagalan suite.
 | BUG-009 | Aturan closure membandingkan nominal terhadap sisa sesungguhnya, mengecualikan baris yang sedang diedit |
 | BUG-010 | Filter `auditableValues()` di trait `Auditable` memakai `$hidden` model; 5 entri lama dibersihkan tanpa kehilangan baris audit |
 | BUG-011 | Guard di `LoanCrudController::destroy()` menolak (422) penghapusan kasbon yang cicilannya melebihi kasbon lain milik karyawan itu |
+| BUG-012 | `PresenceCrudController::setup()` memeriksa `backpack_auth()->check()` lebih dulu — controller ini juga melayani route publik `/scan` dan `POST /presence/record` yang dipakai tanpa login |
 
 ### Area yang kini sudah teruji dan **bersih**
 
@@ -67,7 +73,7 @@ Diperiksa manual pada putaran ketiga; tidak ada bug ditemukan:
 |---|---|---|
 | Lintas modul | BUG-003, BUG-004, BUG-005, BUG-006, BUG-007 | [lintas-modul.md](lintas-modul.md) |
 | 01 Users | BUG-003, BUG-004 | [01-users.md](01-users.md) |
-| 02 Absensi | BUG-003, BUG-004, BUG-005 | [02-absensi.md](02-absensi.md) |
+| 02 Absensi | BUG-003, BUG-004, BUG-005, **BUG-012** | [02-absensi.md](02-absensi.md) |
 | 03 Kasbon | BUG-003 | [03-kasbon.md](03-kasbon.md) |
 | 04 Penggajian | BUG-001, BUG-002, BUG-003 | [04-penggajian.md](04-penggajian.md) |
 | 05 Profil Perusahaan | BUG-001 (akar), BUG-003 | [05-profil-perusahaan.md](05-profil-perusahaan.md) |

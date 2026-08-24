@@ -1,66 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Absensi — Aplikasi Absensi & HRIS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem absensi berbasis pemindaian QR yang berkembang menjadi HRIS: penggajian,
+cuti, kasbon, dokumen karyawan, pajak & BPJS, serta portal layanan mandiri.
 
-## About Laravel
+Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Modul | Cakupan |
+|---|---|
+| **Absensi** | Pemindaian QR di pintu masuk, geofence per cabang, jadwal kerja, hari libur nasional |
+| **Penggajian** | Komponen gaji, lembur, denda keterlambatan, rekap bulanan, slip gaji PDF |
+| **Kasbon** | Penerbitan kasbon, pencatatan cicilan, potongan otomatis dari gaji |
+| **Cuti & Izin** | Pengajuan, kuota tahunan dengan carry-over, kalender, rekap |
+| **Persetujuan** | Alur bertingkat per modul, approver berdasarkan role / atasan / user tertentu |
+| **Organisasi** | Cabang, departemen bersarang, jabatan, struktur organisasi |
+| **Dokumen** | Dokumen karyawan di penyimpanan privat, checklist kelengkapan, peringatan kedaluwarsa |
+| **Pajak & BPJS** | PPh 21 progresif, PTKP, BPJS Kesehatan/JHT/JP/JKK/JKM, THR |
+| **Portal Karyawan** | `/my` — riwayat kehadiran, slip gaji, cuti, kasbon, profil, notifikasi |
+| **Dashboard & Laporan** | Ringkasan harian, tren 12 bulan, laporan kehadiran/gaji/kasbon/headcount |
+| **Audit & Notifikasi** | Jejak audit seluruh perubahan; notifikasi database, email, dan WhatsApp |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Menjalankan secara lokal
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Prasyarat: PHP 8.1+, Composer, Docker, Node 18+ (hanya untuk pengujian browser).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+git clone git@github.com:agitnaeta/absensi.git
+cd absensi
 
-## Laravel Sponsors
+composer install
+cp .env.example .env
+php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+docker compose up -d          # MySQL 8 di port host 3307
+php artisan migrate
+php artisan db:seed --class=HrisSeeder      # data referensi, idempoten
+php artisan serve
+```
 
-### Premium Partners
+Sesuaikan `.env` agar menunjuk ke container:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=absensi
+DB_USERNAME=root
+DB_PASSWORD=secret
+```
 
-## Contributing
+Buka http://127.0.0.1:8000 — halaman muka adalah pemindai QR (`/scan`),
+panel admin di `/admin/login`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Berikan role tertinggi ke akun pertama:
 
-## Code of Conduct
+```bash
+php artisan tinker
+>>> \App\Models\User::find(1)->assignRole('super_admin');
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Data demo
 
-## Security Vulnerabilities
+```bash
+php artisan db:seed --class=DemoDataSeeder   # menolak berjalan di production
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Membuat perusahaan lima orang dengan satu bulan kehadiran penuh, cuti yang
+disetujui dan yang pending, satu kasbon, serta satu siklus penggajian.
 
-## License
+| Email | Password | Role |
+|---|---|---|
+| `siti@demo.test` | `password` | super_admin |
+| `rina@demo.test` | `password` | hr_admin |
+| `budi@demo.test` | `password` | manager |
+| `ahmad@demo.test` · `dewi@demo.test` | `password` | employee |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Data sengaja ditempatkan di **bulan sebelumnya**: rekap gaji mengukur satu bulan
+penuh, sehingga bulan berjalan yang baru separuh akan terbaca seperti absen
+massal.
+
+---
+
+## Role
+
+| Role | Cakupan |
+|---|---|
+| `super_admin` | Seluruh akses, termasuk role, permission, dan alur persetujuan |
+| `hr_admin` | Seluruh operasi HR. Tidak boleh mengubah role, permission, atau alur persetujuan |
+| `manager` | Melihat timnya (bawahan langsung) dan bertindak atas persetujuan. Hanya izin baca |
+| `employee` | Portal layanan mandiri saja |
+
+Hak akses ditegakkan di dua lapis: middleware `permission:` pada route group, dan
+`denyAccess` di controller untuk modul yang boleh dibaca tetapi tidak ditulis.
+Daftar karyawan dan presensi disempitkan lewat `User::scopeVisibleTo()`.
+
+> **Dua guard.** Backpack mengautentikasi admin pada guard `backpack`, sedangkan
+> role Spatie tersimpan pada guard `web`. Akibatnya `@can` dan `@role` bawaan
+> **selalu false** untuk admin yang login. Di view admin gunakan
+> `backpack_user()->can(...)`.
+
+---
+
+## Perintah terjadwal
+
+| Jadwal | Perintah |
+|---|---|
+| Hari kerja 08:15 | `notify:attendance --type=checkin` |
+| Hari kerja 09:30 | `notify:attendance --type=late` |
+| Hari kerja 17:00 | `notify:attendance --type=checkout` |
+| Senin 07:30 | `documents:notify-expiring --days=30` |
+| Senin 08:00 | `notify:approval-digest` |
+| Harian 23:00 | `backup:run --only-db` |
+| Harian 23:30 | `db:seed RecalculatePresence` |
+| Bulanan tgl 1, 02:00 | `audit:prune --days=90` |
+| Tahunan | `leave:generate-balances --carry-over --max-carry=6` |
+
+Perintah manual: `calculate:salary`, `salary:recalculate`, `import:presence-command`.
+
+---
+
+## Pengujian
+
+```bash
+./vendor/bin/phpunit                    # 150 test, skema absensi_testing terpisah
+```
+
+Pengujian berbasis browser (Chromium sungguhan) untuk hal yang tidak terjangkau
+PHPUnit — tabel Backpack dimuat lewat AJAX, sehingga mengambil URL daftar saja
+hanya menghasilkan kerangka tabel kosong:
+
+```bash
+npm install && npx playwright install chromium
+php artisan serve                       # aplikasi harus berjalan
+node tests/browser/crud-suite.mjs       # 146 pemeriksaan siklus CRUD & hak akses
+node tests/browser/ui-test.mjs          # rendering dashboard, menu, portal
+```
+
+> `crud-suite.mjs` **mengubah data**. Cadangkan lebih dulu:
+> ```bash
+> docker exec absensi-mysql mysqldump -uroot -psecret --single-transaction absensi \
+>   > storage/app/backups/pre-crud-test.sql
+> ```
+> Pulihkan dengan `mysql` dan berkas yang sama.
+
+---
+
+## Dokumentasi
+
+| Berkas | Isi |
+|---|---|
+| [docs/HRIS_SETUP.md](docs/HRIS_SETUP.md) | Referensi modul M0–M8, keputusan arsitektur, batasan Backpack edisi gratis |
+| [docs/BUSINESS_FLOW.md](docs/BUSINESS_FLOW.md) | Alur bisnis |
+| [docs/test-cases/](docs/test-cases/README.md) | 725 test case CRUD operasional per modul |
+| [docs/bug-list/](docs/bug-list/README.md) | 12 bug beserta akar masalah dan perbaikannya |
+| [docs/UI_TEST_CASES.md](docs/UI_TEST_CASES.md) | Test case UI lintas modul + matriks akses per role |
+| [docs/MODULE_PLANS.md](docs/MODULE_PLANS.md) | Rencana modul |
+
+---
+
+## Catatan penerapan
+
+**Tarif pajak wajib diverifikasi.** `TaxRateSeeder` mengacu PMK 101/2016 dan
+UU HPP No. 7/2021 saat ditulis, dan JKK diisi kelas risiko terendah (0,24%).
+PTKP, lapisan PPh 21, dan persentase BPJS disimpan **per tahun** agar
+perhitungan historis memakai tarif periodenya sendiri — periksa nilainya
+terhadap regulasi terbaru sebelum menjalankan payroll sungguhan.
+
+**Single-tenant.** Satu instalasi untuk satu perusahaan. Tabel `branches` dan
+`departments` adalah struktur di dalam satu perusahaan, bukan pemisah antar
+pelanggan; tidak ada kolom tenant di tabel inti.
+
+**Dokumen karyawan** disimpan di disk `local` (privat), bukan `public`. Unduhan
+mengalir lewat aplikasi setelah pemeriksaan hak akses.
+
+**WhatsApp** memakai `LogWhatsAppGateway` (hanya mencatat) sampai `FONNTE_TOKEN`
+diisi, sehingga tidak ada notifikasi yang berpura-pura terkirim.
+
+**Integrasi akuntansi** nonaktif kecuali `ACC_ACTIVE=true` diset di `.env`.
