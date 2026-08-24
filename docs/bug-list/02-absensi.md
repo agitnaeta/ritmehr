@@ -109,6 +109,86 @@ Perbaikan: [lintas-modul.md § BUG-004](lintas-modul.md#bug-004--scoping-tim-man
 
 ---
 
+## BUG-012 — Halaman scan publik 500 setelah permission ditegakkan
+
+| | |
+|---|---|
+| **Severity** | 🔴 Kritis — halaman muka aplikasi mati |
+| **Status** | ✅ **SUDAH DIPERBAIKI** |
+| **Test case** | `SCAN-R-02`, `SCAN-R-03` |
+
+Regresi yang **ditimbulkan oleh perbaikan BUG-003 itu sendiri**, dan lolos dari
+kedua suite karena keduanya selalu login lebih dulu.
+
+### Reproduksi
+
+Buka `http://127.0.0.1:8000/scan` **tanpa login** (atau buka `/` yang
+mengarah ke sana).
+
+### Hasil aktual (sebelum perbaikan)
+
+```
+HTTP 500
+Call to a member function can() on null
+```
+
+Karena `/` mengalihkan ke `/scan`, **halaman muka aplikasi mati total** —
+pemindai QR di pintu masuk tidak bisa dipakai sama sekali.
+
+### Akar masalah
+
+`PresenceCrudController` melayani dua route **publik** di luar grup admin:
+
+```php
+Route::get("/scan", [PresenceCrudController::class, 'scan'])->name('presence.scan.public');
+Route::post("/record", [PresenceCrudController::class, 'record'])->name('presence.record');
+```
+
+Penjagaan izin yang ditambahkan untuk BUG-003 memanggil `backpack_user()->can()`
+di `setup()` — dan bagi pengunjung tanpa login `backpack_user()` bernilai
+`null`.
+
+### Perbaikan
+
+```php
+// Controller ini juga melayani route PUBLIK `/scan` dan `POST /presence/record`
+// (pemindai QR di pintu masuk, tanpa login). Di sana tidak ada pengguna
+// terautentikasi, jadi pemeriksaan izin harus dilewati — bukan meledak.
+$me = backpack_auth()->check() ? backpack_user() : null;
+
+if (! $me) {
+    return;
+}
+```
+
+Melewati pemeriksaan izin di sini aman: route publik hanya memanggil `scan()`
+dan `record()`, yang tidak menyentuh daftar CRUD maupun scoping tim.
+
+### Audit lanjutan
+
+Delapan controller lain yang juga diberi penjagaan izin
+(`User`, `Salary`, `SalaryRecap`, `Loan`, `LoanPayment`, `Schedule`,
+`Department`, `Position`) **tidak** dijangkau route publik mana pun, sehingga
+`backpack_user()` di sana selalu ada. `PresenceCrudController` satu-satunya
+yang terpapar.
+
+### Verifikasi
+
+| Uji | Hasil |
+|---|---|
+| `GET /scan` tanpa login | ✅ 200, keempat elemen scanner ada |
+| `GET /` (mengarah ke `/scan`) | ✅ 200 |
+| `POST /presence/record` dengan QR valid | ✅ 200, presensi tercatat, telat & koordinat terhitung |
+| `POST /presence/record` dengan QR ngawur | ✅ ditolak, tidak crash |
+| Scoping tim manager masih utuh | ✅ user 3 dari 5, presensi 64 dari 110 |
+| PHPUnit | ✅ 150/150 |
+
+> **Pelajaran.** Kedua suite selalu login lebih dulu, jadi jalur anonim tidak
+> pernah teruji. Route publik perlu kasus uji tersendiri — sudah ditambahkan
+> sebagai `SCAN-R-02` dan `SCAN-R-03`.
+
+---
+
 ## BUKAN bug — sudah diverifikasi
 
 ### Edit jadwal ditolak "Kolom hari libur harus diisi"
