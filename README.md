@@ -152,6 +152,15 @@ node tests/browser/ui-test.mjs          # rendering dashboard, menu, portal
 
 ## Dokumentasi
 
+**Mulai dari salah satu ini:**
+
+| Berkas | Untuk siapa |
+|---|---|
+| [docs/PANDUAN-PENGGUNA.md](docs/PANDUAN-PENGGUNA.md) | **Pengguna** — HR, manager, karyawan. Berorientasi tugas, per peran |
+| [docs/PANDUAN-DEVELOPER.md](docs/PANDUAN-DEVELOPER.md) | **Developer** — arsitektur, konvensi, jebakan, cara menambah modul |
+
+Rujukan lebih dalam:
+
 | Berkas | Isi |
 |---|---|
 | [docs/HRIS_SETUP.md](docs/HRIS_SETUP.md) | Referensi modul M0–M8, keputusan arsitektur, batasan Backpack edisi gratis |
