@@ -14,6 +14,7 @@ Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 ## Daftar isi
 
 - [Fitur](#fitur)
+- [Tampilan](#tampilan)
 - [Prasyarat](#prasyarat)
 - [Pemasangan](#pemasangan)
 - [Cara pakai](#cara-pakai)
@@ -46,6 +47,20 @@ Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 Hak akses dibagi empat peran — `super_admin`, `hr_admin`, `manager`, `employee`
 — dan ditegakkan di dua lapis: middleware pada route group, serta pembatasan
 operasi di controller. Manager hanya melihat bawahan langsungnya.
+
+---
+
+## Tampilan
+
+![Dashboard admin](docs/images/dashboard.png)
+
+Dashboard admin dengan data demo pada sebuah hari kerja: kehadiran hari ini,
+tren 12 bulan, headcount per departemen, dan daftar keterlambatan.
+
+Kartu penggajian menunjukkan Rp 0 karena tangkapan layar ini diambil di
+pertengahan bulan — rekap gaji mengukur satu bulan penuh, sehingga baru terisi
+setelah perhitungan bulanan dijalankan. Perilaku ini disengaja, bukan kekosongan
+data.
 
 ---
 
