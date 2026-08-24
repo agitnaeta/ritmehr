@@ -5,15 +5,16 @@ namespace App\Observers;
 use App\Models\Presence;
 use App\Services\PresenceService;
 use App\Services\SalaryService;
-use Illuminate\Support\Facades\Log;
 
 class PresenceObserver
 {
     protected $presenceService;
     protected $salaryService;
-    public function __construct() {
-        $this->presenceService = new PresenceService();
-        $this->salaryService = new SalaryService();
+
+    public function __construct(PresenceService $presenceService, SalaryService $salaryService)
+    {
+        $this->presenceService = $presenceService;
+        $this->salaryService = $salaryService;
     }
 
     /**
@@ -25,6 +26,10 @@ class PresenceObserver
         $this->presenceService->calculateLate($presence);
         $this->presenceService->calculateOvertime($presence);
         $this->presenceService->calculateExtraTime($presence);
+        // `outside` defaults to 1 in the schema, so a row inserted with its
+        // coordinates already attached (import, API, seeder) would stay flagged
+        // as off-site forever if the geofence were only evaluated on update.
+        $this->presenceService->recalCulateCoordinate($presence);
         $this->salaryService->recap($presence);
     }
 

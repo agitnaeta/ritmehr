@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\LoanPaymentRequest;
 use App\Models\LoanPayment;
 use App\Models\User;
-use App\Services\Acc\Acc;
-use App\Services\Acc\AccTransaction;
 use App\Services\TransactionService;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -21,9 +19,9 @@ use Prologue\Alerts\Facades\Alert;
 class LoanPaymentCrudController extends CrudController
 {
     protected $transactionService;
-    public function __construct() {
+    public function __construct(TransactionService $transactionService) {
         parent::__construct();
-        $this->transactionService = new TransactionService(new Acc(), new AccTransaction());
+        $this->transactionService = $transactionService;
     }
 
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
@@ -62,6 +60,11 @@ class LoanPaymentCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/loan-payment');
         CRUD::setEntityNameStrings('Pembayaran Kasbon ', 'Pembayaran Kasbon');
         $this->crud->addClause('with','user');
+
+        // Manager boleh melihat pembayaran, tidak boleh mencatatnya.
+        if (! backpack_user()->can('loan_payment.create')) CRUD::denyAccess(['create']);
+        if (! backpack_user()->can('loan_payment.edit'))   CRUD::denyAccess(['update']);
+        if (! backpack_user()->can('loan_payment.delete')) CRUD::denyAccess(['delete']);
     }
     protected function setupShowOperation()
     {

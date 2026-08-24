@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
+    | WhatsApp gateway. Without a token the app falls back to a gateway that
+    | only logs, so notifications stay functional in dev.
+    */
+    'fonnte' => [
+        'token' => env('FONNTE_TOKEN'),
+    ],
+
 ];

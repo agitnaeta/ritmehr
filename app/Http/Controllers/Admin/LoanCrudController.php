@@ -6,10 +6,9 @@ use App\Exports\LoanDetailExport;
 use App\Exports\LoanExport;
 use App\Http\Requests\LoanRequest;
 use App\Models\Loan;
+use App\Models\LoanPayment;
 use App\Models\User;
 use App\Repositories\LoanRepository;
-use App\Services\Acc\Acc;
-use App\Services\Acc\AccTransaction;
 use App\Services\TransactionService;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
@@ -27,9 +26,9 @@ class LoanCrudController extends CrudController
 {
 
     protected $transactionService;
-    public function __construct() {
+    public function __construct(TransactionService $transactionService) {
         parent::__construct();
-        $this->transactionService = new TransactionService(new Acc(), new AccTransaction());
+        $this->transactionService = $transactionService;
     }
 
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
@@ -67,6 +66,11 @@ class LoanCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/loan');
         CRUD::setEntityNameStrings('Kasbon', 'Kasbon');
         $this->crud->addClause('with','user');
+
+        // Manager boleh melihat kasbon, tidak boleh menerbitkan atau mengubahnya.
+        if (! backpack_user()->can('loan.create')) CRUD::denyAccess(['create']);
+        if (! backpack_user()->can('loan.edit'))   CRUD::denyAccess(['update']);
+        if (! backpack_user()->can('loan.delete')) CRUD::denyAccess(['delete']);
     }
     protected function setupShowOperation()
     {
@@ -196,7 +200,30 @@ class LoanCrudController extends CrudController
     {
         CRUD::hasAccessOrFail('delete');
         $loan = Loan::find($id);
+        abort_if(! $loan, 404);
+
+        // `loan_payments` tidak punya `loan_id` — cicilan dicatat per karyawan,
+        // bukan per kasbon. Jadi menghapus kasbon yang sudah dicicil membuat
+        // buku pembayaran karyawan menggantung: sisanya jadi negatif, dan
+        // validasi pembayaran (BUG-009) akan menolak setiap setoran berikutnya
+        // sehingga karyawan terjebak tidak bisa membayar apa pun lagi.
+        $kasbonLain = (int) Loan::where('user_id', $loan->user_id)
+            ->where('id', '!=', $loan->id)
+            ->sum('amount');
+        $dibayar = (int) LoanPayment::where('user_id', $loan->user_id)->sum('amount');
+
+        if ($dibayar > $kasbonLain) {
+            $terpakai = $dibayar - $kasbonLain;
+
+            return response()->json([
+                'message' => 'Kasbon ini tidak bisa dihapus karena sudah dicicil Rp '
+                    . number_format($terpakai, 0, ',', '.')
+                    . '. Hapus atau sesuaikan pembayarannya lebih dulu.',
+            ], 422);
+        }
+
         $this->transactionService->deleteRecordLoanACC($loan);
+
         return CRUD::delete($id);
     }
 

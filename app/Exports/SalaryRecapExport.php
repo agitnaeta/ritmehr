@@ -83,7 +83,7 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
             $row->late_cut,
             $row->loan_cut,
             $row->received,
-            $row->status ? 'Ya' :'Tidak',
+            $row->paid ? 'Ya' :'Tidak',
             $row->desc,
             $row->method,
         ];

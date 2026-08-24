@@ -16,13 +16,16 @@ class TransactionService
 {
 
     protected  $acc;
-    protected  $accTransaction;
 
     protected $active;
-    public function __construct(Acc $acc, AccTransaction $accTransaction) {
+    public function __construct(Acc $acc) {
         $this->acc = $acc;
-        $this->accTransaction = $accTransaction;
         $this->active = env('ACC_ACTIVE');
+    }
+
+    protected function newTransaction(): AccTransaction
+    {
+        return new AccTransaction();
     }
 
     public function recordSalaryToACC(SalaryRecap $data): void
@@ -33,7 +36,7 @@ class TransactionService
         $code = "GAJIAN";
         $user = User::find($data->user_id);
         $acc  = \App\Models\Acc::where("code",$code)->first();
-        $transaction = $this->accTransaction;
+        $transaction = $this->newTransaction();
         $transaction->type = AccTransactionType::WITHDRAWAL;
         $transaction->amount = $data->received;
         $transaction->date = $data->updated_at;
@@ -65,7 +68,7 @@ class TransactionService
             $code = "GAJIAN";
             $user = User::find($data->user_id);
             $acc  = \App\Models\Acc::where("code",$code)->first();
-            $transaction = $this->accTransaction;
+            $transaction = $this->newTransaction();
             $transaction->type = AccTransactionType::WITHDRAWAL;
             $transaction->amount = $data->received;
             $transaction->date = $data->updated_at;
@@ -99,7 +102,7 @@ class TransactionService
         $code = "BAYARKASBON";
         $user = User::find($data->user_id);
         $acc  = \App\Models\Acc::where("code",$code)->first();
-        $transaction = $this->accTransaction;
+        $transaction = $this->newTransaction();
         $transaction->type = AccTransactionType::DEPOSIT;
         $transaction->amount = $data->amount;
         $transaction->date = $data->date;
@@ -133,7 +136,7 @@ class TransactionService
             $user = User::find($data->user_id);
             $acc  = \App\Models\Acc::where("code",$code)->first();
 
-            $transaction = $this->accTransaction;
+            $transaction = $this->newTransaction();
             $transaction->amount = $data->amount;
             $transaction->description = "$code - $user->name";
             $transaction->date = $data->date;
@@ -171,7 +174,7 @@ class TransactionService
         $user = User::find($loan->user_id);
         $acc  = \App\Models\Acc::where("code",$code)->first();
 
-        $transaction = $this->accTransaction;
+        $transaction = $this->newTransaction();
         $transaction->type = AccTransactionType::DEPOSIT;
         $transaction->amount = $loan->amount;
         $transaction->date = $loan->date;
@@ -202,7 +205,7 @@ class TransactionService
             $this->recordLoanACC($loan);
         }
         else{
-            $transaction = $this->accTransaction;
+            $transaction = $this->newTransaction();
             $transaction->amount = $loan->amount;
             $transaction->description = "$code - $user->name";
             $transaction->date = $loan->date;

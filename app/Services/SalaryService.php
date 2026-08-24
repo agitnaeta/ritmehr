@@ -8,11 +8,9 @@ use App\Models\Presence;
 use App\Models\Salary;
 use App\Models\SalaryRecap;
 use App\Models\User;
-use App\Services\Acc\Acc;
-use App\Services\Acc\AccTransaction;
 use Carbon\Carbon;
 use Database\Factories\TranslateFactory;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SalaryService
@@ -23,11 +21,10 @@ class SalaryService
 
     protected $transactionService;
 
-    public function __construct()
+    public function __construct(PresenceService $presenceService = null, TransactionService $transactionService = null)
     {
-       $this->presenceService = new PresenceService();
-       $this->transactionService = new TransactionService(new Acc(), new AccTransaction());
-
+       $this->presenceService = $presenceService ?? app(PresenceService::class);
+       $this->transactionService = $transactionService ?? app(TransactionService::class);
     }
 
     public function recap(Presence $presence){
@@ -73,61 +70,97 @@ class SalaryService
 
     public function calculateSalaryRecap(SalaryRecap $salaryRecap){
         $presence = $this->getPresenceRecords($salaryRecap);
-        $salary = Salary::where('user_id',$salaryRecap->user_id)->first();
-        $user = User::find($salaryRecap->user_id);
-        if($salary === null || $user === null){
+        $user = User::with(['salary','schedule'])->find($salaryRecap->user_id);
+        if($user === null || $user->salary === null){
             return $salaryRecap;
         }
+        $salary = $user->salary;
 
-        $salaryRecap->work_day = $presence->count();
-        $salaryRecap->late_day = $presence->sum('is_late');
-        $salaryRecap->salary_amount = $salary->amount;
-        $salaryRecap->overtime_amount = $presence->sum('is_overtime') * $salary->overtime_amount;
-        $salaryRecap->abstain_cut = $this->unpaidLeaveDeduction($salaryRecap,$salary);
-        $salaryRecap->abstain_count = $this->getAbstain($salaryRecap,$salary);
-        $salaryRecap->late_minute_count = $presence->sum('late_minute');
-        $salaryRecap->late_cut = $this->deductSalaryByLate($salaryRecap);
-        $salaryRecap->extra_time = $presence->sum('extra_time');
-        $salaryRecap->extra_time_amount = $this->calculateExtraTimeAmount($salaryRecap);
-        $salaryRecap->received = $salaryRecap->salary_amount +
-            $salaryRecap->overtime_amount -
-            $salaryRecap->loan_cut -
-            $salaryRecap->abstain_cut -
-            $salaryRecap->late_cut + $salaryRecap->extra_time_amount;
+        DB::transaction(function () use ($salaryRecap, $presence, $salary, $user) {
+            $salaryRecap->work_day = $presence->count();
+            $salaryRecap->late_day = $presence->sum('is_late');
+            $salaryRecap->salary_amount = $salary->amount;
+            $salaryRecap->overtime_amount = $presence->sum('is_overtime') * $salary->overtime_amount;
+            $salaryRecap->abstain_cut = $this->unpaidLeaveDeduction($salaryRecap,$salary);
+            $salaryRecap->abstain_count = $this->getAbstain($salaryRecap);
+            $salaryRecap->late_minute_count = $presence->sum('late_minute');
+            $salaryRecap->late_cut = $this->deductSalaryByLate($salaryRecap, $user);
+            $salaryRecap->extra_time = $presence->sum('extra_time');
+            $salaryRecap->extra_time_amount = $this->calculateExtraTimeAmount($salaryRecap, $user);
+            $salaryRecap->received = $salaryRecap->salary_amount +
+                $salaryRecap->overtime_amount -
+                $salaryRecap->loan_cut -
+                $salaryRecap->abstain_cut -
+                $salaryRecap->late_cut + $salaryRecap->extra_time_amount;
 
-        $salaryRecap->saveQuietly();
+            $salaryRecap->saveQuietly();
 
-
-        // only update when there's a payment
-        // avoid Issue always recall
-        if($salaryRecap->paid){
-            $this->transactionService->updateRecordSalaryToACC($salaryRecap);
-
-        }
+            // only update when there's a payment
+            // avoid Issue always recall
+            if($salaryRecap->paid){
+                $this->transactionService->updateRecordSalaryToACC($salaryRecap);
+            }
+        });
     }
 
+    /**
+     * Deduction for days not worked and not covered by paid leave.
+     *
+     * Unpaid leave is deducted like an absence (that is what "unpaid" means),
+     * but paid leave must not be — before leave management existed every
+     * non-present day was charged here, which silently docked people for
+     * approved holidays and sick days.
+     */
     public function unpaidLeaveDeduction(SalaryRecap $salaryRecap, Salary $salary){
-        $workDayInMonth = $this->workdayInAMonth($salaryRecap);
+        $deductibleDays = $this->deductibleAbsenceDays($salaryRecap);
 
-        // National Holiday
-        $workDayInMonth = $workDayInMonth- $this->countOfNationalHoliday($salaryRecap);
-
-        if($salaryRecap->work_day < $workDayInMonth){
-            $abstain  = $workDayInMonth - $salaryRecap->work_day;
-            return $abstain * $salary->unpaid_leave_deduction;
-        }
-        return 0;
+        return $deductibleDays * $salary->unpaid_leave_deduction;
     }
 
-    public function getAbstain(SalaryRecap $salaryRecap,Salary $salary){
-        $workDayInMonth = $this->workdayInAMonth($salaryRecap);
-        return $workDayInMonth - $salaryRecap->work_day;
+    /**
+     * Days treated as unexcused absence — used for the abstain_count shown on
+     * the recap. Paid *and* unpaid leave are excluded here because neither is
+     * an unexplained absence; unpaid leave is charged separately.
+     */
+    public function getAbstain(SalaryRecap $salaryRecap){
+        $available = $this->availableWorkDays($salaryRecap);
+        $leave = $this->leaveDays($salaryRecap);
+
+        return max(0, $available - $salaryRecap->work_day - $leave['total']);
     }
 
-    public function testSalaryRecap(){
-        $sr = SalaryRecap::find(1);
-        return $this->workdayInAMonth($sr);
+    /**
+     * Unexcused absences plus unpaid leave — the days that actually cost money.
+     */
+    public function deductibleAbsenceDays(SalaryRecap $salaryRecap): int
+    {
+        $available = $this->availableWorkDays($salaryRecap);
+        $leave = $this->leaveDays($salaryRecap);
+
+        $unexcused = max(0, $available - $salaryRecap->work_day - $leave['total']);
+
+        return $unexcused + $leave['unpaid'];
     }
+
+    /**
+     * Workdays in the month after removing scheduled off days and national
+     * holidays.
+     */
+    public function availableWorkDays(SalaryRecap $salaryRecap): int
+    {
+        return $this->workdayInAMonth($salaryRecap) - $this->countOfNationalHoliday($salaryRecap);
+    }
+
+    /**
+     * Approved leave in the recap month, split paid/unpaid.
+     *
+     * @return array{paid: int, unpaid: int, total: int}
+     */
+    public function leaveDays(SalaryRecap $salaryRecap): array
+    {
+        return app(LeaveService::class)->approvedLeaveDaysForRecap($salaryRecap);
+    }
+
     public function offDayInMonth(SalaryRecap $salaryRecap){
         $month = $this->getRecapMonthCarbon($salaryRecap);
         $user = User::with('schedule')->find($salaryRecap->user_id);
@@ -222,14 +255,18 @@ class SalaryService
             $loan = LoanPayment::where('salary_recap_id',$salaryRecap->id)
                 ->first();
 
+            if(!$loan){
+                return;
+            }
+
             $this->transactionService->deleteRecordPayLoanAcc($loan);
             $loan->delete();
-
-
     }
 
-    public function deductSalaryByLate(SalaryRecap $salaryRecap){
-        $user = User::with('salary')->find($salaryRecap->user_id);
+    public function deductSalaryByLate(SalaryRecap $salaryRecap, User $user = null){
+        if($user === null){
+            $user = User::with('salary')->find($salaryRecap->user_id);
+        }
         if($user->salary->type  === TranslateFactory::MINUTE){
             return $user->salary->fine_per_minute * $salaryRecap->late_minute_count;
         }
@@ -238,9 +275,11 @@ class SalaryService
             return $user->salary->fine * $salaryRecap->late_day;
         }
     }
-    public function calculateExtraTimeAmount($salaryRecap){
+    public function calculateExtraTimeAmount($salaryRecap, User $user = null){
         // Extra time x salary extra time
-        $user = User::with('salary')->find($salaryRecap->user_id);
+        if($user === null){
+            $user = User::with('salary')->find($salaryRecap->user_id);
+        }
         if($user->salary->extra_time_rule == 1){
             return $user->salary->extra_time * $salaryRecap->extra_time;
         }

@@ -47,6 +47,19 @@ class PresenceCrudController extends CrudController
         CRUD::setEntityNameStrings('Kehadiran', 'Kehadiran');
         $this->crud->addClause('with','user');
 
+        $me = backpack_user();
+
+        if (! $me->can('presence.view')) {
+            abort(403, 'Anda tidak berhak melihat data kehadiran.');
+        }
+
+        // Menyempit lewat pemilik presensinya, memakai definisi tim yang sama
+        // dengan daftar karyawan.
+        $this->crud->addClause('whereHas', 'user', fn ($q) => $q->visibleTo($me));
+
+        if (! $me->can('presence.create')) CRUD::denyAccess(['create']);
+        if (! $me->can('presence.edit'))   CRUD::denyAccess(['update']);
+        if (! $me->can('presence.delete')) CRUD::denyAccess(['delete']);
     }
 
     protected function autoSetupShowOperation()
@@ -139,12 +152,12 @@ class PresenceCrudController extends CrudController
     {
 
         $request = $this->crud->validateRequest();
-        $presense  = new Presence();
-        $presense->user_id = $request->user_id;
-        $presense->in = $request->in;
-        $presense->out = $request->out;
+        $presence  = new Presence();
+        $presence->user_id = $request->user_id;
+        $presence->in = $request->in;
+        $presence->out = $request->out;
 
-        $presense->save();
+        $presence->save();
         Alert::add('success', 'Berhasil input data')->flash();
         return redirect(route('presence.index'));
     }
@@ -152,12 +165,12 @@ class PresenceCrudController extends CrudController
     public function update()
     {
         $request = $this->crud->validateRequest();
-        $presense  = $this->crud->getCurrentEntry();
-        $presense->user_id = $request->user_id;
-        $presense->in = $request->in;
-        $presense->out = $request->out;
+        $presence  = $this->crud->getCurrentEntry();
+        $presence->user_id = $request->user_id;
+        $presence->in = $request->in;
+        $presence->out = $request->out;
 
-        $presense->save();
+        $presence->save();
         Alert::add('success', 'Berhasil update data')->flash();
         return redirect(route('presence.index'));
     }
@@ -173,8 +186,9 @@ class PresenceCrudController extends CrudController
             if(!$user){
                 return response()->json('Failed',500);
             }
-            $p = (new PresenceService())->record($user);
-            (new PresenceService())->updateCoordinate($p,$request->lat, $request->lng);
+            $presenceService = app(PresenceService::class);
+            $p = $presenceService->record($user);
+            $presenceService->updateCoordinate($p,$request->lat, $request->lng);
             return response()->json($p);
         }
         return response()->json("Not Found",404);

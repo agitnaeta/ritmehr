@@ -7,28 +7,31 @@ use Closure;
 class CheckIfAdmin
 {
     /**
-     * Checked that the logged in user is an administrator.
+     * Roles allowed into the Backpack admin panel.
+     */
+    private const ADMIN_ROLES = ['super_admin', 'hr_admin', 'manager'];
+
+    /**
+     * Admins and regular employees share the `users` table, so this decides
+     * who may see /admin/*.
      *
-     * --------------
-     * VERY IMPORTANT
-     * --------------
-     * If you have both regular users and admins inside the same table, change
-     * the contents of this method to check that the logged in user
-     * is an admin, and not a regular user.
-     *
-     * Additionally, in Laravel 7+, you should change app/Providers/RouteServiceProvider::HOME
-     * which defines the route where a logged in user (but not admin) gets redirected
-     * when trying to access an admin route. By default it's '/home' but Backpack
-     * does not have a '/home' route, use something you've built for your users
-     * (again - users, not admins).
+     * A user with no roles at all is treated as an admin: this app predates
+     * roles, and existing accounts must not be locked out by the upgrade.
+     * Only accounts explicitly limited to `employee` are pushed to the portal.
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable|null  $user
-     * @return bool
      */
-    private function checkIfUserIsAdmin($user)
+    private function checkIfUserIsAdmin($user): bool
     {
-        // return ($user->is_admin == 1);
-        return true;
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->roles()->count() === 0) {
+            return true;
+        }
+
+        return $user->hasAnyRole(self::ADMIN_ROLES);
     }
 
     /**
@@ -41,9 +44,15 @@ class CheckIfAdmin
     {
         if ($request->ajax() || $request->wantsJson()) {
             return response(trans('backpack::base.unauthorized'), 401);
-        } else {
-            return redirect()->guest(backpack_url('login'));
         }
+
+        // A signed-in employee is not unauthenticated — send them to the
+        // portal instead of bouncing them back to a login form.
+        if (backpack_auth()->check()) {
+            return redirect()->route('portal.dashboard');
+        }
+
+        return redirect()->guest(backpack_url('login'));
     }
 
     /**

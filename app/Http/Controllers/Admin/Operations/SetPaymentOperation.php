@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Operations;
 
-use App\Services\Acc\Acc;
-use App\Services\Acc\AccTransaction;
 use App\Services\TransactionService;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Prologue\Alerts\Facades\Alert;
 use App\Services\SalaryService;
@@ -21,7 +20,9 @@ trait SetPaymentOperation
      */
     protected function setupSetPaymentRoutes($segment, $routeName, $controller)
     {
-        Route::get($segment.'/{id}/set-payment', [
+        // POST, bukan GET: operasi ini mengubah data. Sebagai GET ia bisa terpicu
+        // prefetch browser atau crawler yang menelusuri tautan.
+        Route::post($segment.'/{id}/set-payment', [
             'as'        => $routeName.'.setPayment',
             'uses'      => $controller.'@setPayment',
             'operation' => 'setPayment',
@@ -64,21 +65,32 @@ trait SetPaymentOperation
      */
     public function setPayment()
     {
+        $data = $this->crud->getRequest()->validate([
+            'method' => 'required|in:cash,transfer',
+        ], [
+            'method.required' => 'Metode pembayaran wajib dipilih.',
+            'method.in'       => 'Metode pembayaran harus cash atau transfer.',
+        ]);
 
-
-        // prepare the fields you need to show
-        $this->data['crud'] = $this->crud;
-        $this->data['title'] = CRUD::getTitle() ?? 'Set Payment '.$this->crud->entity_name;
         $recap = $this->crud->getCurrentEntry();
+        abort_if(! $recap, 404);
 
-        $recap->paid = 1;
-        $recap->method = $this->crud->getRequest()->get('method');
-        $recap->save();
+        if ($recap->paid) {
+            Alert::add('warning', '<strong>Dilewati</strong><br>Rekap gaji ini sudah dibayar.')->flash();
 
-        $acc = new Acc();
-        $accTransaction = new AccTransaction();
+            return redirect(route('salary-recap.index'));
+        }
 
-        (new TransactionService($acc, $accTransaction))->updateRecordSalaryToACC($recap);
+        // Satu transaksi: jangan sampai rekap tertandai lunas sementara
+        // pencatatan ke akuntansi gagal.
+        DB::transaction(function () use ($recap, $data) {
+            $recap->forceFill([
+                'paid'   => 1,
+                'method' => $data['method'],
+            ])->saveQuietly();
+
+            app(TransactionService::class)->updateRecordSalaryToACC($recap);
+        });
 
         Alert::add('success', '<strong>Berhasil</strong><br>Berhasil bayar secara '.$recap->method)->flash();
         return redirect(route('salary-recap.index'));
@@ -87,7 +99,7 @@ trait SetPaymentOperation
 
     public function recalculateSalary(){
         $recap = $this->crud->getCurrentEntry();
-        (new SalaryService())->calculateSalaryRecap($recap);
+        app(SalaryService::class)->calculateSalaryRecap($recap);
         Alert::add('success', '<strong>Berhasil</strong><br>Berhasil update perhitungan gaji')->flash();
         return redirect(route('salary-recap.index'));
     }

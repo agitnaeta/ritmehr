@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Prologue\Alerts\Facades\Alert;
-use function Symfony\Component\Translation\t;
 
 /**
  * Class SalaryRecapCrudController
@@ -60,6 +59,17 @@ class SalaryRecapCrudController extends CrudController
         $this->crud->addClause('with','user');
         $this->crud->denyAccess('create');
         $this->crud->allowAccess(['filter_monthly','export_salary_recap']);
+
+        // Manager boleh melihat rekap, tidak boleh mengubah atau membayarkannya.
+        if (! backpack_user()->can('salary_recap.edit')) {
+            $this->crud->denyAccess(['update', 'delete']);
+        }
+        if (! backpack_user()->can('salary.pay')) {
+            $this->crud->denyAccess(['setPayment', 'set_payment_cash', 'set_payment_transfer']);
+        }
+        if (! backpack_user()->can('salary.recalculate')) {
+            $this->crud->denyAccess(['recalculateSalary', 'recalculate_salary']);
+        }
     }
 
 
@@ -228,7 +238,7 @@ class SalaryRecapCrudController extends CrudController
 
     public function store(){
         $request = $this->crud->validateRequest();
-        SalaryRecap::create($request->all());
+        SalaryRecap::create($request->validated());
         Alert::success('Berhasil Update data')->flash();
         return redirect(route('salary-recap.index'));
     }
@@ -237,7 +247,7 @@ class SalaryRecapCrudController extends CrudController
     {
         $request = $this->crud->validateRequest();
         $salaryRecap   = $this->crud->getCurrentEntry();
-        $salaryRecap->update($request->all());
+        $salaryRecap->update($request->validated());
         Alert::success('Berhasil Update data')->flash();
         return redirect(route('salary-recap.index'));
     }
@@ -273,12 +283,21 @@ class SalaryRecapCrudController extends CrudController
                 return $q;
             })->get();
         $recaps->map(function ($recap){
-            $recap->work_in_month = (new SalaryService())->workdayInAMonth($recap);
+            $recap->work_in_month = app(SalaryService::class)->workdayInAMonth($recap);
             return $recap;
         });
-        $company = CompanyProfile::find(1);
-        $company->image = Storage::path("public/$company->image");
-        $isCompanyImage = strlen($company->image) > 0 ;
+        $company = CompanyProfile::first();
+
+        // Periksa nilai mentahnya dulu: Storage::path("public/") pada image kosong
+        // mengembalikan path direktori yang panjangnya bukan nol, sehingga guard
+        // lolos dan dompdf memanggil getimagesize() pada sebuah direktori.
+        $isCompanyImage = filled($company?->image);
+        if ($isCompanyImage) {
+            $logoPath = Storage::path("public/{$company->image}");
+            $isCompanyImage = is_file($logoPath);   // berkas bisa saja sudah terhapus
+            $company->image = $logoPath;
+        }
+
         $pdf  = Pdf::loadView('salary-recap.print',compact('recaps','isCompanyImage','company'));
         $pdf->setPaper([0,0,350,500],'P');
         return $pdf->stream('rekap-gaji.pdf');
