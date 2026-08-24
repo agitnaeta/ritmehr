@@ -8,6 +8,7 @@
     "devDependencies": {
         "axios": "^1.6.1",
         "laravel-vite-plugin": "^1.0.0",
+        "playwright": "^1.62.1",
         "sass": "^1.69.7",
         "vite": "^5.0.0"
     },
