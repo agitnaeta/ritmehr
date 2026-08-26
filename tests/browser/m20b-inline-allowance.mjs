@@ -58,7 +58,7 @@ const total = h('amount', uid);
 // 5. Show page has the breakdown
 await p.goto(`${BASE}/admin/salary/${sid}/show`); await p.waitForTimeout(1200);
 const body = await p.evaluate(() => document.body.innerText);
-(body.includes('Rincian Tunjangan') && body.includes(label))
+(body.includes('Komponen Gaji') && body.includes(label))
   ? pass('TC-06', 'halaman Show nampilin rincian tunjangan')
   : fail('TC-06', 'rincian tunjangan tak muncul di Show');
 

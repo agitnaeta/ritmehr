@@ -54,14 +54,28 @@ class SalaryCrudController extends CrudController
         $this->autoSetupShowOperation();
         CRUD::setFromDB();
         $this->fieldModification();
+    }
 
-        // M20b — allowance breakdown for this employee (read-only detail).
-        CRUD::addColumn([
-            'name'     => 'allowance_breakdown',
-            'label'    => 'Rincian Tunjangan',
-            'type'     => 'view',
-            'view'     => 'admin.salary.allowance_breakdown',
-        ])->afterColumn('amount');
+    /**
+     * M20b — Clean, report-style salary detail instead of the raw column dump.
+     */
+    public function show($id)
+    {
+        $this->crud->hasAccessOrFail('show');
+
+        $salary = Salary::with('user')->findOrFail($id);
+        $allowances = \App\Models\EmployeeSalaryAllowance::with('type')
+            ->where('user_id', $salary->user_id)
+            ->get()
+            ->filter(fn ($a) => $a->type && $a->type->is_active)
+            ->values();
+
+        return view('admin.salary.show', [
+            'crud'       => $this->crud,
+            'salary'     => $salary,
+            'allowances' => $allowances,
+            'title'      => 'Detail Gaji — ' . ($salary->user->name ?? '-'),
+        ]);
     }
 
     /**
