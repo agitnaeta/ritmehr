@@ -6,13 +6,14 @@ class TransalateService
 {
 
     public function salaryRecapPrefix(){
+        $symbol = app(\App\Services\CurrencyService::class)->symbol();
         return [
-            'salary_amount'=>'Rp.',
-            'overtime_amount'=>'Rp.',
-            'loan_cut'=>'Rp.',
-            'late_cut'=>'Rp.',
-            'abstain_cut'=>'Rp.',
-            'received'=>'Rp.',
+            'salary_amount'=>$symbol,
+            'overtime_amount'=>$symbol,
+            'loan_cut'=>$symbol,
+            'late_cut'=>$symbol,
+            'abstain_cut'=>$symbol,
+            'received'=>$symbol,
         ];
     }
     public function salaryRecap(){

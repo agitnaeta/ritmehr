@@ -80,10 +80,13 @@
                             <td>
                                 @if($doc->expiry_date)
                                     {{ $doc->expiry_date->format('d/m/Y') }}
+                                    @php($dLeft = $doc->daysUntilExpiry())
                                     @if($doc->isExpired())
                                         <span class="badge bg-danger">Kedaluwarsa</span>
-                                    @elseif($doc->daysUntilExpiry() <= 30)
-                                        <span class="badge bg-warning text-dark">{{ $doc->daysUntilExpiry() }} hari</span>
+                                    @elseif($dLeft <= 7)
+                                        <span class="badge bg-danger">{{ $dLeft }} hari lagi</span>
+                                    @elseif($dLeft <= 30)
+                                        <span class="badge bg-warning text-dark">{{ $dLeft }} hari</span>
                                     @endif
                                 @else
                                     —

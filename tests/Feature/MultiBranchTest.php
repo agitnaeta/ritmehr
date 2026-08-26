@@ -205,4 +205,71 @@ class MultiBranchTest extends TestCase
 
         $this->assertDatabaseHas('users', ['id' => $user->id, 'branch_id' => null]);
     }
+
+    // ── CRUD + map picker (M07 polish) ─────────────────────
+
+    public function test_scope_in_branch_filters_users(): void
+    {
+        $jakarta = $this->branch('Jakarta', self::JAKARTA_LAT, self::JAKARTA_LNG);
+        $bandung = $this->branch('Bandung', self::BANDUNG_LAT, self::BANDUNG_LNG);
+
+        $this->user('JKT One', $jakarta->id);
+        $this->user('JKT Two', $jakarta->id);
+        $this->user('BDG One', $bandung->id);
+
+        $this->assertSame(2, User::inBranch($jakarta->id)->count());
+        $this->assertSame(1, User::inBranch($bandung->id)->count());
+    }
+
+    public function test_branch_create_form_renders_the_map_picker(): void
+    {
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin, 'backpack')
+            ->get(backpack_url('branch/create'))
+            ->assertOk()
+            ->assertSee('branch-map', false)          // Leaflet container
+            ->assertSee('Pilih Lokasi di Peta')       // picker label
+            ->assertSee('leaflet', false);            // library asset
+    }
+
+    public function test_branch_can_be_created_with_coordinates_via_crud(): void
+    {
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin, 'backpack')->post(backpack_url('branch'), [
+            'name'          => 'Cabang Surabaya',
+            'code'          => 'SBY',
+            'lat'           => '-7.2574719',
+            'lng'           => '112.7520883',
+            'radius_meters' => 150,
+            'is_active'     => 1,
+        ]);
+
+        $this->assertDatabaseHas('branches', [
+            'name' => 'Cabang Surabaya', 'code' => 'SBY', 'radius_meters' => 150,
+        ]);
+        $branch = Branch::where('code', 'SBY')->first();
+        $this->assertTrue($branch->hasGeofence());
+    }
+
+    private function superAdmin(): User
+    {
+        $guard = 'backpack';
+        $view = \Spatie\Permission\Models\Permission::firstOrCreate(
+            ['name' => 'branch.view', 'guard_name' => $guard]
+        );
+        $edit = \Spatie\Permission\Models\Permission::firstOrCreate(
+            ['name' => 'branch.edit', 'guard_name' => $guard]
+        );
+        $role = \Spatie\Permission\Models\Role::firstOrCreate(
+            ['name' => 'super_admin', 'guard_name' => $guard]
+        );
+        $role->givePermissionTo([$view, $edit]);
+
+        $admin = $this->user('Admin ' . uniqid());
+        $admin->assignRole($role);
+
+        return $admin;
+    }
 }

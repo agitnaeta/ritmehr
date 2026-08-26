@@ -95,7 +95,7 @@ return [
         /**
          * When true, the password input will have a toggle button to show/hide the password.
          */
-        'showPasswordVisibilityToggler' => false,
+        'showPasswordVisibilityToggler' => true,   // diaktifkan: tombol lihat/sembunyikan password di halaman login
     ],
 
     /**

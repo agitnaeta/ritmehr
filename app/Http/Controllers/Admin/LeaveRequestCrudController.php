@@ -225,6 +225,7 @@ class LeaveRequestCrudController extends CrudController
             'byDate'       => $byDate,
             'departments'  => Department::orderBy('name')->get(),
             'departmentId' => $departmentId,
+            'leaveTypes'   => \App\Models\LeaveType::active()->orderBy('name')->get(),
         ]);
     }
 

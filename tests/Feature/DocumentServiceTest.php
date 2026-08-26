@@ -126,6 +126,38 @@ class DocumentServiceTest extends TestCase
         $this->assertDatabaseCount('employee_documents', 0);
     }
 
+    public function test_storage_disk_follows_the_platform_setting(): void
+    {
+        // Default provider is local.
+        $this->assertSame('local', app(\App\Services\StorageManager::class)->provider());
+
+        // Switching provider via the M15 setting changes the active provider.
+        $s = app(\App\Services\SettingService::class);
+        $s->set('storage_provider', 's3');
+        $s->flush();
+        $this->assertSame('s3', app(\App\Services\StorageManager::class)->provider());
+
+        // Unknown value falls back to local.
+        $s->set('storage_provider', 'bogus');
+        $s->flush();
+        $this->assertSame('local', app(\App\Services\StorageManager::class)->provider());
+    }
+
+    public function test_document_is_stored_on_the_configured_disk(): void
+    {
+        // Local provider (default) → files land on the local disk.
+        Storage::fake('local');
+
+        $user = $this->user('Staff');
+        $doc = $this->documents->store(
+            $user, $this->type(),
+            UploadedFile::fake()->create('ktp.pdf', 50),
+            $user
+        );
+
+        $this->documents->disk()->assertExists($doc->file_path);
+    }
+
     // ── Completeness ───────────────────────────────────────
 
     public function test_missing_required_documents_are_reported(): void

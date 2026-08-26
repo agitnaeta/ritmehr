@@ -88,7 +88,15 @@ cd absensi
 composer install
 cp .env.example .env
 php artisan key:generate
+
+npm install && npm run build     # wajib — stylesheet dimuat lewat Vite
 ```
+
+> `npm run build` **bukan opsional.** Panel admin dan portal karyawan memuat
+> stylesheet-nya lewat Vite, sedangkan `public/build` tidak disertakan dalam
+> repositori. Tanpa langkah ini, halaman akan tampil tanpa gaya atau melempar
+> galat manifest. Jalankan ulang setiap kali berkas di `resources/css/` diubah,
+> atau pakai `npm run dev` saat sedang mengerjakannya.
 
 Jalankan basis data, lalu sesuaikan `.env`:
 

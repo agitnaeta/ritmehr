@@ -79,7 +79,7 @@ class BpjsRateCrudController extends CrudController
             'type'     => 'closure',
             'function' => fn (BpjsRate $e) => $e->max_salary === null
                 ? 'Tanpa batas'
-                : 'Rp ' . number_format($e->max_salary, 0, ',', '.'),
+                : money($e->max_salary),
         ]);
 
         $this->crud->orderBy('year', 'desc')->orderBy('type');

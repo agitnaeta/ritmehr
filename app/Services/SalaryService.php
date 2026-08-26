@@ -21,10 +21,13 @@ class SalaryService
 
     protected $transactionService;
 
-    public function __construct(PresenceService $presenceService = null, TransactionService $transactionService = null)
+    protected $taxService;
+
+    public function __construct(PresenceService $presenceService = null, TransactionService $transactionService = null, TaxService $taxService = null)
     {
        $this->presenceService = $presenceService ?? app(PresenceService::class);
        $this->transactionService = $transactionService ?? app(TransactionService::class);
+       $this->taxService = $taxService ?? app(TaxService::class);
     }
 
     public function recap(Presence $presence){
@@ -94,6 +97,11 @@ class SalaryService
                 $salaryRecap->late_cut + $salaryRecap->extra_time_amount;
 
             $salaryRecap->saveQuietly();
+
+            // M05: hitung PPh21/BPJS/net_income otomatis tiap rekap dihitung
+            // ulang, seharga gross yang baru saja final. applyToRecap menulis
+            // dengan saveQuietly sehingga tidak memicu observer lagi.
+            $this->taxService->applyToRecap($salaryRecap);
 
             // only update when there's a payment
             // avoid Issue always recall

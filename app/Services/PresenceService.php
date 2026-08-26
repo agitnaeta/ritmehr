@@ -202,9 +202,9 @@ class PresenceService
             $longitudeTo = (float) $branch->lng;
             $radius = max(1, (int) $branch->radius_meters);
         } else {
-            $latitudeTo = (float) config('app.office_lat');
-            $longitudeTo = (float) config('app.office_lng');
-            $radius = max(1, (int) config('app.office_radius', 100));
+            $latitudeTo = (float) setting('office_lat', config('app.office_lat'));
+            $longitudeTo = (float) setting('office_lng', config('app.office_lng'));
+            $radius = max(1, (int) setting('office_radius', config('app.office_radius', 100)));
         }
 
         // With no reference point configured there is nothing to be outside

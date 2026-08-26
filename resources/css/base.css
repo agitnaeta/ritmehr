@@ -1,0 +1,94 @@
+/* ============================================================================
+   Dasar bersama — berlaku di admin maupun portal.
+
+   Sengaja tipis. Ini bukan reset menyeluruh: Tabler dan Bootstrap sudah
+   membawa normalisasi masing-masing. Yang ada di sini hanyalah hal yang
+   keduanya tidak sepakati, atau yang keduanya tangani kurang baik.
+   ========================================================================= */
+
+/* Angka yang dibaca berdampingan harus sejajar. Tanpa tabular-nums, lebar
+   tiap digit berbeda sehingga kolom rupiah bergoyang antar baris dan jam
+   bergeser tiap detik. */
+.tabular,
+table td,
+table th,
+.amount,
+.clock {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Fokus yang terlihat. Banyak tema menghapus outline tanpa menggantinya,
+   sehingga navigasi papan tuts jadi tidak terlihat sama sekali. */
+:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: var(--r-control);
+}
+
+/* Sasaran sentuh minimum pada kontrol berukuran kecil. */
+@media (pointer: coarse) {
+    .btn-sm,
+    .badge,
+    a.nav-link {
+        min-height: 2.75rem;
+        display: inline-flex;
+        align-items: center;
+    }
+}
+
+/* ── Preferensi pengguna ──────────────────────────────────────────────────
+   Gerak yang dikurangi berarti lebih lembut, bukan nol: transisi warna dan
+   opacity yang membantu pemahaman tetap dipertahankan, yang dibuang adalah
+   perpindahan posisi. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: var(--dur-press) !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* Buang perpindahan, sisakan perubahan warna dan opacity. */
+    .btn:active,
+    .card:hover {
+        transform: none !important;
+    }
+}
+
+@media (prefers-contrast: more) {
+    :root {
+        --border: var(--n-400);
+        --border-strong: var(--n-600);
+        --text-secondary: var(--n-700);
+    }
+}
+
+/* ── Cetak ────────────────────────────────────────────────────────────────
+   Berlaku untuk halaman yang dicetak dari browser. Slip gaji dan kartu
+   karyawan memakai dompdf dengan CSS inline sendiri — dompdf tidak andal
+   memuat stylesheet eksternal, jadi keduanya sengaja tidak disentuh. */
+@media print {
+    .navbar,
+    .sidebar,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000;
+    }
+
+    .card {
+        border: 1px solid #999 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    a[href]::after {
+        content: "";   /* jangan cetak URL di belakang tautan */
+    }
+}

@@ -69,7 +69,7 @@ class PtkpRateCrudController extends CrudController
         CRUD::column('status')->label('Status');
         CRUD::addColumn([
             'name' => 'amount', 'label' => 'PTKP Setahun',
-            'type' => 'number', 'prefix' => 'Rp ',
+            'type' => 'number', 'prefix' => app(\App\Services\CurrencyService::class)->symbol() . ' ',
             'decimals' => 0, 'dec_point' => ',', 'thousands_sep' => '.',
         ]);
 

@@ -84,9 +84,16 @@ class PortalController extends Controller
             ->orderBy('in')
             ->get();
 
+        // Index by date (Y-m-d) so the calendar grid can look each day up in O(1).
+        $byDate = [];
+        foreach ($presences as $p) {
+            $byDate[Carbon::parse($p->in)->toDateString()] = $p;
+        }
+
         return view('portal.attendance', [
             'month'     => $month,
             'presences' => $presences,
+            'byDate'    => $byDate,
             'summary'   => [
                 'present'  => $presences->count(),
                 'late'     => $presences->where('is_late', true)->count(),
@@ -114,6 +121,23 @@ class PortalController extends Controller
         return view('portal.salary_show', [
             'recap' => $recap,
             'user'  => $this->me(),
+        ]);
+    }
+
+    /**
+     * Printable / downloadable payslip — a clean, standalone A4 layout the
+     * employee can save as PDF via the browser's print dialog. Ownership is
+     * enforced the same way as salaryShow (query scoped to user → 404 for
+     * someone else's recap).
+     */
+    public function salaryPrint(int $id)
+    {
+        $recap = $this->ownedSalaryRecap($id);
+
+        return view('portal.salary_print', [
+            'recap'   => $recap,
+            'user'    => $this->me()->load(['department', 'position']),
+            'company' => \App\Models\CompanyProfile::first(),
         ]);
     }
 

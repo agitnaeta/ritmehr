@@ -1,0 +1,247 @@
+/* ============================================================================
+   Design token — sumber tunggal untuk seluruh permukaan aplikasi.
+
+   Berkas ini TIDAK menata elemen apa pun. Ia hanya mendefinisikan nilai.
+   Pemetaan ke framework dilakukan di admin.css (token --tblr-*) dan
+   portal.css (variabel Bootstrap), supaya satu perubahan di sini berlaku
+   di admin, portal, dan halaman scan sekaligus.
+
+   Token gelap sudah disiapkan tetapi belum diaktifkan — pemilih tema
+   menyusul. Menyiapkannya sekarang jauh lebih murah daripada meninjau
+   ulang seluruh token nanti.
+   ========================================================================= */
+
+:root {
+    /* ── Netral ─────────────────────────────────────────────────────────────
+       Sebelas langkah. Dipakai untuk latar, garis, dan teks — bukan warna
+       merek. UI padat data hidup dari netral, bukan dari warna. */
+    --n-50:  #f8fafc;
+    --n-100: #f1f5f9;
+    --n-200: #e2e8f0;
+    --n-300: #cbd5e1;
+    --n-400: #94a3b8;
+    --n-500: #64748b;
+    --n-600: #475569;
+    --n-700: #334155;
+    --n-800: #1e293b;
+    --n-900: #0f172a;
+    --n-950: #020617;
+
+    /* ── Aksi utama ─────────────────────────────────────────────────────── */
+    --brand:        #2563eb;
+    --brand-hover:  #1d4ed8;
+    --brand-active: #1e40af;
+    --brand-subtle: #eff6ff;
+    --brand-border: #bfdbfe;
+
+    /* Navy pekat untuk tombol aksi utama. Diambil dari referensi desain:
+       tombolnya justru lebih GELAP daripada panel birunya, bukan lebih
+       terang. Itu yang membuatnya terbaca sebagai aksi tegas, bukan
+       sebagai hiasan. */
+    --brand-deep:        #1e3a8a;
+    --brand-deep-hover:  #1e40af;
+    --brand-deep-active: #172554;
+
+    /* Panel merek — gradien dan bentuk organik untuk permukaan otentikasi.
+       Dipakai HANYA di halaman auth dan scan. Permukaan padat data tetap
+       netral: hiasan di atas tabel dan angka justru mengganggu bacaan. */
+    --brand-panel-from: #2563eb;
+    --brand-panel-to:   #1e3a8a;
+    --brand-blob:       rgb(255 255 255 / 0.10);
+    --brand-blob-soft:  rgb(255 255 255 / 0.06);
+
+    /* ── Kolom isian bergaya terisi ─────────────────────────────────────────
+       Referensi memakai kolom berlatar abu tanpa garis, bukan kotak
+       berbingkai. Lebih tenang, dan batas kolomnya tetap jelas karena
+       latarnya berbeda dari kartu. */
+    --field-bg:         var(--n-100);
+    --field-bg-hover:   var(--n-200);
+    --field-bg-focus:   #ffffff;
+    --field-border:     transparent;
+    --field-border-focus: var(--brand);
+    --field-icon:       var(--n-500);
+
+    /* ── Status ─────────────────────────────────────────────────────────────
+       Empat saja. Setiap status punya empat peran, dan pembagiannya penting.
+
+       `--x`        isian dan ikon — kontras non-teks, ambangnya 3:1
+       `--x-text`   WARNA TEKS di atas latar terang — wajib >= 4.5:1
+       `--x-subtle` latar badge dan alert
+       `--x-border` garis badge dan alert
+
+       Kenapa dipisah: warna status yang enak dipandang sebagai isian hampir
+       selalu terlalu terang untuk dipakai sebagai teks. Diukur di atas putih,
+       #16a34a hanya 3,30:1 dan #d97706 hanya 3,19:1 — keduanya gagal AA.
+       Varian `-text` di bawah sudah diukur lolos. */
+    --ok:            #16a34a;   /* 3,30:1 — isian saja */
+    --ok-text:       #15803d;   /* 5,02:1 ✓ AA */
+    --ok-subtle:     #f0fdf4;
+    --ok-border:     #bbf7d0;
+
+    --warn:          #d97706;   /* 3,19:1 — isian saja */
+    --warn-text:     #b45309;   /* 5,02:1 ✓ AA */
+    --warn-subtle:   #fffbeb;
+    --warn-border:   #fde68a;
+
+    --danger:        #dc2626;   /* 4,83:1 ✓ AA */
+    --danger-text:   #b91c1c;   /* 6,47:1 ✓ AA */
+    --danger-subtle: #fef2f2;
+    --danger-border: #fecaca;
+
+    --info:          #0891b2;   /* 3,68:1 — isian saja */
+    --info-text:     #0e7490;   /* 5,36:1 ✓ AA */
+    --info-subtle:   #ecfeff;
+    --info-border:   #a5f3fc;
+
+    --brand-text:    #1d4ed8;   /* 6,70:1 ✓ AA — untuk tautan di atas putih */
+
+    /* ── Peran permukaan ────────────────────────────────────────────────── */
+    --bg-page:      var(--n-50);
+    --bg-surface:   #ffffff;
+    --bg-raised:    #ffffff;
+    --bg-sunken:    var(--n-100);
+    --bg-hover:     var(--n-100);
+    --text-primary: var(--n-900);
+    /* n-600, bukan n-500. Diukur di atas latar bernada #f1f5f9 — yang dipakai
+       panel di dalam lembar portal — n-500 hanya mencapai 4,34:1 dan gagal
+       ambang AA. n-600 mencapai 6,92:1 dan tetap terbaca tenang di atas putih. */
+    --text-secondary: var(--n-600);
+    --text-muted:   var(--n-500);
+    --text-invert:  #ffffff;
+    --border:       var(--n-200);
+    --border-strong: var(--n-300);
+
+    /* ── Tipografi ──────────────────────────────────────────────────────────
+       Tracking dan leading spesifik per ukuran. Satu nilai letter-spacing
+       untuk semua ukuran pasti salah di salah satu ujung: teks besar terbaca
+       renggang, teks kecil terbaca sempit. */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+    --fs-display: clamp(1.75rem, 3vw, 2.5rem);
+    --lh-display: 1.1;
+    --tr-display: -0.02em;
+
+    --fs-title:   1.375rem;
+    --lh-title:   1.25;
+    --tr-title:   -0.01em;
+
+    --fs-card:    1rem;
+    --lh-card:    1.4;
+    --tr-card:    -0.005em;
+
+    --fs-body:    0.875rem;
+    --lh-body:    1.55;
+    --tr-body:    0;
+
+    --fs-table:   0.8125rem;
+    --lh-table:   1.45;
+    --tr-table:   0;
+
+    --fs-label:   0.75rem;
+    --lh-label:   1.4;
+    --tr-label:   0.01em;
+
+    /* ── Spasi ──────────────────────────────────────────────────────────────
+       Berbasis rem, bukan px, supaya layout ikut membesar bersama pengaturan
+       ukuran teks pengguna. */
+    --sp-1: 0.25rem;
+    --sp-2: 0.5rem;
+    --sp-3: 0.75rem;
+    --sp-4: 1rem;
+    --sp-6: 1.5rem;
+    --sp-8: 2rem;
+    --sp-12: 3rem;
+    --sp-16: 4rem;
+
+    /* ── Kerapatan: padat ───────────────────────────────────────────────────
+       Aplikasi HR dipakai untuk membandingkan banyak baris sekaligus —
+       presensi, rekap gaji, daftar karyawan. Baris rapat berarti lebih
+       banyak yang terlihat tanpa menggulir. */
+    --row-h:      2.25rem;   /* 36px */
+    --cell-pad-y: 0.5rem;
+    --cell-pad-x: 0.75rem;
+
+    /* ── Radius ─────────────────────────────────────────────────────────────
+       Referensi memakai sudut yang jauh lebih membulat. Kontrol dan kartu
+       dinaikkan, tetapi tabel padat TIDAK — sudut besar pada baris rapat
+       membuat gridnya terlihat pecah. */
+    --r-control: 8px;
+    --r-card:    10px;
+    --r-panel:   16px;
+    --r-hero:    24px;   /* kartu otentikasi dan panel merek */
+    --r-pill:    999px;
+
+    /* ── Bayangan ───────────────────────────────────────────────────────────
+       Tiga tingkat. Jangan campur dengan border pada elemen yang sama —
+       pilih salah satu, kalau tidak tepinya terbaca dua kali. */
+    --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+    --shadow-md: 0 2px 8px rgb(15 23 42 / 0.08);
+    --shadow-lg: 0 8px 24px rgb(15 23 42 / 0.12);
+
+    /* ── Gerak ──────────────────────────────────────────────────────────────
+       Easing bawaan CSS terlalu lemah untuk terasa disengaja. Nilai di bawah
+       bukan karangan sendiri. Tidak ada ease-in untuk UI: ia menunda momen
+       yang paling diperhatikan pengguna. */
+    --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --dur-press: 120ms;
+    --dur-ui:    180ms;
+    --dur-panel: 240ms;
+
+    /* ── Fokus ──────────────────────────────────────────────────────────── */
+    --focus-ring: 0 0 0 3px rgb(37 99 235 / 0.35);
+}
+
+/* ── Token gelap ────────────────────────────────────────────────────────────
+   Disiapkan, belum diaktifkan. Cukup menambahkan data-bs-theme="dark" pada
+   <html> untuk memakainya. */
+[data-bs-theme="dark"] {
+    --brand:        #3b82f6;
+    --brand-hover:  #60a5fa;
+    --brand-active: #93c5fd;
+    --brand-subtle: #172554;
+    --brand-border: #1e40af;
+
+    /* Di latar gelap arahnya terbalik: varian teks justru lebih TERANG. */
+    --ok:            #22c55e;
+    --ok-text:       #4ade80;
+    --ok-subtle:     #052e16;
+    --ok-border:     #166534;
+
+    --warn:          #f59e0b;
+    --warn-text:     #fbbf24;
+    --warn-subtle:   #451a03;
+    --warn-border:   #92400e;
+
+    --danger:        #ef4444;
+    --danger-text:   #f87171;
+    --danger-subtle: #450a0a;
+    --danger-border: #991b1b;
+
+    --info:          #06b6d4;
+    --info-text:     #22d3ee;
+    --info-subtle:   #083344;
+    --info-border:   #155e75;
+
+    --brand-text:    #60a5fa;
+
+    --bg-page:      #0b1120;
+    --bg-surface:   #111827;
+    --bg-raised:    #1f2937;
+    --bg-sunken:    #0b1120;
+    --bg-hover:     #1f2937;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted:   #64748b;
+    --text-invert:  #0f172a;
+    --border:       #1f2937;
+    --border-strong: #334155;
+
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-md: 0 2px 8px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.6);
+
+    --focus-ring: 0 0 0 3px rgb(59 130 246 / 0.45);
+}

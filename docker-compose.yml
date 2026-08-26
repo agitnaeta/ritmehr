@@ -18,5 +18,52 @@ services:
       timeout: 5s
       retries: 20
 
+  # WAHA — self-hosted WhatsApp HTTP API (https://waha.devlike.pro).
+  # Dashboard + API at http://localhost:3000. Sessions persist in a volume so
+  # you don't have to re-scan the QR after a restart.
+  waha:
+    image: devlikeapro/waha
+    container_name: absensi-waha
+    restart: unless-stopped
+    # WAHA's default image ships amd64 only; on Apple Silicon / ARM this runs
+    # under emulation. Docker Desktop (Rosetta) handles it transparently.
+    platform: linux/amd64
+    ports:
+      - "3000:3000"
+    environment:
+      # Secure the API. Use the SAME value in the app: Pengaturan → Notifikasi
+      # → "WAHA API Key". Change it before going to production.
+      WAHA_API_KEY: ${WAHA_API_KEY:-waha-dev-secret}
+      # Restore any started sessions automatically after a restart.
+      WHATSAPP_RESTART_ALL_SESSIONS: "true"
+      WAHA_PRINT_QR: "false"
+    volumes:
+      - absensi-waha-sessions:/app/.sessions
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--header=X-Api-Key: ${WAHA_API_KEY:-waha-dev-secret}", "http://localhost:3000/api/sessions"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Qdrant — vector database for M17 AI recruitment matching.
+  # Multi-arch image (runs native on Apple Silicon — no platform pin needed).
+  # REST API on 6333, gRPC on 6334. Data persists in a volume.
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: absensi-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - absensi-qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   absensi-mysql-data:
+  absensi-waha-sessions:
+  absensi-qdrant-data:

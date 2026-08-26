@@ -31,17 +31,22 @@
                         <td class="text-end">@rupiah($recap->late_cut)</td></tr>
                     <tr><td>Ketidakhadiran ({{ $recap->abstain_count }} hari)</td>
                         <td class="text-end">@rupiah($recap->abstain_cut)</td></tr>
+                    <tr><td>PPh 21</td><td class="text-end">@rupiah($recap->pph21 ?? 0)</td></tr>
+                    <tr><td>BPJS Kesehatan (karyawan)</td><td class="text-end">@rupiah($recap->bpjs_kes_employee ?? 0)</td></tr>
+                    <tr><td>BPJS JHT (karyawan)</td><td class="text-end">@rupiah($recap->bpjs_jht_employee ?? 0)</td></tr>
+                    <tr><td>BPJS JP (karyawan)</td><td class="text-end">@rupiah($recap->bpjs_jp_employee ?? 0)</td></tr>
+                    @php($totalPotongan = $recap->loan_cut + $recap->late_cut + $recap->abstain_cut
+                        + ($recap->pph21 ?? 0) + ($recap->bpjs_kes_employee ?? 0)
+                        + ($recap->bpjs_jht_employee ?? 0) + ($recap->bpjs_jp_employee ?? 0))
                     <tr class="table-light">
                         <td><strong>Total Potongan</strong></td>
-                        <td class="text-end"><strong>
-                            @rupiah($recap->loan_cut + $recap->late_cut + $recap->abstain_cut)
-                        </strong></td>
+                        <td class="text-end"><strong>@rupiah($totalPotongan)</strong></td>
                     </tr>
                 </table>
 
                 <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3">
-                    <h5 class="mb-0">Diterima</h5>
-                    <h4 class="mb-0 text-success">@rupiah($recap->received)</h4>
+                    <h5 class="mb-0">Diterima (Net)</h5>
+                    <h4 class="mb-0 text-success">@rupiah($recap->net_income ?: $recap->received)</h4>
                 </div>
             </div>
         </div>
@@ -77,6 +82,9 @@
             </div>
         @endif
 
+        <a href="{{ route('portal.salary.print', $recap->id) }}" target="_blank" class="btn btn-primary w-100 mb-2">
+            <i class="la la-print"></i> Unduh / Cetak Slip
+        </a>
         <a href="{{ route('portal.salary.index') }}" class="btn btn-outline-secondary w-100">Kembali</a>
     </div>
 </div>

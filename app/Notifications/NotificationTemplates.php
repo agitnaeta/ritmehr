@@ -104,14 +104,14 @@ class NotificationTemplates
             Notification::SALARY_PAID => fn ($d) => [
                 'title' => 'Gaji Telah Dibayarkan',
                 'body'  => 'Gaji periode ' . ($d['period'] ?? '-') . ' sebesar '
-                           . 'Rp ' . number_format((float) ($d['amount'] ?? 0), 0, ',', '.')
+                           . money((float) ($d['amount'] ?? 0))
                            . ' telah dibayarkan.',
             ],
 
             Notification::LOAN_CREATED => fn ($d) => [
                 'title' => 'Kasbon Dibuat',
-                'body'  => 'Kasbon sebesar Rp '
-                           . number_format((float) ($d['amount'] ?? 0), 0, ',', '.')
+                'body'  => 'Kasbon sebesar '
+                           . money((float) ($d['amount'] ?? 0))
                            . ' telah dicatat atas nama Anda.',
             ],
 

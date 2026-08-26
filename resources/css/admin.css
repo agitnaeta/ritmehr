@@ -1,0 +1,430 @@
+/* ============================================================================
+   Panel admin (/admin/*) — memetakan token proyek ke token --tblr-* Tabler.
+
+   Tidak melawan Tabler. Tabler mengekspos 880 custom property, jadi yang
+   dilakukan di sini adalah menimpanya. Sidebar tetap tegak: 15 menu memang
+   butuh navigasi vertikal, dan menggantinya dengan pil mengapung seperti
+   portal akan merusak kemampuan pakainya.
+
+   Tingkat "Kerja": mewarisi material dari referensi — radius, bayangan,
+   kolom terisi, tombol navy, judul tebal — tetapi bidangnya tetap netral dan
+   tabelnya tetap padat. Tabel presensi 110 baris tidak boleh berubah jadi
+   poster.
+
+   JANGAN mengubah selector #crudTable dan .dataTables_info: keduanya dipakai
+   suite pengujian 146 pemeriksaan.
+   ========================================================================= */
+
+/* ── Pemetaan ke Tabler ─────────────────────────────────────────────────── */
+:root {
+    --tblr-primary: var(--brand);
+    --tblr-primary-rgb: 37, 99, 235;
+    --tblr-success: var(--ok);
+    --tblr-warning: var(--warn);
+    --tblr-danger: var(--danger);
+    --tblr-info: var(--info);
+
+    --tblr-body-bg: var(--bg-page);
+    --tblr-body-color: var(--text-primary);
+    --tblr-secondary: var(--text-secondary);
+    --tblr-border-color: var(--border);
+    --tblr-muted: var(--text-secondary);
+
+    --tblr-font-sans-serif: var(--font-sans);
+    --tblr-body-font-size: var(--fs-body);
+
+    --tblr-border-radius: var(--r-card);
+    --tblr-border-radius-sm: var(--r-control);
+    --tblr-border-radius-lg: var(--r-panel);
+    --tblr-border-radius-pill: var(--r-pill);
+
+    --tblr-link-color: var(--brand-text);
+    --tblr-link-hover-color: var(--brand-hover);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────
+   Bawaan Tabler rgb(34,30,38) — hitam kehangatan yang tidak berhubungan
+   dengan palet mana pun. Diganti navy dari skala netral yang sama dengan
+   seluruh produk. */
+.navbar-vertical {
+    background: var(--n-900) !important;
+    border-right: 1px solid var(--n-800);
+}
+
+.navbar-vertical .navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: #fff;
+}
+
+.navbar-vertical .nav-link {
+    color: var(--n-200);
+    font-size: var(--fs-body);
+    border-radius: var(--r-control);
+    margin-inline: var(--sp-2);
+    padding-block: 0.5rem;
+    transition: background-color var(--dur-ui) var(--ease-out),
+                color var(--dur-ui) var(--ease-out);
+}
+
+.navbar-vertical .nav-link:hover {
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+}
+
+/* Item aktif jadi pil, bukan blok berpalang kiri. */
+.navbar-vertical .nav-item.active > .nav-link,
+.navbar-vertical .nav-link.active {
+    background: var(--brand);
+    color: #fff;
+    box-shadow: none;
+}
+
+.navbar-vertical .nav-item.active > .nav-link::before,
+.navbar-vertical .nav-link.active::before { display: none; }
+
+.navbar-vertical .nav-link-icon { opacity: 0.9; }
+
+/* Ikon dan tautan tanpa teks di kepala sidebar — pengalih tema, tombol layar
+   penuh — masih memakai abu kehangatan bawaan Tabler rgb(102,98,108), yang di
+   atas navy hanya mencapai sekitar 2,6:1. Ikon perlu 3:1, jadi diterangkan. */
+.navbar-vertical a,
+.navbar-vertical .nav-link,
+.navbar-vertical .navbar-nav > .nav-item > a {
+    color: var(--n-200);
+}
+
+.navbar-vertical svg { color: inherit; }
+
+/* Submenu sedikit menjorok dan lebih kecil, supaya hierarkinya terbaca. */
+.navbar-vertical .dropdown-menu .dropdown-item {
+    color: var(--n-300);
+    font-size: var(--fs-body);
+    border-radius: var(--r-control);
+    padding-inline: var(--sp-3);
+}
+
+.navbar-vertical .dropdown-menu .dropdown-item:hover,
+.navbar-vertical .dropdown-menu .dropdown-item.active {
+    background: rgb(255 255 255 / 0.10);
+    color: #fff;
+}
+
+/* ── Judul halaman ────────────────────────────────────────────────────────
+   Tipografi display dari referensi dipakai di sini — satu-satunya tempat di
+   permukaan kerja yang boleh tebal dan besar. */
+.page-title,
+.page-wrapper h1 {
+    font-size: 1.625rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.page-pretitle,
+.breadcrumb {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    color: var(--text-secondary);
+}
+
+/* ── Kartu ────────────────────────────────────────────────────────────────
+   Satu batas ATAU satu bayangan. Tabler memasang keduanya sekaligus,
+   sehingga tepinya terbaca dua kali. */
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-panel) !important;
+    box-shadow: none;
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border);
+    padding: var(--sp-4) var(--sp-4);
+    font-weight: 700;
+    letter-spacing: var(--tr-card);
+}
+
+.card-title { font-size: 1.0625rem; font-weight: 700; letter-spacing: var(--tr-card); }
+
+/* ── Tabel: KERAPATAN PADAT ───────────────────────────────────────────────
+   Baris bawaan 56px dengan teks 14px. Diturunkan supaya lebih banyak baris
+   terlihat tanpa menggulir — inilah alasan kerapatan padat dipilih.
+
+   Tinggi diatur lewat padding, bukan height tetap: baris memuat tombol aksi
+   yang punya tingginya sendiri, dan memaksa height akan menghimpitnya. */
+#crudTable,
+.table {
+    font-size: var(--fs-table);
+    line-height: var(--lh-table);
+}
+
+#crudTable > thead > tr > th,
+.table > thead > tr > th {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--border);
+    padding: var(--cell-pad-y) var(--cell-pad-x);
+    text-transform: none;   /* Tabler memaksa uppercase; label kecil lebih terbaca tanpa itu */
+}
+
+/* `th` ikut disasar: Backpack memakai <th> di dalam tbody untuk kolom
+   pertama. Menyasar `td` saja membuat kolom itu mempertahankan padding
+   bawaan Tabler dan menahan tinggi seluruh baris — barisnya tetap 56px
+   meski sel lainnya sudah turun ke 39px. */
+#crudTable > tbody > tr > td,
+#crudTable > tbody > tr > th,
+.table > tbody > tr > td,
+.table > tbody > tr > th {
+    padding: var(--cell-pad-y) var(--cell-pad-x);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;   /* th bawaan tebal; di tbody ia data, bukan judul */
+}
+
+/* Angka rupiah dan tanggal sejajar antar baris. */
+#crudTable td, #crudTable th { font-variant-numeric: tabular-nums; }
+
+/* Baris header yang diulang di kaki tabel memakan tinggi tanpa menambah
+   informasi pada tabel sependek ini. */
+#crudTable > tfoot { display: none; }
+
+#crudTable > tbody > tr:hover > * { background-color: var(--bg-hover); }
+
+/* Tautan aksi dalam baris: ungu bawaan Tabler diganti biru merek. */
+#crudTable a { color: var(--brand-text); }
+#crudTable a:hover { color: var(--brand-hover); }
+
+/* ── Tombol: satu sistem ──────────────────────────────────────────────────
+   Sebelumnya satu halaman bisa memuat empat warna tombol berbeda — ungu,
+   hijau, abu pekat, biru — tanpa hubungan apa pun. Aksi utama jadi navy,
+   sisanya jadi netral bergaris. Warna hanya dipakai untuk aksi merusak. */
+.btn {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    border-radius: var(--r-control);
+    transition: transform var(--dur-press) var(--ease-out),
+                background-color var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out);
+}
+
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { box-shadow: var(--focus-ring); }
+
+.btn-primary {
+    --tblr-btn-bg: var(--brand-deep);
+    --tblr-btn-border-color: var(--brand-deep);
+    --tblr-btn-hover-bg: var(--brand-deep-hover);
+    --tblr-btn-hover-border-color: var(--brand-deep-hover);
+    --tblr-btn-active-bg: var(--brand-deep-active);
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: #fff;
+}
+
+.btn-primary:hover { background: var(--brand-deep-hover); border-color: var(--brand-deep-hover); color: #fff; }
+
+/* Aksi sekunder — export, cetak, filter — jadi netral bergaris. Sebelumnya
+   hijau dan abu pekat, yang membuatnya bersaing dengan aksi utama. */
+.btn-success,
+.btn-secondary,
+.btn-dark,
+.btn-info {
+    background: var(--bg-surface);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+.btn-success:hover,
+.btn-secondary:hover,
+.btn-dark:hover,
+.btn-info:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+}
+
+/* Backpack menandai tombol simpan utama CRUD dengan utility `.text-white`,
+   mengira latarnya pekat. Aksi sekunder (export/cetak/filter) TANPA `.text-white`
+   tetap netral; tapi yang BER-`.text-white` adalah aksi utama form, jadi beri
+   warna brand solid agar menonjol sekaligus kebaca (bukan putih-di-atas-putih). */
+.btn-success.text-white,
+.btn-secondary.text-white,
+.btn-dark.text-white,
+.btn-info.text-white {
+    background: var(--brand-deep) !important;
+    border-color: var(--brand-deep) !important;
+    color: #fff !important;
+}
+.btn-success.text-white:hover,
+.btn-secondary.text-white:hover,
+.btn-dark.text-white:hover,
+.btn-info.text-white:hover {
+    background: var(--brand-deep-hover) !important;
+    border-color: var(--brand-deep-hover) !important;
+    color: #fff !important;
+}
+
+/* Merah dipertahankan: hapus memang harus terlihat berbeda. */
+.btn-danger {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.btn-danger:hover { background: var(--danger-text); border-color: var(--danger-text); }
+
+/* ── Kolom isian ──────────────────────────────────────────────────────────
+   Bergaya terisi, sama dengan portal dan halaman login.
+
+   PENTING: pakai `background-color`, JANGAN properti singkat `background`.
+   Panah dropdown <select> dirender lewat `background-image` berisi SVG;
+   properti singkat akan menghapusnya dan selectnya kehilangan panah. */
+.form-control,
+.form-select {
+    font-size: var(--fs-body);
+    border-radius: var(--r-control);
+    background-color: var(--field-bg);
+    border: 1px solid var(--field-border);
+    color: var(--text-primary);
+    transition: background-color var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out),
+                box-shadow var(--dur-ui) var(--ease-out);
+}
+
+.form-control:hover:not(:focus),
+.form-select:hover:not(:focus) { background-color: var(--field-bg-hover); }
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+    box-shadow: var(--focus-ring);
+}
+
+/* Varian kecil. Tanpa aturan ini, `-sm` mewarisi padding dasar sehingga
+   kontrol filter terlihat setinggi kontrol biasa — persis yang membuat
+   bilah filter tampak gempal. */
+.form-control-sm,
+.form-select-sm {
+    font-size: var(--fs-table);
+    padding: 0.3125rem 0.625rem;
+    border-radius: var(--r-control);
+    min-height: 2rem;
+}
+
+.form-select-sm { padding-right: 1.75rem; }   /* ruang untuk panah */
+
+.form-label {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* ── Bilah alat tabel: filter, aksi, pencarian ────────────────────────────
+   Sebelumnya ketiga kelompok itu saling berebut satu baris: filter memakai
+   kontrol selebar kolom penuh, tombol aksi terlipat ke baris kedua, dan
+   kotak pencarian terdorong sendirian ke kanan.
+
+   Filter dikelompokkan sebagai satu satuan bergaris di latar bernada, supaya
+   terbaca sebagai alat penyaring — bukan sebagai formulir. */
+.crud-filters-form,
+form:has(> div > .form-select-sm):has(.la-filter) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    margin-bottom: var(--sp-3);
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+}
+
+/* Lebar kontrol filter dibatasi. Tanpa batas atas, select "Semua" melebar
+   mengikuti wadahnya dan bilah filter terlihat gempal. */
+form:has(.la-filter) .form-select-sm,
+form:has(.la-filter) .form-control-sm {
+    min-width: 7.5rem;
+    max-width: 11rem;
+    width: auto;
+}
+
+form:has(.la-filter) .form-label {
+    display: block;
+    margin-bottom: 0.1875rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.02em;
+    color: var(--text-secondary);
+}
+
+/* Tombol Filter dan Reset disejajarkan ke dasar bersama kontrolnya. */
+form:has(.la-filter) .btn-sm {
+    min-height: 2rem;
+    padding-inline: var(--sp-3);
+}
+
+/* Kotak pencarian bawaan DataTables: dirapatkan dan diberi lebar wajar
+   supaya tidak melebar sendiri ke ujung. */
+.dataTables_filter input,
+#crudTable_filter input {
+    min-height: 2rem;
+    padding: 0.3125rem 0.625rem 0.3125rem 2rem;
+    font-size: var(--fs-table);
+    max-width: 16rem;
+}
+
+/* Pemilih jumlah baris per halaman. Sebelumnya melebar seperti kolom isian
+   penuh padahal isinya hanya angka. */
+.dataTables_length select,
+#crudTable_length select {
+    width: auto;
+    min-width: 4.5rem;
+    padding: 0.3125rem 1.75rem 0.3125rem 0.625rem;
+    font-size: var(--fs-table);
+    min-height: 2rem;
+}
+
+.dataTables_length,
+.dataTables_info,
+.dataTables_paginate {
+    font-size: var(--fs-table);
+    color: var(--text-secondary);
+}
+
+/* ── Badge ────────────────────────────────────────────────────────────────
+   Latar lembut bergaris, bukan blok warna pekat: di tengah tabel, badge
+   pekat menarik mata lebih kuat daripada datanya sendiri. */
+.badge {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: var(--tr-label);
+    border-radius: var(--r-pill);
+    border: 1px solid transparent;
+    padding: 0.25em 0.6em;
+}
+
+.badge.bg-success { background: var(--ok-subtle)     !important; color: var(--ok-text);     border-color: var(--ok-border); }
+.badge.bg-warning { background: var(--warn-subtle)   !important; color: var(--warn-text);   border-color: var(--warn-border); }
+.badge.bg-danger  { background: var(--danger-subtle) !important; color: var(--danger-text); border-color: var(--danger-border); }
+.badge.bg-info    { background: var(--info-subtle)   !important; color: var(--info-text);   border-color: var(--info-border); }
+.badge.bg-primary { background: var(--brand-subtle)  !important; color: var(--brand-text);  border-color: var(--brand-border); }
+
+/* ── Paginasi ─────────────────────────────────────────────────────────── */
+.page-item .page-link { border-radius: var(--r-control); font-size: var(--fs-body); }
+.page-item.active .page-link { background: var(--brand-deep); border-color: var(--brand-deep); }
+
+/* ── Preferensi pengguna ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .btn:active { transform: none; }
+}
+
+@media (prefers-contrast: more) {
+    .card { border-color: var(--border-strong); }
+    #crudTable > tbody > tr > td { border-bottom-color: var(--border-strong); }
+}

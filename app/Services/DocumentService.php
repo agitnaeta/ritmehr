@@ -19,11 +19,23 @@ use Illuminate\Support\Facades\Storage;
  */
 class DocumentService
 {
+    /** Default disk when no platform setting is configured. */
     public const DISK = 'local';
     private const DIRECTORY = 'employee-documents';
 
-    public function __construct(private readonly NotificationService $notifications)
+    public function __construct(
+        private readonly NotificationService $notifications,
+        private readonly StorageManager $storage,
+    ) {
+    }
+
+    /**
+     * The active filesystem for documents, resolved from the M16 StorageManager
+     * (local / S3 / … driven by the M15 Settings UI).
+     */
+    public function disk(): \Illuminate\Contracts\Filesystem\Filesystem
     {
+        return $this->storage->disk();
     }
 
     /**
@@ -44,7 +56,7 @@ class DocumentService
             throw new \DomainException("Tanggal kedaluwarsa wajib diisi untuk dokumen {$type->name}.");
         }
 
-        $path = $file->store(self::DIRECTORY . '/' . $user->id, self::DISK);
+        $path = $this->disk()->putFile(self::DIRECTORY . '/' . $user->id, $file);
 
         if (! $path) {
             throw new \RuntimeException('Gagal menyimpan berkas dokumen.');
@@ -96,8 +108,9 @@ class DocumentService
         $document->delete();
 
         try {
-            if ($path && Storage::disk(self::DISK)->exists($path)) {
-                Storage::disk(self::DISK)->delete($path);
+            $disk = $this->disk();
+            if ($path && $disk->exists($path)) {
+                $disk->delete($path);
             }
         } catch (\Throwable $e) {
             Log::error('[Documents] failed to delete file', [

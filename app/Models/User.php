@@ -25,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'locale',
         'schedule_id',
         'manager_id',
         'department_id',

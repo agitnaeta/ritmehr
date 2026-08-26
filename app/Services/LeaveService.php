@@ -599,7 +599,7 @@ class LeaveService
      */
     public function calendarEntries($from, $to, ?int $departmentId = null): Collection
     {
-        $query = LeaveRequest::with(['user', 'leaveType'])
+        $query = LeaveRequest::with(['user', 'leaveType', 'dates'])
             ->approved()
             ->overlapping(Carbon::parse($from)->toDateString(), Carbon::parse($to)->toDateString());
 

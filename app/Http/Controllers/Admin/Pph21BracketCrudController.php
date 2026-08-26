@@ -60,7 +60,7 @@ class Pph21BracketCrudController extends CrudController
         CRUD::column('year')->label('Tahun');
         CRUD::addColumn([
             'name' => 'lower_bound', 'label' => 'Batas Bawah',
-            'type' => 'number', 'prefix' => 'Rp ',
+            'type' => 'number', 'prefix' => app(\App\Services\CurrencyService::class)->symbol() . ' ',
             'decimals' => 0, 'dec_point' => ',', 'thousands_sep' => '.',
         ]);
         CRUD::addColumn([
@@ -69,7 +69,7 @@ class Pph21BracketCrudController extends CrudController
             'type'     => 'closure',
             'function' => fn (Pph21Bracket $e) => $e->upper_bound === null
                 ? 'Tak terbatas'
-                : 'Rp ' . number_format($e->upper_bound, 0, ',', '.'),
+                : money($e->upper_bound),
         ]);
         CRUD::addColumn([
             'name' => 'rate', 'label' => 'Tarif', 'type' => 'number', 'suffix' => ' %',

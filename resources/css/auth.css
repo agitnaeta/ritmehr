@@ -1,0 +1,305 @@
+/* ============================================================================
+   Halaman otentikasi — login, reset password.
+
+   Diadaptasi dari referensi desain: satu kartu membulat besar yang terbagi
+   dua, panel merek bergradien di kiri dan formulir di kanan.
+
+   Yang DIAMBIL dari referensi: pembagian dua panel, gradien biru dengan
+   bentuk organik, kolom isian terisi tanpa garis, tombol navy pekat lebar
+   penuh, sudut membulat besar, judul tebal bertracking rapat.
+
+   Yang TIDAK diambil, dan alasannya:
+   - "Sign Up" — pendaftaran ditutup di aplikasi ini (registration_open
+     bernilai false, /admin/register mengembalikan 403). Menampilkan tautan
+     ke halaman yang menolak pengunjung lebih buruk daripada tidak ada.
+   - "Sign in with other" — tidak ada penyedia OAuth yang dikonfigurasi.
+   - "User Name" — masuk memakai email, bukan nama pengguna.
+   ========================================================================= */
+
+/* ── Latar halaman ────────────────────────────────────────────────────────
+   Biru pekat mengelilingi kartu, seperti pada referensi. */
+.page.page-center,
+body:has(.auth-split) {
+    background: var(--brand-panel-to);
+}
+
+.auth-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: var(--sp-4);
+    background: linear-gradient(135deg, var(--brand-panel-from), var(--brand-panel-to));
+}
+
+/* ── Kartu terbagi ─────────────────────────────────────────────────────── */
+.auth-split {
+    width: min(100%, 60rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--bg-surface);
+    border-radius: var(--r-hero);
+    box-shadow: 0 1.5rem 4rem rgb(2 6 23 / 0.35);
+    overflow: hidden;
+}
+
+@media (max-width: 860px) {
+    .auth-split { grid-template-columns: 1fr; }
+    .auth-brand { display: none; }   /* di layar kecil, formulir yang penting */
+}
+
+/* ── Panel merek ──────────────────────────────────────────────────────────
+   Bentuk organik dibuat dari radial-gradient, bukan berkas gambar: tidak
+   ada permintaan jaringan tambahan, ikut skala ke ukuran apa pun, dan
+   warnanya bersumber dari token yang sama. */
+.auth-brand {
+    position: relative;
+    isolation: isolate;
+    padding: var(--sp-12) var(--sp-8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--sp-4);
+    color: #fff;
+    background:
+        radial-gradient(circle at 78% 74%, var(--brand-blob) 0 22%, transparent 22.5%),
+        radial-gradient(circle at 12% 92%, var(--brand-blob-soft) 0 30%, transparent 30.5%),
+        radial-gradient(circle at 95% 8%, var(--brand-blob-soft) 0 18%, transparent 18.5%),
+        linear-gradient(150deg, var(--brand-panel-from), var(--brand-panel-to));
+}
+
+.auth-brand__eyebrow {
+    font-size: var(--fs-label);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.72);
+}
+
+/* Teks display: tracking negatif dan leading rapat. Satu-satunya tempat
+   huruf kapital seluruhnya dipakai — di sini ia judul, bukan label UI. */
+.auth-brand__title {
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.auth-brand__lead {
+    font-size: var(--fs-card);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.9);
+    margin: 0;
+}
+
+.auth-brand__text {
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    color: rgb(255 255 255 / 0.72);
+    margin: 0;
+    max-width: 34ch;
+}
+
+.auth-brand__meta {
+    margin-top: auto;
+    padding-top: var(--sp-8);
+    font-size: var(--fs-label);
+    color: rgb(255 255 255 / 0.6);
+}
+
+/* ── Panel formulir ─────────────────────────────────────────────────────── */
+.auth-form {
+    padding: var(--sp-12) clamp(var(--sp-6), 5vw, var(--sp-12));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-form__title {
+    font-size: 1.875rem;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 var(--sp-1);
+}
+
+.auth-form__sub {
+    font-size: var(--fs-body);
+    color: var(--text-secondary);
+    margin: 0 0 var(--sp-6);
+}
+
+.auth-logo {
+    margin-bottom: var(--sp-6);
+    font-size: var(--fs-card);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+}
+
+/* ── Kolom isian terisi ───────────────────────────────────────────────────
+   Latar abu tanpa garis. Ikon di depan sebagai penanda, dan seluruh kolom
+   ikut berubah saat difokuskan supaya jelas mana yang aktif. */
+.auth-form .form-label {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--sp-2);
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    border-radius: var(--r-control);
+    padding-inline: var(--sp-3);
+    transition: background-color var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out),
+                box-shadow var(--dur-ui) var(--ease-out);
+}
+
+.field:hover { background: var(--field-bg-hover); }
+
+.field:focus-within {
+    background: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+    box-shadow: var(--focus-ring);
+}
+
+.field__icon {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--field-icon);
+}
+
+/* Input di dalam .field tidak lagi punya kotaknya sendiri — kotaknya
+   adalah .field. */
+.field .form-control,
+.field input {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.75rem 0;
+    font-size: var(--fs-body);
+    color: var(--text-primary);
+    width: 100%;
+}
+
+.field .form-control:focus,
+.field input:focus { box-shadow: none; outline: 0; }
+
+.field.is-invalid { border-color: var(--danger); background: var(--danger-subtle); }
+
+/* Tombol lihat / sembunyikan password */
+.field__toggle {
+    flex: none;
+    background: transparent;
+    border: 0;
+    padding: var(--sp-1);
+    color: var(--text-secondary);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: var(--tr-label);
+    cursor: pointer;
+    border-radius: var(--r-control);
+    transition: color var(--dur-ui) var(--ease-out);
+}
+
+.field__toggle:hover { color: var(--brand-text); }
+
+/* ── Baris ingat saya / lupa password ───────────────────────────────────── */
+.auth-form .form-check-label { font-size: var(--fs-body); color: var(--text-primary); }
+
+.auth-form a {
+    color: var(--brand-text);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    text-decoration: none;
+}
+
+.auth-form a:hover { text-decoration: underline; }
+
+/* ── Tombol utama ─────────────────────────────────────────────────────────
+   Navy pekat dan lebar penuh, seperti referensi. Umpan balik hadir saat
+   ditekan, bukan saat dilepas. */
+.btn-auth {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.8125rem var(--sp-4);
+    border: 0;
+    border-radius: var(--r-control);
+    background: var(--brand-deep);
+    color: #fff;
+    font-size: var(--fs-card);
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    transition: transform var(--dur-press) var(--ease-out),
+                background-color var(--dur-ui) var(--ease-out);
+}
+
+.btn-auth:hover  { background: var(--brand-deep-hover); color: #fff; }
+.btn-auth:active { transform: scale(0.985); background: var(--brand-deep-active); }
+.btn-auth:focus-visible { box-shadow: var(--focus-ring); outline: 0; }
+
+/* ── Pesan galat ───────────────────────────────────────────────────────── */
+.auth-form .invalid-feedback,
+.auth-form .field-error {
+    display: block;
+    font-size: var(--fs-label);
+    color: var(--danger-text);
+    margin-top: var(--sp-1);
+}
+
+.auth-form .alert {
+    border-radius: var(--r-card);
+    font-size: var(--fs-body);
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-4);
+}
+
+/* ── Footer tema ──────────────────────────────────────────────────────────
+   Layout auth Tabler menaruh baris kredit di bawah kartu. Di atas latar biru
+   pekat, warna teks bawaannya nyaris tak terbaca. Diterangkan, bukan
+   disembunyikan — kreditnya tetap pada tempatnya. */
+.auth-shell ~ .footer,
+.auth-shell + *,
+body:has(.auth-split) .footer,
+body:has(.auth-split) .page-footer {
+    color: rgb(255 255 255 / 0.6);
+}
+
+body:has(.auth-split) .footer a,
+body:has(.auth-split) .page-footer a {
+    color: rgb(255 255 255 / 0.85);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* ── Preferensi pengguna ────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    .btn-auth:active { transform: none; }
+    .field, .btn-auth { transition-duration: var(--dur-press); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    /* Bentuk organik dibuang, gradien disederhanakan jadi satu warna pekat. */
+    .auth-brand { background: var(--brand-panel-to); }
+}
+
+@media (prefers-contrast: more) {
+    .field { border-color: var(--border-strong); }
+    .auth-brand { background: var(--brand-panel-to); }
+    .auth-brand__text, .auth-brand__meta { color: #fff; }
+}

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\UserCrudController;
+use App\Http\Controllers\Career\CandidateAuthController;
+use App\Http\Controllers\Career\CareerController;
 use App\Http\Controllers\Portal\PortalController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,32 @@ Route::get('/', function () {
 });
 Route::get('/admin', function () {
     return redirect('/admin/dashboard');
+});
+
+// M13 — switch UI language (persists to user + session).
+Route::get('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('locale.switch');
+
+/*
+| M17 — Public careers portal + candidate auth ("candidate" guard).
+| Fully separate from the admin panel and employee portal.
+*/
+Route::group(['prefix' => 'karir', 'as' => 'career.', 'middleware' => 'web'], function () {
+    // Public
+    Route::get('/', [CareerController::class, 'index'])->name('index');
+    Route::get('/lowongan/{slug}', [CareerController::class, 'show'])->name('show');
+
+    // Candidate auth
+    Route::get('/daftar', [CandidateAuthController::class, 'showRegister'])->name('register');
+    Route::post('/daftar', [CandidateAuthController::class, 'register'])->name('register.submit');
+    Route::get('/masuk', [CandidateAuthController::class, 'showLogin'])->name('login');
+    Route::post('/masuk', [CandidateAuthController::class, 'login'])->name('login.submit');
+    Route::post('/keluar', [CandidateAuthController::class, 'logout'])->name('logout');
+
+    // Candidate-only
+    Route::group(['middleware' => \App\Http\Middleware\EnsureCandidate::class], function () {
+        Route::get('/akun', [CareerController::class, 'dashboard'])->name('dashboard');
+        Route::post('/lowongan/{slug}/lamar', [CareerController::class, 'apply'])->name('apply');
+    });
 });
 
 /*
@@ -43,6 +71,8 @@ Route::group([
     Route::get('/salary', [PortalController::class, 'salaryIndex'])->name('salary.index');
     Route::get('/salary/{id}', [PortalController::class, 'salaryShow'])
          ->whereNumber('id')->name('salary.show');
+    Route::get('/salary/{id}/print', [PortalController::class, 'salaryPrint'])
+         ->whereNumber('id')->name('salary.print');
 
     Route::get('/leave', [PortalController::class, 'leaveIndex'])->name('leave.index');
     Route::get('/leave/create', [PortalController::class, 'leaveCreate'])->name('leave.create');

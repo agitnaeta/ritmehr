@@ -30,6 +30,9 @@ class Kernel extends ConsoleKernel
         // New year's leave balances, carrying over at most 6 unused days.
         $schedule->command('leave:generate-balances --carry-over --max-carry=6')
                  ->yearlyOn(1, 1, '01:00');
+
+        // M17-5 — purge CVs of rejected applicants past the retention window.
+        $schedule->command('recruitment:purge-cvs')->dailyAt('02:30');
     }
 
     /**

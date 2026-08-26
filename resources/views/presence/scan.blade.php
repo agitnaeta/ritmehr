@@ -22,12 +22,17 @@
            tracking sendiri. Seluruh jarak memakai rem agar layout ikut membesar
            saat pengguna menaikkan ukuran teks. */
         :root {
-            --bg: #0b0b0f;
-            --ink: #f5f5f7;
-            --ink-dim: #a1a1aa;
-            --ok: #30d158;
-            --bad: #ff453a;
-            --warn: #ffd60a;
+            /* Diselaraskan ke token proyek. Tetap gelap — perangkatnya dipasang
+               di pintu masuk, bukan dipakai duduk di meja — tetapi warnanya
+               kini bersumber dari palet yang sama, bukan netral asing. */
+            --bg: #0b1120;          /* sama dengan latar mode gelap token */
+            --brand-from: #2563eb;
+            --brand-to: #1e3a8a;
+            --ink: #f1f5f9;
+            --ink-dim: #94a3b8;
+            --ok: #22c55e;
+            --bad: #ef4444;
+            --warn: #f59e0b;
 
             /* Material: translusen di atas latar gelap. */
             --mat: rgba(255, 255, 255, 0.07);
@@ -45,7 +50,12 @@
         html, body {
             margin: 0;
             min-height: 100%;
-            background: var(--bg);
+            /* Gradien sangat halus dari biru merek — cukup untuk terasa satu
+               keluarga dengan halaman login, tidak sampai mengganggu
+               keterbacaan pratinjau kamera. */
+            background:
+                radial-gradient(ellipse 120% 80% at 50% -10%, rgb(37 99 235 / 0.18), transparent 60%),
+                var(--bg);
             color: var(--ink);
             font: 100%/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -128,7 +138,7 @@
             position: relative;
             width: min(100%, 34rem);
             aspect-ratio: 4 / 3;
-            border-radius: 1.5rem;
+            border-radius: 16px;
             overflow: hidden;
             background: #000;
             /* Permukaan besar terbaca lebih tebal: bayangan lebih dalam. */
@@ -141,7 +151,7 @@
         .reticle {
             position: absolute;
             inset: 18%;
-            border-radius: 1rem;
+            border-radius: 10px;
             box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
             pointer-events: none;
             transition: box-shadow var(--dur) var(--ease);
@@ -243,7 +253,7 @@
 </head>
 <body>
     <header class="top">
-        <span class="brand">Absensi</span>
+        <span class="brand">RitmeHR</span>
         <a class="admin-link" href="/admin" rel="nofollow">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" aria-hidden="true">
                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>

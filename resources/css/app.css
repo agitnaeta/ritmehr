@@ -1,19 +1,44 @@
-.text-right{
+/* ============================================================================
+   Titik masuk CSS untuk panel admin.
+
+   Dimuat lewat `vite_styles` di config/backpack/ui.php, sehingga hadir di
+   seluruh halaman /admin/* tanpa perlu menyentuh view vendor.
+
+   Tahap sekarang: token dan dasar bersama saja. Pemetaan ke token --tblr-*
+   milik Tabler menyusul di admin.css (Tahap 2) — dipisah supaya perubahan
+   tampilan admin bisa dirilis dan diuji sendiri.
+   ========================================================================= */
+
+@import "./tokens.css";
+@import "./base.css";
+
+/* Halaman otentikasi. Seluruh aturannya bercakup di kelas .auth-* dan
+   .field, jadi tidak menyentuh halaman admin lain meski dimuat global. */
+@import "./auth.css";
+
+/* Permukaan admin: memetakan token proyek ke token --tblr-* Tabler. */
+@import "./admin.css";
+
+/* ── Utilitas yang sudah dipakai view ─────────────────────────────────────
+   Dipertahankan apa adanya: beberapa view bergantung padanya. */
+.text-right {
     text-align: right;
 }
-.pull-right{
+
+.pull-right {
     justify-content: right;
     text-align: left;
 }
+
 .disabled-input {
-    background-color: #f0f0f0; /* Light gray background color */
-    color: #777; /* Dark gray text color */
-    cursor: not-allowed; /* Change cursor to indicate not clickable */
-    opacity: 0.7; /* Reduce opacity to visually indicate it's disabled */
-    /* Add any additional styles you want for the disabled input */
+    background-color: var(--bg-sunken);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.7;
     pointer-events: none;
 }
-.company-logo{
+
+.company-logo {
     width: 100px;
     height: auto;
 }

@@ -6,17 +6,20 @@
     <title>@yield('title', 'Portal Karyawan') — {{ config('app.name') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" rel="stylesheet">
-    <style>
-        body { background: #f6f7fb; }
-        .stat-card .value { font-size: 1.6rem; font-weight: 600; }
-        .navbar-brand { font-weight: 600; }
-        @media (max-width: 576px) { .stat-card .value { font-size: 1.3rem; } }
-    </style>
+
+    {{-- Dimuat SETELAH Bootstrap: portal.css menimpa variabel Bootstrap
+         dengan token proyek, sehingga urutannya menentukan. --}}
+    @vite('resources/css/portal.css')
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+{{-- Bidang biru: memuat navigasi mengapung dan judul halaman.
+     Markup di dalam <nav> sengaja tidak diubah agar collapse dan dropdown
+     Bootstrap tetap berjalan tanpa JavaScript tambahan. --}}
+<div class="portal-hero">
     <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark portal-nav">
+    <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('portal.dashboard') }}">
             <i class="la la-user-clock"></i> Portal Karyawan
         </a>
@@ -67,7 +70,12 @@
     </div>
 </nav>
 
-<div class="container my-4">
+        <h1 class="portal-title">@yield('heading', 'Portal Karyawan')</h1>
+    </div>
+</div>
+
+{{-- Lembar putih, naik menimpa bidang biru. --}}
+<div class="container portal-sheet">
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
             {{ session('success') }}
@@ -89,8 +97,6 @@
             </ul>
         </div>
     @endif
-
-    <h4 class="mb-3">@yield('heading', 'Portal Karyawan')</h4>
 
     @yield('content')
 </div>

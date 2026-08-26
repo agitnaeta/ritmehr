@@ -44,6 +44,17 @@
         </form>
     </div>
 
+    @if($leaveTypes->isNotEmpty())
+        <div class="card-body py-2 border-bottom">
+            <span class="small text-muted me-2">Keterangan:</span>
+            @foreach($leaveTypes as $lt)
+                <span class="badge me-2 mb-1" style="background: {{ $lt->color ?? '#3498db' }}; color:#fff;">
+                    {{ $lt->name }}{{ $lt->is_paid ? '' : ' (tidak dibayar)' }}
+                </span>
+            @endforeach
+        </div>
+    @endif
+
     <div class="card-body p-2">
         <table class="table table-bordered mb-0" style="table-layout: fixed;">
             <thead>

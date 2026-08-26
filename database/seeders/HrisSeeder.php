@@ -18,6 +18,7 @@ class HrisSeeder extends Seeder
             LeaveTypeSeeder::class,
             DocumentTypeSeeder::class,
             TaxRateSeeder::class,
+            ChartOfAccountsSeeder::class,
         ]);
 
         $this->command?->info('HRIS reference data seeded.');

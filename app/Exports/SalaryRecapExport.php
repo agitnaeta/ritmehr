@@ -91,12 +91,16 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function columnFormats(): array
     {
+        // M14: Excel currency format follows the active currency symbol.
+        $symbol = app(\App\Services\CurrencyService::class)->symbol();
+        $fmt = '"' . $symbol . ' "#,##0';
+
         return [
-            'H'=>'"Rp "#,##0',
-            'I'=>'"Rp "#,##0',
-            'J'=>'"Rp "#,##0',
-            'K'=>'"Rp "#,##0',
-            'L'=>'"Rp "#,##0'
+            'H' => $fmt,
+            'I' => $fmt,
+            'J' => $fmt,
+            'K' => $fmt,
+            'L' => $fmt,
         ];
     }
 }

@@ -122,13 +122,14 @@ class SalaryCrudController extends CrudController
             ]
         );
 
+        $cur = app(\App\Services\CurrencyService::class)->symbol();
         $fields = [
-            'unpaid_leave_deduction' => ['Besaran Potongan Absen', 'Rp'],
-            'amount' => ['Besaran Gaji', 'Rp'],
-            'overtime_amount' => ['Besaran 1x Lembur', 'Rp'],
-            'fine_per_minute' => ['Denda Per-Menit', 'Rp.'],
-            'fine' => ['Besaran Denda Telat - Flat', 'Rp.'],
-            'extra_time' => ['Besaran lebih waktu (per-menit)', 'Rp.'],
+            'unpaid_leave_deduction' => ['Besaran Potongan Absen', $cur],
+            'amount' => ['Besaran Gaji', $cur],
+            'overtime_amount' => ['Besaran 1x Lembur', $cur],
+            'fine_per_minute' => ['Denda Per-Menit', $cur],
+            'fine' => ['Besaran Denda Telat - Flat', $cur],
+            'extra_time' => ['Besaran lebih waktu (per-menit)', $cur],
             'extra_time_rule' => ['Aturan Lebih Waktu', ''],
         ];
 
@@ -145,14 +146,14 @@ class SalaryCrudController extends CrudController
         $this->crud->addColumn($this->entityField)->makeFirstColumn();
 
         $fields = [
-            'amount' => ['Gaji', 'Rp.',2],
-            'overtime_amount' => ['1x Lembur', 'Rp.',3],
+            'amount' => ['Gaji', $cur,2],
+            'overtime_amount' => ['1x Lembur', $cur,3],
             'overtime_type' => ['Tipe Lembur', '',4],
             'fine_type' => ['Jenis Denda', '',5],
-            'fine_per_minute' => ['Denda Per-Menit', 'Rp.',6],
-            'fine' => ['Denda Flat','Rp.',7],
-            'unpaid_leave_deduction' => ['Potongan Absen', 'Rp.',8],
-            'extra_time' => ['Besaran lebih waktu (per-menit)', 'Rp.',9],
+            'fine_per_minute' => ['Denda Per-Menit', $cur,6],
+            'fine' => ['Denda Flat',$cur,7],
+            'unpaid_leave_deduction' => ['Potongan Absen', $cur,8],
+            'extra_time' => ['Besaran lebih waktu (per-menit)', $cur,9],
             'extra_time_rule' => ['Aturan Lebih Waktu', '',10],
         ];
 

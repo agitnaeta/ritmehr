@@ -1,0 +1,594 @@
+/* ============================================================================
+   Portal karyawan (/my/*) — memetakan token proyek ke variabel Bootstrap.
+
+   Tidak melawan Bootstrap. Bootstrap 5 mengekspos variabelnya sendiri, jadi
+   yang dilakukan di sini adalah menimpanya dengan token dari tokens.css.
+   Akibatnya seluruh komponen Bootstrap — tombol, kartu, tabel, badge, alert
+   — ikut menyesuaikan tanpa perlu ditata satu per satu.
+   ========================================================================= */
+
+@import "./tokens.css";
+@import "./base.css";
+
+/* ── Pemetaan ke Bootstrap ───────────────────────────────────────────────── */
+:root {
+    --bs-primary: var(--brand);
+    --bs-primary-rgb: 37, 99, 235;
+    --bs-success: var(--ok);
+    --bs-warning: var(--warn);
+    --bs-danger: var(--danger);
+    --bs-info: var(--info);
+
+    --bs-body-bg: var(--bg-page);
+    --bs-body-color: var(--text-primary);
+    --bs-secondary-color: var(--text-secondary);
+    --bs-border-color: var(--border);
+
+    --bs-body-font-family: var(--font-sans);
+    --bs-body-font-size: var(--fs-body);
+    --bs-body-line-height: var(--lh-body);
+
+    --bs-border-radius: var(--r-card);
+    --bs-border-radius-sm: var(--r-control);
+    --bs-border-radius-lg: var(--r-panel);
+    --bs-border-radius-pill: var(--r-pill);
+
+    --bs-link-color: var(--brand);
+    --bs-link-hover-color: var(--brand-hover);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Tipografi ────────────────────────────────────────────────────────────
+   Ukuran, leading, dan tracking sebagai satu kesatuan. Hierarki dibangun
+   dari berat dan ukuran bersama, bukan ukuran sendirian. */
+h1, .h1 { font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: var(--tr-display); font-weight: 700; }
+h2, .h2 { font-size: var(--fs-title);   line-height: var(--lh-title);   letter-spacing: var(--tr-title);   font-weight: 650; }
+h3, .h3,
+h4, .h4 { font-size: var(--fs-card);    line-height: var(--lh-card);    letter-spacing: var(--tr-card);    font-weight: 600; }
+
+.page-heading {
+    font-size: var(--fs-title);
+    line-height: var(--lh-title);
+    letter-spacing: var(--tr-title);
+    font-weight: 650;
+    color: var(--text-primary);
+    margin-bottom: var(--sp-4);
+}
+
+.text-label {
+    font-size: var(--fs-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--tr-label);
+    color: var(--text-secondary);
+    text-transform: none;
+}
+
+/* ── Kerangka: bidang biru + lembar mengapung ─────────────────────────────
+   Varian "Seimbang". Bidang biru memuat navigasi dan judul halaman; lembar
+   putih naik menimpanya. Ini perubahan struktural yang membuat susunannya
+   menyerupai referensi — penggantian warna saja tidak cukup.
+
+   Bentuk organik dibuat dari radial-gradient, bukan berkas gambar: tidak ada
+   permintaan jaringan tambahan dan warnanya bersumber dari token yang sama. */
+.portal-hero {
+    position: relative;
+    isolation: isolate;
+    padding: var(--sp-4) 0 var(--sp-16);
+    background:
+        radial-gradient(circle at 88% 8%, var(--brand-blob) 0 26%, transparent 26.5%),
+        radial-gradient(circle at 8% 96%, var(--brand-blob-soft) 0 34%, transparent 34.5%),
+        linear-gradient(150deg, var(--brand-panel-from), var(--brand-panel-to));
+}
+
+/* Judul di atas bidang biru. Di sinilah tipografi display referensi dipakai:
+   besar dan tebal, dengan tracking negatif karena huruf terbaca renggang saat
+   ukurannya bertambah. */
+.portal-title {
+    margin: var(--sp-6) 0 0;
+    color: #fff;
+    font-size: clamp(1.625rem, 3.2vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+}
+
+/* Lembar putih naik menimpa bidang biru. Radius besar, bayangan dalam, tanpa
+   border — border bersama bayangan membuat tepinya terbaca dua kali. */
+.portal-sheet {
+    position: relative;
+    z-index: 1;
+    margin-top: calc(var(--sp-12) * -1);
+    margin-bottom: var(--sp-8);
+    padding: var(--sp-6);
+    background: var(--bg-surface);
+    border-radius: var(--r-hero);
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 576px) {
+    .portal-hero { padding-bottom: var(--sp-12); }
+    .portal-sheet { padding: var(--sp-4); border-radius: var(--r-panel); }
+}
+
+/* ── Navigasi mengapung ───────────────────────────────────────────────────
+   Bukan bar lebar penuh, melainkan pil translusen di atas bidang biru.
+   Markup di dalamnya tidak diubah, jadi collapse dan dropdown Bootstrap
+   tetap bekerja apa adanya. */
+.portal-nav {
+    padding: var(--sp-1) var(--sp-2);
+    border-radius: var(--r-pill);
+    /* Lapisan GELAP, bukan putih. Transparansi putih di atas biru justru
+       menerangkan latarnya: diukur, teks putih hanya mencapai 4,40:1 dan
+       gagal ambang AA. Lapisan gelap menurunkan latar sehingga teks putih
+       lolos dengan lapang. */
+    background: rgb(2 6 23 / 0.28);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-top-color: rgb(255 255 255 / 0.22);   /* tepi atas terang */
+    backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Saat menu dibuka di layar kecil, pil berubah jadi panel — daftar tegak di
+   dalam bentuk pil akan terlihat aneh. */
+@media (max-width: 991.98px) {
+    .portal-nav:has(.navbar-collapse.show),
+    .portal-nav:has(.navbar-collapse.collapsing) {
+        border-radius: var(--r-panel);
+    }
+}
+
+.navbar-brand {
+    font-weight: 650;
+    letter-spacing: var(--tr-card);
+    font-size: var(--fs-card);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    /* n-200, bukan n-300: di atas pil, n-300 hanya mencapai 2,96:1. */
+    color: var(--n-200);
+    font-size: var(--fs-body);
+    border-radius: var(--r-pill);
+    padding-inline: var(--sp-3);
+    transition: color var(--dur-ui) var(--ease-out),
+                background-color var(--dur-ui) var(--ease-out);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-nav .nav-link:focus-visible {
+    color: #fff;
+    background-color: rgb(255 255 255 / 0.08);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #fff;
+    background-color: rgb(255 255 255 / 0.12);
+}
+
+/* Lonceng notifikasi: badge menempel, bukan mengambang lepas. */
+.navbar .nav-link .badge {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.1rem;
+    font-size: 0.625rem;
+    padding: 0.15em 0.4em;
+    line-height: 1;
+}
+
+/* ── Kartu ────────────────────────────────────────────────────────────────
+   Di dalam lembar putih, kartu melepas border-nya: kartu berbingkai di dalam
+   kartu berbingkai membuat tepinya terbaca berlapis. Yang memisahkan adalah
+   nada latar dan bayangan halus.
+
+   Kelapangan referensi dibayar di sini — padding naik dari 16px ke 24px —
+   bukan di tabel, yang kerapatannya justru harus dijaga. */
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: none;
+    transition: box-shadow var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out);
+}
+
+.portal-sheet .card {
+    border-color: transparent;
+    background: var(--bg-sunken);
+    border-radius: var(--r-panel);
+    box-shadow: none;
+}
+
+.portal-sheet .card:hover { box-shadow: var(--shadow-sm); }
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    padding: var(--sp-4) var(--sp-6);
+    font-size: 1.0625rem;
+    line-height: var(--lh-card);
+    letter-spacing: var(--tr-card);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.card-body { padding: var(--sp-6); }
+
+@media (max-width: 576px) {
+    .card-header { padding: var(--sp-3) var(--sp-4); }
+    .card-body { padding: var(--sp-4); }
+}
+
+/* Tabel di dalam kartu bernada tetap berlatar putih supaya barisnya terbaca
+   jelas — datanya yang harus paling terang, bukan wadahnya. */
+.portal-sheet .card .table {
+    background: var(--bg-surface);
+    border-radius: var(--r-card);
+    overflow: hidden;
+}
+
+/* Kartu angka ringkas di beranda. Angkanya yang jadi fokus, bukan warnanya —
+   itulah sebabnya nilai netral dan hanya status yang berwarna. */
+.stat-card .text-label,
+.stat-card .text-muted {
+    color: var(--text-secondary) !important;
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+}
+
+.stat-card .value {
+    font-size: 1.75rem;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+}
+
+.stat-card .value.is-ok     { color: var(--ok-text); }
+.stat-card .value.is-warn   { color: var(--warn-text); }
+.stat-card .value.is-danger { color: var(--danger-text); }
+.stat-card .value.is-info   { color: var(--info-text); }
+
+/* ── Utilitas warna teks Bootstrap ────────────────────────────────────────
+   Diukur di atas putih, `text-warning` bawaan Bootstrap (#ffc107) hanya
+   1,63:1 dan `text-info` (#0dcaf0) hanya 1,96:1 — jauh di bawah ambang AA
+   4,5:1. Keduanya dipakai untuk angka di beranda portal, jadi ini kegagalan
+   kontras yang nyata, bukan soal selera. Diarahkan ke varian teks yang sudah
+   diukur lolos. */
+.text-success { color: var(--ok-text) !important; }
+.text-warning { color: var(--warn-text) !important; }
+.text-danger  { color: var(--danger-text) !important; }
+.text-info    { color: var(--info-text) !important; }
+.text-primary { color: var(--brand-text) !important; }
+.text-muted   { color: var(--text-secondary) !important; }
+
+@media (max-width: 576px) {
+    .stat-card .value { font-size: 1.375rem; }
+}
+
+/* ── Tabel ────────────────────────────────────────────────────────────────
+   Kerapatan padat. Header dibedakan lewat berat dan warna, bukan lewat latar
+   pekat yang menarik perhatian dari datanya. */
+.table {
+    --bs-table-bg: transparent;
+    font-size: var(--fs-table);
+    line-height: var(--lh-table);
+    margin-bottom: 0;
+}
+
+.table > thead > tr > th {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-sunken);
+    border-bottom: 1px solid var(--border);
+    padding: var(--cell-pad-y) var(--cell-pad-x);
+    white-space: nowrap;
+}
+
+.table > tbody > tr > td {
+    padding: var(--cell-pad-y) var(--cell-pad-x);
+    height: var(--row-h);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+.table > tbody > tr:last-child > td { border-bottom: 0; }
+
+/* Satu pemisah baris saja. Garis DAN warna berselang sekaligus membuat tabel
+   padat terlihat ramai — sama seperti memasang border bersama bayangan.
+   Tabel berselang memakai warnanya, garisnya dilepas. */
+.table-striped {
+    --bs-table-striped-bg: var(--n-50);
+    --bs-table-striped-color: var(--text-primary);
+}
+
+.table-striped > tbody > tr > td { border-bottom: 0; }
+
+/* Baris keadaan kosong bukan data, jadi tidak ikut berselang. */
+.table > tbody > tr > td[colspan] {
+    background: transparent !important;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: var(--sp-8) var(--sp-4);
+}
+
+.table-hover > tbody > tr:hover > * {
+    background-color: var(--bg-hover);
+}
+
+/* Kolom angka dirapatkan ke kanan agar satuan ribuan sejajar. */
+.table .num,
+.table td.text-end,
+.table th.text-end {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Tombol ───────────────────────────────────────────────────────────────
+   Umpan balik hadir saat ditekan, bukan saat dilepas. Ini yang membuat
+   antarmuka terasa mendengarkan. */
+.btn {
+    font-size: var(--fs-body);
+    font-weight: 500;
+    border-radius: var(--r-control);
+    transition: transform var(--dur-press) var(--ease-out),
+                background-color var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out);
+}
+
+.btn:active { transform: scale(0.97); }
+
+/* Navy pekat, mengikuti referensi desain: tombol aksi utama justru lebih
+   gelap daripada birunya panel, sehingga terbaca sebagai keputusan tegas. */
+.btn-primary {
+    --bs-btn-bg: var(--brand-deep);
+    --bs-btn-border-color: var(--brand-deep);
+    --bs-btn-hover-bg: var(--brand-deep-hover);
+    --bs-btn-hover-border-color: var(--brand-deep-hover);
+    --bs-btn-active-bg: var(--brand-deep-active);
+    --bs-btn-active-border-color: var(--brand-deep-active);
+    font-weight: 600;
+}
+
+.btn-outline-secondary {
+    --bs-btn-color: var(--text-primary);
+    --bs-btn-border-color: var(--border-strong);
+    --bs-btn-hover-bg: var(--bg-hover);
+    --bs-btn-hover-border-color: var(--border-strong);
+    --bs-btn-hover-color: var(--text-primary);
+}
+
+.btn:focus-visible { box-shadow: var(--focus-ring); }
+
+/* ── Badge status ─────────────────────────────────────────────────────────
+   Latar lembut dan garis tipis, bukan blok warna pekat. Di tengah tabel,
+   badge pekat menarik mata lebih kuat daripada datanya sendiri. */
+.badge {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: var(--tr-label);
+    padding: 0.25em 0.6em;
+    border-radius: var(--r-pill);
+    border: 1px solid transparent;
+}
+
+.badge.bg-success { background: var(--ok-subtle)     !important; color: var(--ok-text);     border-color: var(--ok-border); }
+.badge.bg-warning { background: var(--warn-subtle)   !important; color: var(--warn-text);   border-color: var(--warn-border); }
+.badge.bg-danger  { background: var(--danger-subtle) !important; color: var(--danger-text); border-color: var(--danger-border); }
+.badge.bg-info    { background: var(--info-subtle)   !important; color: var(--info-text);   border-color: var(--info-border); }
+.badge.bg-primary { background: var(--brand-subtle)  !important; color: var(--brand-text);  border-color: var(--brand-border); }
+
+.badge.bg-secondary {
+    background: var(--bg-sunken) !important;
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+/* Badge notifikasi di navbar tetap pekat — di sana ia memang harus menarik
+   perhatian, dan latarnya gelap sehingga versi lembut tidak terbaca. */
+.navbar .badge.bg-danger {
+    background: var(--danger) !important;
+    color: #fff;
+    border-color: transparent;
+}
+
+/* ── Alert ─────────────────────────────────────────────────────────────── */
+.alert {
+    border-radius: var(--r-card);
+    border-width: 1px;
+    font-size: var(--fs-body);
+    padding: var(--sp-3) var(--sp-4);
+}
+
+.alert-success { background: var(--ok-subtle);     border-color: var(--ok-border);     color: #14532d; }
+.alert-danger  { background: var(--danger-subtle); border-color: var(--danger-border); color: #7f1d1d; }
+.alert-warning { background: var(--warn-subtle);   border-color: var(--warn-border);   color: #78350f; }
+.alert-info    { background: var(--info-subtle);   border-color: var(--info-border);   color: #164e63; }
+
+/* ── Form ─────────────────────────────────────────────────────────────── */
+.form-label {
+    font-size: var(--fs-label);
+    letter-spacing: var(--tr-label);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--sp-1);
+}
+
+/* Kolom isian bergaya terisi, sama seperti halaman login: latar abu tanpa
+   garis, dan berubah jadi putih berbingkai saat difokuskan. Batas kolomnya
+   tetap jelas karena latarnya berbeda dari kartu. */
+/* PENTING: `background-color`, bukan properti singkat `background`. Panah
+   dropdown <select> dirender lewat `background-image` berisi SVG — properti
+   singkat menghapusnya dan selectnya kehilangan panah. */
+.form-control,
+.form-select {
+    font-size: var(--fs-body);
+    border-radius: var(--r-control);
+    background-color: var(--field-bg);
+    border: 1px solid var(--field-border);
+    color: var(--text-primary);
+    padding: 0.625rem 0.75rem;
+    transition: background-color var(--dur-ui) var(--ease-out),
+                border-color var(--dur-ui) var(--ease-out),
+                box-shadow var(--dur-ui) var(--ease-out);
+}
+
+.form-select { padding-right: 2.25rem; }   /* ruang untuk panah */
+
+.form-control:hover:not(:focus),
+.form-select:hover:not(:focus) { background-color: var(--field-bg-hover); }
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+    box-shadow: var(--focus-ring);
+}
+
+.form-control::placeholder { color: var(--text-muted); }
+
+.form-control.is-invalid,
+.form-select.is-invalid { border-color: var(--danger); background-color: var(--danger-subtle); }
+
+.form-control-sm,
+.form-select-sm {
+    font-size: var(--fs-table);
+    padding: 0.3125rem 0.625rem;
+    min-height: 2rem;
+}
+
+.form-text { font-size: var(--fs-label); color: var(--text-secondary); }
+
+/* ── Dropdown ─────────────────────────────────────────────────────────── */
+.dropdown-menu {
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--fs-body);
+    padding: var(--sp-1);
+}
+
+.dropdown-item {
+    border-radius: var(--r-control);
+    padding: var(--sp-2) var(--sp-3);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── Daftar ───────────────────────────────────────────────────────────── */
+.list-group-item {
+    border-color: var(--border);
+    font-size: var(--fs-body);
+    padding: var(--cell-pad-y) var(--sp-4);
+}
+
+/* ── Slip gaji ────────────────────────────────────────────────────────────
+   Dibaca sebagai dokumen keuangan, bukan sebagai tabel biasa: label kiri
+   tenang, angka kanan sejajar, dan baris total dibedakan tegas. */
+.payslip-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--sp-4);
+    padding: var(--cell-pad-y) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.payslip-row:last-child { border-bottom: 0; }
+.payslip-row .label { color: var(--text-secondary); font-size: var(--fs-body); }
+.payslip-row .value { font-variant-numeric: tabular-nums; font-weight: 500; }
+
+.payslip-row.is-total {
+    border-top: 2px solid var(--border-strong);
+    border-bottom: 0;
+    margin-top: var(--sp-2);
+    padding-top: var(--sp-3);
+}
+
+.payslip-row.is-total .label { color: var(--text-primary); font-weight: 600; }
+.payslip-row.is-total .value { font-size: 1.125rem; font-weight: 700; }
+
+/* ── Keadaan kosong ───────────────────────────────────────────────────────
+   Keadaan kosong yang rapi adalah bagian dari kesan profesional, bukan sisa
+   yang terlupakan. */
+.empty-state {
+    text-align: center;
+    padding: var(--sp-12) var(--sp-4);
+    color: var(--text-secondary);
+    font-size: var(--fs-body);
+}
+
+.empty-state .la {
+    font-size: 2rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: var(--sp-2);
+}
+
+/* ── Preferensi pengguna untuk kerangka ───────────────────────────────────
+   Pil navigasi bergantung pada backdrop-filter. Bila pengguna meminta
+   transparansi dikurangi, blur-nya hilang — jadi latarnya harus dipekatkan
+   supaya teks tetap terbaca, bukan dibiarkan tembus. */
+@media (prefers-reduced-transparency: reduce) {
+    .portal-nav {
+        background: var(--n-800);
+        backdrop-filter: none;
+        border-color: var(--n-700);
+    }
+    .portal-hero { background: var(--brand-panel-to); }
+}
+
+@media (prefers-contrast: more) {
+    .portal-nav {
+        background: var(--n-900);
+        backdrop-filter: none;
+        border-color: #fff;
+    }
+    .portal-hero { background: var(--brand-panel-to); }
+    .portal-sheet { border: 1px solid var(--border-strong); }
+}
+
+/* ── Portal karir (M17) — kartu lowongan ──────────────────────────────────
+   Dipakai di /karir. Kartu lowongan mengangkat sedikit saat disorot supaya
+   terbaca dapat diklik; efeknya halus, memakai bayangan & token yang sama
+   dengan komponen lain. */
+.job-card {
+    cursor: pointer;
+    transition: transform var(--dur-ui) var(--ease-out),
+                box-shadow var(--dur-ui) var(--ease-out);
+}
+
+.portal-sheet .job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Ringkasan deskripsi dipotong dua baris agar tinggi kartu seragam. */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Kolom isian di /karir berada di atas kartu sunken yang senada dengan
+   --field-bg, sehingga tanpa garis kolomnya nyaris tak terbaca. Beri garis
+   tegas khusus portal karir (tidak mengubah portal karyawan). */
+.career-portal .portal-sheet .card .form-control,
+.career-portal .portal-sheet .card .form-select {
+    background-color: var(--bg-surface);
+    border-color: var(--field-border-visible, var(--border-strong));
+}
+
+.career-portal .portal-sheet .card .form-control:focus,
+.career-portal .portal-sheet .card .form-select:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+}
+
+

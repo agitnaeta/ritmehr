@@ -1,3 +1,18 @@
+{{-- M13 — Language switcher. Shows the active locale; switching persists to
+     the user + session via /locale/{locale}. --}}
+<li class="nav-item dropdown">
+    <a class="nav-link" href="#" data-bs-toggle="dropdown" aria-label="{{ __('common.language') }}" title="{{ __('common.language') }}">
+        <i class="la la-language la-lg"></i>
+        <span class="text-uppercase small fw-bold">{{ app()->getLocale() }}</span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item {{ app()->getLocale() === 'id' ? 'active' : '' }}"
+           href="{{ url('/locale/id') }}">🇮🇩 Indonesia</a>
+        <a class="dropdown-item {{ app()->getLocale() === 'en' ? 'active' : '' }}"
+           href="{{ url('/locale/en') }}">🇬🇧 English</a>
+    </div>
+</li>
+
 {{-- Notification bell (M3). Rendered on every admin page, so it must stay
      cheap: one count query plus at most five rows for the dropdown. --}}
 

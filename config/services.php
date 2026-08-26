@@ -32,11 +32,14 @@ return [
     ],
 
     /*
-    | WhatsApp gateway. Without a token the app falls back to a gateway that
-    | only logs, so notifications stay functional in dev.
+    | Accounting sync (external ledger integration, e.g. Firefly III). Managed
+    | via the M15 Settings UI at runtime; these are just the .env fallbacks used
+    | before a value is saved to the settings table.
     */
-    'fonnte' => [
-        'token' => env('FONNTE_TOKEN'),
+    'acc' => [
+        'active' => env('ACC_ACTIVE', false),
+        'host'   => env('ACC_HOST'),
+        'key'    => env('ACC_KEY'),
     ],
 
 ];

@@ -39,6 +39,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'company_profile.view', 'company_profile.edit',
             // Accounting config
             'acc.view', 'acc.edit',
+            // Internal accounting ledger (M12)
+            'accounting.view', 'accounting.edit',
             // Reports
             'report.view', 'report.export',
             // Audit
@@ -53,6 +55,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'document.view', 'document.edit',
             // Tax & BPJS rates
             'tax.view', 'tax.edit',
+            // Recruitment (M09)
+            'recruitment.view', 'recruitment.edit',
+            // Performance (M10). performance.review_self = isi self-review sendiri.
+            'performance.view', 'performance.edit', 'performance.review_self',
             // Role & permission management — super_admin only
             'role.view', 'role.edit', 'permission.view',
         ];
@@ -82,6 +88,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'national_holiday.view', 'national_holiday.edit',
             'company_profile.view', 'company_profile.edit',
             'acc.view', 'acc.edit',
+            'accounting.view', 'accounting.edit',
             'report.view', 'report.export',
             'audit.view',
             'approval.view_all', 'approval.act',
@@ -89,6 +96,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'branch.view', 'branch.edit',
             'document.view', 'document.edit',
             'tax.view', 'tax.edit',
+            'recruitment.view', 'recruitment.edit',
+            'performance.view', 'performance.edit', 'performance.review_self',
             // Deliberately NOT granted: approval.configure, role.*, permission.*
             // — changing who can approve what is a super_admin decision.
         ]);
@@ -110,6 +119,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'report.view', 'report.export',
             'approval.act',
             'org.view',
+            // Manager menilai timnya + mengisi self-review sendiri.
+            'performance.view', 'performance.edit', 'performance.review_self',
         ]);
 
         // 4. Employee — self-service only
@@ -122,6 +133,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'loan_payment.view',
             'leave.view_own', 'leave.request',
             'schedule.view',
+            // Karyawan mengisi self-review kinerjanya sendiri.
+            'performance.review_self',
         ]);
     }
 }

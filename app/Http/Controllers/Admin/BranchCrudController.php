@@ -64,6 +64,13 @@ class BranchCrudController extends CrudController
         CRUD::field('address')->label('Alamat')->type('textarea');
         CRUD::field('phone')->label('Telepon')->type('text');
 
+        // M07 — interactive map picker (Leaflet/OSM) that fills lat/lng/radius below.
+        CRUD::addField([
+            'name' => 'map_picker',
+            'type' => 'view',
+            'view' => 'admin.branch.map_picker',
+        ]);
+
         CRUD::addField([
             'name' => 'lat', 'label' => 'Latitude', 'type' => 'text',
             'hint' => 'Mis. -6.2087634. Kosongkan untuk memakai koordinat global.',

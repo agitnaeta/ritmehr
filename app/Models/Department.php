@@ -121,10 +121,12 @@ class Department extends Model
 
     /**
      * Build a nested tree of all departments, roots first.
+     * Eager-loads head + staff (with position) so the org chart renders without
+     * running a query per node (N+1).
      */
     public static function tree(): Collection
     {
-        $all = static::with('head')->get();
+        $all = static::with(['head', 'users' => fn ($q) => $q->orderBy('name'), 'users.position'])->get();
 
         $build = function ($parentId) use ($all, &$build) {
             return $all->where('parent_id', $parentId)->values()->map(fn ($d) => [

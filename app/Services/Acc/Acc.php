@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Log;
 
-class Acc
+class Acc implements LedgerInterface
 {
 
     protected $host;
@@ -17,8 +17,9 @@ class Acc
 
     public function __construct()
     {
-        $this->host = env('ACC_HOST');
-        $this->key = env('ACC_KEY');
+        // M15: managed via Settings UI, falling back to .env/config.
+        $this->host = setting('acc_host', env('ACC_HOST'));
+        $this->key = setting('acc_key', env('ACC_KEY'));
     }
 
     private function headers()
@@ -57,7 +58,7 @@ class Acc
         return json_decode($res->getBody());
     }
 
-    public function getAccounts()
+    public function getAccounts(): array
     {
         try {
             $client = new Client();

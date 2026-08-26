@@ -31,11 +31,11 @@
 <h5 class="mb-2">Bulan Ini ({{ $recapMonth }})</h5>
 <div class="row">
     @php
-        $statCard('Total Gaji', 'Rp ' . number_format($month['salary'], 0, ',', '.'), 'text-success',
+        $statCard('Total Gaji', money($month['salary']), 'text-success',
                   $month['recaps'] . ' rekap');
-        $statCard('Total Lembur', 'Rp ' . number_format($month['overtime'], 0, ',', '.'), 'text-info');
-        $statCard('Total Potongan', 'Rp ' . number_format($month['deductions'], 0, ',', '.'), 'text-warning');
-        $statCard('Sisa Kasbon', 'Rp ' . number_format($month['loan_outstanding'], 0, ',', '.'), 'text-danger');
+        $statCard('Total Lembur', money($month['overtime']), 'text-info');
+        $statCard('Total Potongan', money($month['deductions']), 'text-warning');
+        $statCard('Sisa Kasbon', money($month['loan_outstanding']), 'text-danger');
     @endphp
 </div>
 

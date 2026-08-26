@@ -131,6 +131,65 @@ class PortalTest extends TestCase
             ->assertSee('08-2026');
     }
 
+    // ── Payslip print (M04 polish) ─────────────────────────
+
+    public function test_can_print_my_own_payslip(): void
+    {
+        $me = $this->user('Me');
+        $recap = $this->recapFor($me, '08-2026', 1_234_567);
+
+        $this->actingAsPortal($me)
+            ->get('/my/salary/' . $recap->id . '/print')
+            ->assertOk()
+            ->assertSee('SLIP GAJI')
+            ->assertSee('08-2026')
+            ->assertSee('Total Pendapatan');
+    }
+
+    public function test_cannot_print_another_users_payslip(): void
+    {
+        $me = $this->user('Me');
+        $other = $this->user('Other');
+        $theirRecap = $this->recapFor($other, '08-2026', 9_999_999);
+
+        $this->actingAsPortal($me)
+            ->get('/my/salary/' . $theirRecap->id . '/print')
+            ->assertNotFound();
+    }
+
+    public function test_payslip_page_links_to_print(): void
+    {
+        $me = $this->user('Me');
+        $recap = $this->recapFor($me, '08-2026');
+
+        $this->actingAsPortal($me)
+            ->get('/my/salary/' . $recap->id)
+            ->assertOk()
+            ->assertSee(route('portal.salary.print', $recap->id));
+    }
+
+    // ── Attendance calendar (M04 polish) ───────────────────
+
+    public function test_attendance_page_renders_calendar_with_my_presence(): void
+    {
+        $me = $this->user('Me');
+        $day = now()->startOfMonth()->addDays(9);
+
+        \App\Models\Presence::create([
+            'user_id' => $me->id,
+            'in'      => $day->copy()->setTime(8, 5)->toDateTimeString(),
+            'out'     => $day->copy()->setTime(17, 0)->toDateTimeString(),
+            'is_late' => true,
+            'late_minute' => 5,
+        ]);
+
+        $this->actingAsPortal($me)
+            ->get('/my/attendance?month=' . now()->format('Y-m'))
+            ->assertOk()
+            ->assertSee('viewCalendar', false)  // calendar container present
+            ->assertSee('Kalender');            // toggle button
+    }
+
     public function test_loan_page_shows_only_my_loans(): void
     {
         $me = $this->user('Me');

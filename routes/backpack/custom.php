@@ -8,7 +8,9 @@ use App\Http\Controllers\Admin\LeaveBalanceCrudController;
 use App\Http\Controllers\Admin\LeaveRequestCrudController;
 use App\Http\Controllers\Admin\LoanCrudController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\PerformanceController;
 use App\Http\Controllers\Admin\PresenceCrudController;
+use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\SalaryRecapCrudController;
 use App\Http\Controllers\Admin\TaxReportController;
 use App\Http\Controllers\Admin\ScheduleCrudController;
@@ -81,13 +83,51 @@ Route::group([
     Route::group(['middleware' => 'permission:company_profile.view'], function () {
         Route::crud('company-profile', 'CompanyProfileCrudController');
     });
-    Route::group(['middleware' => 'permission:acc.view'], function () {
-        Route::crud('acc', 'AccCrudController');
+    // M12 — Internal accounting ledger. Chart of accounts (with posting roles)
+    // fully replaces the old `acc` mapping screen; everything is under /account.
+    Route::group(['middleware' => 'permission:accounting.view'], function () {
+        Route::crud('account', 'AccountCrudController');
+        Route::get('accounting/journal', [\App\Http\Controllers\Admin\LedgerController::class, 'journal'])->name('accounting.journal');
+        Route::get('accounting/ledger', [\App\Http\Controllers\Admin\LedgerController::class, 'ledger'])->name('accounting.ledger');
+        Route::get('accounting/trial-balance', [\App\Http\Controllers\Admin\LedgerController::class, 'trialBalance'])->name('accounting.trial_balance');
+        Route::get('accounting/income-statement', [\App\Http\Controllers\Admin\LedgerController::class, 'incomeStatement'])->name('accounting.income_statement');
+        Route::get('accounting/balance-sheet', [\App\Http\Controllers\Admin\LedgerController::class, 'balanceSheet'])->name('accounting.balance_sheet');
+
+        // Manual journal management: friendly "Catat Transaksi" + advanced + reversal.
+        Route::get('accounting/transaksi', [\App\Http\Controllers\Admin\JournalController::class, 'chooser'])->name('accounting.journal.chooser');
+        Route::get('accounting/journal/create', [\App\Http\Controllers\Admin\JournalController::class, 'create'])->name('accounting.journal.create');
+        Route::post('accounting/journal', [\App\Http\Controllers\Admin\JournalController::class, 'store'])->name('accounting.journal.store');
+        Route::get('accounting/journal/{id}/edit', [\App\Http\Controllers\Admin\JournalController::class, 'edit'])->whereNumber('id')->name('accounting.journal.edit');
+        Route::put('accounting/journal/{id}', [\App\Http\Controllers\Admin\JournalController::class, 'update'])->whereNumber('id')->name('accounting.journal.update');
+        Route::delete('accounting/journal/{id}', [\App\Http\Controllers\Admin\JournalController::class, 'destroy'])->whereNumber('id')->name('accounting.journal.destroy');
+        Route::post('accounting/journal/{id}/reverse', [\App\Http\Controllers\Admin\JournalController::class, 'reverse'])->whereNumber('id')->name('accounting.journal.reverse');
+        Route::get('accounting/journal/{id}/attachment', [\App\Http\Controllers\Admin\JournalController::class, 'attachment'])->whereNumber('id')->name('accounting.journal.attachment');
     });
     Route::crud('role', 'RoleCrudController');
     Route::crud('permission', 'PermissionCrudController');
     Route::group(['middleware' => 'permission:audit.view'], function () {
         Route::crud('audit-log', 'AuditLogCrudController');
+    });
+
+    // M15 — Platform Settings (super admin only; guard also enforced in controller).
+    Route::group(['prefix' => 'settings'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+        Route::post('/', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+        Route::post('/test-whatsapp', [\App\Http\Controllers\Admin\SettingController::class, 'testWhatsApp'])->name('settings.test_whatsapp');
+        Route::post('/test-storage', [\App\Http\Controllers\Admin\SettingController::class, 'testStorage'])->name('settings.test_storage');
+        // M17 — Rekrutmen AI probes.
+        Route::post('/test-qdrant', [\App\Http\Controllers\Admin\SettingController::class, 'testQdrant'])->name('settings.test_qdrant');
+        Route::post('/test-embedding', [\App\Http\Controllers\Admin\SettingController::class, 'testEmbedding'])->name('settings.test_embedding');
+        Route::post('/test-llm', [\App\Http\Controllers\Admin\SettingController::class, 'testLlm'])->name('settings.test_llm');
+    });
+
+    // M03b — In-app WhatsApp (WAHA) connection: scan QR, status, logout.
+    Route::group(['prefix' => 'whatsapp'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\WahaController::class, 'index'])->name('whatsapp.index');
+        Route::get('/status', [\App\Http\Controllers\Admin\WahaController::class, 'status'])->name('whatsapp.status');
+        Route::post('/start', [\App\Http\Controllers\Admin\WahaController::class, 'start'])->name('whatsapp.start');
+        Route::get('/qr', [\App\Http\Controllers\Admin\WahaController::class, 'qr'])->name('whatsapp.qr');
+        Route::post('/logout', [\App\Http\Controllers\Admin\WahaController::class, 'logout'])->name('whatsapp.logout');
     });
 
     Route::group(['prefix' => 'notification'], function () {
@@ -101,7 +141,7 @@ Route::group([
     // so it wins over the package's own /dashboard registration.
     Route::get('dashboard', [DashboardController::class, 'index'])->name('backpack.dashboard');
 
-    Route::group(['prefix' => 'report'], function () {
+    Route::group(['prefix' => 'report', 'middleware' => 'permission:report.view'], function () {
         Route::get('/attendance', [DashboardController::class, 'attendanceReport'])->name('report.attendance');
         Route::get('/salary', [DashboardController::class, 'salaryReport'])->name('report.salary');
         Route::get('/loan', [DashboardController::class, 'loanReport'])->name('report.loan');
@@ -159,6 +199,57 @@ Route::group([
             Route::post('/recalculate', [TaxReportController::class, 'recalculate'])->name('tax-report.recalculate');
         });
     });
+
+    // M09 — Recruitment. Pipeline board + interview calendar + hire action.
+    Route::group(['middleware' => 'permission:recruitment.view'], function () {
+        Route::crud('job-opening', 'JobOpeningCrudController');
+        Route::crud('applicant', 'ApplicantCrudController');
+        Route::crud('interview', 'InterviewCrudController');
+        Route::get('recruitment/pipeline', [RecruitmentController::class, 'pipeline'])->name('recruitment.pipeline');
+        Route::get('recruitment/calendar', [RecruitmentController::class, 'calendar'])->name('recruitment.calendar');
+        Route::post('recruitment/applicant/{id}/stage', [RecruitmentController::class, 'moveStage'])
+             ->whereNumber('id')->name('recruitment.move_stage');
+        Route::post('recruitment/applicant/{id}/hire', [RecruitmentController::class, 'hire'])
+             ->whereNumber('id')->name('recruitment.hire');
+        // M17 — reject (hapus CV) + AI ranking.
+        Route::post('recruitment/applicant/{id}/reject', [RecruitmentController::class, 'reject'])
+             ->whereNumber('id')->name('recruitment.reject');
+        Route::post('recruitment/opening/{id}/rank', [RecruitmentController::class, 'rankWithAi'])
+             ->whereNumber('id')->name('recruitment.rank_ai');
+        // M18 — inline CV stream (read without download).
+        Route::get('recruitment/applicant/{id}/cv', [RecruitmentController::class, 'streamCv'])
+             ->whereNumber('id')->name('recruitment.cv');
+        // M18-3 — applicant detail JSON for the pipeline drawer.
+        Route::get('recruitment/applicant/{id}/detail', [RecruitmentController::class, 'applicantDetail'])
+             ->whereNumber('id')->name('recruitment.detail');
+        // M18-4 — schedule interview inline from the drawer.
+        Route::post('recruitment/applicant/{id}/interview', [RecruitmentController::class, 'scheduleInterview'])
+             ->whereNumber('id')->name('recruitment.schedule_interview');
+        // M18-5 — bulk action (reject/move) on selected applicants.
+        Route::post('recruitment/bulk', [RecruitmentController::class, 'bulkAction'])
+             ->name('recruitment.bulk');
+    });
+
+    // M10 — Performance Management. Cycles/KPI (edit-gated) + review flow (self-service).
+    Route::group(['middleware' => 'permission:performance.edit'], function () {
+        Route::crud('review-cycle', 'ReviewCycleCrudController');
+        Route::crud('kpi', 'KpiCrudController');
+        Route::post('performance/cycle/{cycleId}/generate', [PerformanceController::class, 'generate'])
+             ->whereNumber('cycleId')->name('performance.generate');
+        Route::get('performance/scoreboard', [PerformanceController::class, 'scoreboard'])->name('performance.scoreboard');
+        Route::post('performance/review/{id}/manager', [PerformanceController::class, 'submitManager'])
+             ->whereNumber('id')->name('performance.submit_manager');
+        Route::post('performance/review/{id}/finalize', [PerformanceController::class, 'finalize'])
+             ->whereNumber('id')->name('performance.finalize');
+    });
+    // Self-service: any admin-panel user may reach these; the controller's
+    // guardView() (canAny performance.view/review_self) + ownership checks do
+    // the real gating. Avoids Spatie's `a|b` middleware OR-syntax ambiguity.
+    Route::get('performance', [PerformanceController::class, 'index'])->name('performance.index');
+    Route::get('performance/review/{id}', [PerformanceController::class, 'show'])
+         ->whereNumber('id')->name('performance.review');
+    Route::post('performance/review/{id}/self', [PerformanceController::class, 'submitSelf'])
+         ->whereNumber('id')->name('performance.submit_self');
 
     Route::crud('approval-flow', 'ApprovalFlowCrudController');
     Route::crud('approval-flow-step', 'ApprovalFlowStepCrudController');

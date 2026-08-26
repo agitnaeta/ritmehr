@@ -104,11 +104,13 @@ class EmployeeDocumentController extends Controller
 
         $this->authoriseAccess($document);
 
-        if (! Storage::disk(DocumentService::DISK)->exists($document->file_path)) {
+        $disk = $this->documents->disk();
+
+        if (! $disk->exists($document->file_path)) {
             abort(404, 'Berkas tidak ditemukan.');
         }
 
-        return Storage::disk(DocumentService::DISK)->download(
+        return $disk->download(
             $document->file_path,
             $document->file_name
         );
