@@ -217,19 +217,24 @@ class SalaryCrudController extends CrudController
             'type'  => 'custom_html',
             'value' => '<h5 class="mt-3 mb-0">Tunjangan</h5>'
                 . '<small class="text-muted">Kosongkan bila tidak ada. Total gaji otomatis = gaji pokok + tunjangan.</small>',
-        ]);
+        ])->afterField('basic_salary');
 
+        // Chain each allowance field after the previous so the block sits between
+        // "Gaji Pokok" and "Total Gaji".
+        $prev = 'allowance_section';
         $cur = app(\App\Services\CurrencyService::class)->symbol();
         foreach ($types as $t) {
+            $name = "allowance[{$t->id}]";
             $this->crud->addField([
-                'name'       => "allowance[{$t->id}]",
+                'name'       => $name,
                 'label'      => $t->label,
                 'type'       => 'number',
                 'prefix'     => $cur,
                 'value'      => $existing[$t->id] ?? null,
                 'wrapper'    => ['class' => 'form-group col-md-6'],
                 'attributes' => ['min' => 0, 'step' => 1000, 'placeholder' => '0'],
-            ]);
+            ])->afterField($prev);
+            $prev = $name;
         }
     }
 
