@@ -271,7 +271,7 @@ class SalaryRecapCrudController extends CrudController
         $ui =  $request->get('id');
         $sr =  $request->get('salary_recap');
         $recaps = SalaryRecap::with(['user'=>function($u){
-            $u->with('salary');
+            $u->with(['salary', 'department', 'position']);
         }, 'allowanceLines'])
             ->where(function ($q) use ($sr,$ui){
                 if($sr != null){
@@ -288,18 +288,8 @@ class SalaryRecapCrudController extends CrudController
         });
         $company = CompanyProfile::first();
 
-        // Periksa nilai mentahnya dulu: Storage::path("public/") pada image kosong
-        // mengembalikan path direktori yang panjangnya bukan nol, sehingga guard
-        // lolos dan dompdf memanggil getimagesize() pada sebuah direktori.
-        $isCompanyImage = filled($company?->image);
-        if ($isCompanyImage) {
-            $logoPath = Storage::path("public/{$company->image}");
-            $isCompanyImage = is_file($logoPath);   // berkas bisa saja sudah terhapus
-            $company->image = $logoPath;
-        }
-
-        $pdf  = Pdf::loadView('salary-recap.print',compact('recaps','isCompanyImage','company'));
-        $pdf->setPaper([0,0,350,500],'P');
+        $pdf  = Pdf::loadView('salary-recap.print', compact('recaps', 'company'));
+        $pdf->setPaper('a4', 'portrait');
         return $pdf->stream('rekap-gaji.pdf');
     }
 }

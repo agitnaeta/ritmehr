@@ -19,6 +19,14 @@ Kunci "as-is": `salaries.amount` tetap = total (basic + Σ tunjangan), di-mainta
 
 Pitfall: legacy `Salary::create(['amount'=>...])` tanpa `basic_salary` → boot hook seed basic dari amount (backward-compat). Test browser: bersihkan orphan allowance antar-run.
 
+### Update M20b (2026-08-26) — Tunjangan inline di form Gaji
+- Pengisian tunjangan **dipindah dari menu terpisah ke form Gaji** (`/admin/salary/create` & `/edit`): satu input `number` per jenis tunjangan aktif (`allowance[<type_id>]`).
+- `SalaryCrudController::syncAllowancesFromRequest()` upsert/hapus baris saat store/update (kosong/0 = hapus) → observer recalc total.
+- Halaman **Show Gaji** nampilin rincian via custom view `resources/views/admin/salary/allowance_breakdown.blade.php`.
+- Menu sidebar **"Tunjangan Karyawan" disembunyikan** (route + CRUD tetap ada sebagai fallback). Menu "Jenis Tunjangan" (master) tetap.
+- Pitfall: Backpack free tanpa `repeatable` → satu field per type (bukan multi-row dinamis). `user_id` validasi `string` → cast di test. Permission guard = `web` (bukan `backpack`).
+- Test: `SalaryInlineAllowanceTest` (3 PHPUnit) + `m20b-inline-allowance.mjs` (8 skenario). Full suite **368 tests HIJAU**.
+
 
 
 ---

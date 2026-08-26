@@ -67,7 +67,10 @@ class EmployeeSalaryAllowanceCrudController extends CrudController
             'amount' => 'required|integer|min:0',
         ]);
 
-        return $this->traitStore();
+        $this->traitStore();
+        \Prologue\Alerts\Facades\Alert::success('Tunjangan karyawan berhasil disimpan.')->flash();
+
+        return redirect(route('employee-salary-allowance.index'));
     }
 
     public function update()
@@ -76,6 +79,9 @@ class EmployeeSalaryAllowanceCrudController extends CrudController
             'amount' => 'required|integer|min:0',
         ]);
 
-        return $this->traitUpdate();
+        $this->traitUpdate();
+        \Prologue\Alerts\Facades\Alert::success('Tunjangan karyawan berhasil diperbarui.')->flash();
+
+        return redirect(route('employee-salary-allowance.index'));
     }
 }

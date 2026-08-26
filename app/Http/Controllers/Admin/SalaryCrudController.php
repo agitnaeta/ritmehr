@@ -54,6 +54,14 @@ class SalaryCrudController extends CrudController
         $this->autoSetupShowOperation();
         CRUD::setFromDB();
         $this->fieldModification();
+
+        // M20b — allowance breakdown for this employee (read-only detail).
+        CRUD::addColumn([
+            'name'     => 'allowance_breakdown',
+            'label'    => 'Rincian Tunjangan',
+            'type'     => 'view',
+            'view'     => 'admin.salary.allowance_breakdown',
+        ])->afterColumn('amount');
     }
 
     /**
@@ -176,6 +184,53 @@ class SalaryCrudController extends CrudController
             $this->crud->removeColumn('fine');
         }
 
+        $this->renderAllowanceFields();
+    }
+
+    /**
+     * M20b — Render one number input per active allowance type on the create/edit
+     * form, prefilled with the employee's existing values on edit. Blank/0 removes
+     * the allowance on save (see syncAllowancesFromRequest).
+     */
+    protected function renderAllowanceFields(): void
+    {
+        $op = $this->crud->getCurrentOperation();
+        if (! in_array($op, ['create', 'update'], true)) {
+            return;
+        }
+
+        $types = \App\Models\SalaryAllowanceType::active()
+            ->orderBy('sort_order')->orderBy('label')->get();
+
+        if ($types->isEmpty()) {
+            return;
+        }
+
+        $existing = [];
+        if ($op === 'update' && ($entry = $this->crud->getCurrentEntry())) {
+            $existing = \App\Models\EmployeeSalaryAllowance::where('user_id', $entry->user_id)
+                ->pluck('amount', 'salary_allowance_type_id')->toArray();
+        }
+
+        $this->crud->addField([
+            'name'  => 'allowance_section',
+            'type'  => 'custom_html',
+            'value' => '<h5 class="mt-3 mb-0">Tunjangan</h5>'
+                . '<small class="text-muted">Kosongkan bila tidak ada. Total gaji otomatis = gaji pokok + tunjangan.</small>',
+        ]);
+
+        $cur = app(\App\Services\CurrencyService::class)->symbol();
+        foreach ($types as $t) {
+            $this->crud->addField([
+                'name'       => "allowance[{$t->id}]",
+                'label'      => $t->label,
+                'type'       => 'number',
+                'prefix'     => $cur,
+                'value'      => $existing[$t->id] ?? null,
+                'wrapper'    => ['class' => 'form-group col-md-6'],
+                'attributes' => ['min' => 0, 'step' => 1000, 'placeholder' => '0'],
+            ]);
+        }
     }
 
     public function autoSetupShowOperation()
@@ -206,7 +261,8 @@ class SalaryCrudController extends CrudController
         //  'user_id', 'amount', 'overtime_amount', 'overtime_type',
 
         $request = $this->crud->validateRequest();
-        Salary::create($request->all());
+        $salary = Salary::create($request->except('allowance'));
+        $this->syncAllowancesFromRequest($salary->user_id, (array) $request->input('allowance', []));
         Alert::add('success', 'Berhasil input Gaji')->flash();
         return redirect(route('salary.index'));
     }
@@ -215,8 +271,35 @@ class SalaryCrudController extends CrudController
     {
         $request = $this->crud->validateRequest();
         $salary = Salary::find($this->crud->getCurrentEntryId());
-        $salary->update($request->all());
+        $salary->update($request->except('allowance'));
+        $this->syncAllowancesFromRequest($salary->user_id, (array) $request->input('allowance', []));
         Alert::add('success', 'Berhasil input Gaji')->flash();
         return redirect(route('salary.index'));
+    }
+
+    /**
+     * M20b — Upsert per-employee allowances from the salary form. Blank/0 removes
+     * the row. The EmployeeSalaryAllowance observer then recalcs salaries.amount.
+     */
+    public function syncAllowancesFromRequest(int $userId, array $allowance): void
+    {
+        foreach ($allowance as $typeId => $amount) {
+            $typeId = (int) $typeId;
+            $amount = (int) $amount;
+
+            if ($amount > 0) {
+                \App\Models\EmployeeSalaryAllowance::updateOrCreate(
+                    ['user_id' => $userId, 'salary_allowance_type_id' => $typeId],
+                    ['amount' => $amount],
+                );
+            } else {
+                \App\Models\EmployeeSalaryAllowance::where('user_id', $userId)
+                    ->where('salary_allowance_type_id', $typeId)
+                    ->delete();
+            }
+        }
+
+        // Make sure the total is fresh even if nothing triggered the observer.
+        optional(Salary::where('user_id', $userId)->first())->recalcTotal();
     }
 }

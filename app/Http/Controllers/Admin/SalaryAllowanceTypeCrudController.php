@@ -9,6 +9,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Prologue\Alerts\Facades\Alert;
 
 /**
  * M20 — Master list of salary allowance types (global, free label).
@@ -16,9 +17,9 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 class SalaryAllowanceTypeCrudController extends CrudController
 {
     use ListOperation;
-    use CreateOperation;
-    use UpdateOperation;
     use DeleteOperation;
+    use CreateOperation { store as traitStore; }
+    use UpdateOperation { update as traitUpdate; }
 
     public function setup()
     {
@@ -29,6 +30,24 @@ class SalaryAllowanceTypeCrudController extends CrudController
         if (! backpack_user()->can('salary.edit')) {
             CRUD::denyAccess(['create', 'update', 'delete']);
         }
+    }
+
+    public function store()
+    {
+        request()->validate(['label' => 'required|string|max:255']);
+        $this->traitStore();
+        Alert::success('Jenis tunjangan berhasil disimpan.')->flash();
+
+        return redirect(route('salary-allowance-type.index'));
+    }
+
+    public function update()
+    {
+        request()->validate(['label' => 'required|string|max:255']);
+        $this->traitUpdate();
+        Alert::success('Jenis tunjangan berhasil diperbarui.')->flash();
+
+        return redirect(route('salary-allowance-type.index'));
     }
 
     protected function setupListOperation()
