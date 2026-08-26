@@ -29,6 +29,10 @@ return [
     'settings'           => 'Settings',
     'approval'           => 'Approval',
     'recruitment'        => 'Recruitment',
+    'recruitment_pipeline' => 'Pipeline Board',
+    'recruitment_openings'  => 'Job Openings',
+    'recruitment_applicants' => 'Applicants',
+    'recruitment_interviews' => 'Interview Schedule',
     'company_profile'    => 'Company Profile',
     'users'              => 'Users',
 ];

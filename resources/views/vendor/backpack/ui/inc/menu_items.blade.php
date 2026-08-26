@@ -179,11 +179,10 @@
 {{-- Rekrutmen --}}
 @if($me?->can('recruitment.view'))
 <x-backpack::menu-dropdown :title="__('menu.recruitment')" icon="la la-user-plus">
-    <x-backpack::menu-dropdown-item title="Jadwal Wawancara" icon="la la-calendar" :link="backpack_url('recruitment/calendar')" />
-    <x-backpack::menu-dropdown-item title="Lowongan" icon="la la-briefcase" :link="backpack_url('job-opening')" />
-    <x-backpack::menu-dropdown-item title="Papan Pipeline" icon="la la-columns" :link="backpack_url('recruitment/pipeline')" />
-    <x-backpack::menu-dropdown-item title="Pelamar" icon="la la-user-friends" :link="backpack_url('applicant')" />
-    <x-backpack::menu-dropdown-item title="Wawancara" icon="la la-comments" :link="backpack_url('interview')" />
+    <x-backpack::menu-dropdown-item :title="__('menu.recruitment_pipeline')" icon="la la-columns" :link="backpack_url('recruitment/pipeline')" />
+    <x-backpack::menu-dropdown-item :title="__('menu.recruitment_openings')" icon="la la-briefcase" :link="backpack_url('job-opening')" />
+    <x-backpack::menu-dropdown-item :title="__('menu.recruitment_applicants')" icon="la la-user-friends" :link="backpack_url('applicant')" />
+    <x-backpack::menu-dropdown-item :title="__('menu.recruitment_interviews')" icon="la la-calendar" :link="backpack_url('recruitment/calendar')" />
 </x-backpack::menu-dropdown>
 @endif
 

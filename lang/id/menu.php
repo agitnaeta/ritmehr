@@ -29,6 +29,10 @@ return [
     'settings'           => 'Pengaturan',
     'approval'           => 'Persetujuan',
     'recruitment'        => 'Rekrutmen',
+    'recruitment_pipeline' => 'Papan Pipeline',
+    'recruitment_openings'  => 'Lowongan',
+    'recruitment_applicants' => 'Pelamar',
+    'recruitment_interviews' => 'Jadwal Wawancara',
     'company_profile'    => 'Profile Perusahaan',
     'users'              => 'Users',
 ];
