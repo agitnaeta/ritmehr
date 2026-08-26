@@ -92,8 +92,12 @@ class SalaryCrudController extends CrudController
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
          */
-        $this->crud->addColumn($this->entityField)->beforeColumn('amount');
         $this->fieldModification();
+
+        // Nama karyawan: tambahkan SETELAH fieldModification (yg remove user_id),
+        // prioritas 0 supaya tak disembunyikan responsive, taruh sebelum Gaji.
+        $this->crud->addColumn(array_merge($this->entityField, ['priority' => 0]))
+            ->beforeColumn('amount');
     }
 
 
@@ -174,10 +178,12 @@ class SalaryCrudController extends CrudController
 
         // kolom
         $this->crud->removeColumn('user_id');
-        $this->crud->addColumn($this->entityField)->makeFirstColumn();
+        // basic_salary (kolom M20) tampil mentah & bikin kolom Nama ketendang
+        // oleh responsive collapse — buang dari list, "Gaji" (total) sudah cukup.
+        $this->crud->removeColumn('basic_salary');
 
         $fields = [
-            'amount' => ['Gaji', $cur,2],
+            'amount' => ['Gaji', $cur,1],
             'overtime_amount' => ['1x Lembur', $cur,3],
             'overtime_type' => ['Tipe Lembur', '',4],
             'fine_type' => ['Jenis Denda', '',5],
