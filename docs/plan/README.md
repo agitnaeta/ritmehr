@@ -95,6 +95,7 @@ Status: ✅ Done · ⚠️ Ada gap · ❌ Belum · 🆕 Modul baru dari evaluasi
 | 18 | M18 Recruitment UX Overhaul (kelola lamaran terkonsolidasi) | `M18-recruitment-ux-overhaul-DONE.md` | ✅ DONE (M18-1..6 + acceptance) · 329 tests HIJAU · drawer detail + jadwal wawancara inline + bulk + retensi ghosting/archive | 🟢 |
 | 19 | M19 PPh 21 TER (Tarif Efektif Rata-rata 2024/2026) | `M19-pph21-ter-DONE.md` | ✅ DONE (M19-1..6 + oracle) · 359 tests HIJAU · TER Jan-Nov + koreksi progresif Des, config-driven CSV+CRUD · ⚠️ tarif DRAFT, verifikasi PMK 168/2023 resmi | 🟢 |
 | 20 | M20 Breakdown Gaji (Gaji Pokok + Tunjangan) | `M20-komponen-gaji-dinamis-DONE.md` | ✅ DONE · 365 tests HIJAU · amount auto = pokok + Σ tunjangan (label bebas, master global), snapshot slip, pajak/BPJS as-is | 🟢 |
+| 21 | M21 Recruitment Ranking View (Urutan 1..N + alasan) | `M21-recruitment-ranking-view-DONE.md` | ✅ DONE (M21-1..3 + acceptance) · 378 tests HIJAU (nol regresi dari 365) · view peringkat 1..N + medali top-3 + 4 stat card + toggle urut · kanban urut skor + badge #N · drawer bar warna + bukti (partial bersama) | 🟢 |
 
 ### Alasan urutan
 - **M15 duluan**: config platform (storage/gateway/ACC toggle) + auto-seed adalah fondasi. Modul lain bergantung ke sini untuk E4.

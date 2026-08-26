@@ -201,6 +201,98 @@ class MatchingService
         return ['shortlisted' => $shortlisted, 'ai_scored' => $aiScored];
     }
 
+    /**
+     * M21 — Canonical ranking order for an opening's active applicants.
+     * Best first: ai_score DESC → vector_score DESC → created_at DESC.
+     * Applicants with a NULL score always sink below those that have one.
+     */
+    public function rankedQuery(int $openingId)
+    {
+        return Applicant::with(['jobOpening', 'hiredUser'])
+            ->where('job_opening_id', $openingId)
+            ->active()
+            ->orderByRaw('ai_score IS NULL, ai_score DESC')
+            ->orderByRaw('vector_score IS NULL, vector_score DESC')
+            ->orderByDesc('created_at');
+    }
+
+    /**
+     * M21 — Ordered applicants for the ranking view.
+     * $orderBy controls DISPLAY order (ai_score|vector_score|created_at|name);
+     * the # rank column is always the canonical score rank (see rankMap()).
+     *
+     * @return \Illuminate\Support\Collection<int, Applicant>
+     */
+    public function rankedApplicants(int $openingId, string $orderBy = 'ai_score')
+    {
+        $query = Applicant::with(['jobOpening', 'hiredUser'])
+            ->where('job_opening_id', $openingId)
+            ->active();
+
+        switch ($orderBy) {
+            case 'vector_score':
+                $query->orderByRaw('vector_score IS NULL, vector_score DESC')
+                    ->orderByDesc('created_at');
+                break;
+            case 'created_at':
+                $query->orderByDesc('created_at');
+                break;
+            case 'name':
+                $query->orderBy('name');
+                break;
+            case 'ai_score':
+            default:
+                $query->orderByRaw('ai_score IS NULL, ai_score DESC')
+                    ->orderByRaw('vector_score IS NULL, vector_score DESC')
+                    ->orderByDesc('created_at');
+                break;
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * M21 — Map of applicant_id => canonical rank position (1..N) for an
+     * opening, computed by score order regardless of display sort. So "#1"
+     * always means the strongest candidate.
+     *
+     * @return array<int, int>
+     */
+    public function rankMap(int $openingId): array
+    {
+        $map = [];
+        $pos = 0;
+        foreach ($this->rankedQuery($openingId)->get(['id']) as $app) {
+            $map[$app->id] = ++$pos;
+        }
+
+        return $map;
+    }
+
+    /**
+     * M21 — Summary stats for the ranking view header.
+     *
+     * @return array{total:int, ai_scored:int, vector_only:int, unscored:int, top_score:?float}
+     */
+    public function rankingStats(int $openingId): array
+    {
+        $apps = Applicant::where('job_opening_id', $openingId)->active()
+            ->get(['ai_score', 'vector_score']);
+
+        $aiScored = $apps->whereNotNull('ai_score')->count();
+        $vectorOnly = $apps->whereNull('ai_score')->whereNotNull('vector_score')->count();
+        $unscored = $apps->whereNull('ai_score')->whereNull('vector_score')->count();
+        $topScore = $apps->whereNotNull('ai_score')->max('ai_score');
+
+        return [
+            'total'       => $apps->count(),
+            'ai_scored'   => $aiScored,
+            'vector_only' => $vectorOnly,
+            'unscored'    => $unscored,
+            'top_score'   => $topScore !== null ? (float) $topScore : null,
+        ];
+    }
+
     /** Build a single text blob describing what the opening wants. */
     private function openingCriteriaText(JobOpening $opening): string
     {

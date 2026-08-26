@@ -30,6 +30,7 @@ return [
     'approval'           => 'Approval',
     'recruitment'        => 'Recruitment',
     'recruitment_pipeline' => 'Pipeline Board',
+    'recruitment_ranking' => 'Candidate Ranking',
     'recruitment_openings'  => 'Job Openings',
     'recruitment_applicants' => 'Applicants',
     'recruitment_interviews' => 'Interview Schedule',

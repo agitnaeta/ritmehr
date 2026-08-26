@@ -83,7 +83,13 @@
                                         <input type="checkbox" class="form-check-input bulk-check mt-0"
                                                data-id="{{ $applicant->id }}" title="Pilih">
                                     @endif
-                                    <div class="fw-bold small">{{ $applicant->name }}</div>
+                                    <div class="fw-bold small">
+                                        @if(!empty($rankMap[$applicant->id]))
+                                            @php($rk = $rankMap[$applicant->id])
+                                            <span class="badge {{ $rk <= 3 ? 'bg-warning text-dark' : 'bg-light text-dark' }} me-1" title="Peringkat {{ $rk }}">#{{ $rk }}</span>
+                                        @endif
+                                        {{ $applicant->name }}
+                                    </div>
                                 </div>
                                 <button class="btn btn-sm btn-link p-0 btn-detail" data-id="{{ $applicant->id }}"
                                         title="Lihat detail" style="line-height:1;">
@@ -148,7 +154,7 @@
                     <span class="text-muted small" id="drawer-ai-model"></span>
                 </div>
                 <div id="drawer-ai-summary" class="small text-muted mb-2"></div>
-                <ul class="list-group list-group-flush small" id="drawer-ai-criteria"></ul>
+                <div id="drawer-ai-criteria"></div>
             </div>
 
             {{-- CV preview --}}
@@ -296,14 +302,28 @@
                 var critWrap = document.getElementById('drawer-ai-criteria');
                 critWrap.innerHTML = '';
                 var criteria = (d.ai_reasoning && d.ai_reasoning.criteria) || [];
+                var critTier = function (s) {
+                    if (s == null) return { cls: 'text-secondary', hex: '#adb5bd' };
+                    if (s >= 80) return { cls: 'text-success', hex: '#198754' };
+                    if (s >= 60) return { cls: 'text-warning', hex: '#fd7e14' };
+                    return { cls: 'text-danger', hex: '#dc3545' };
+                };
                 criteria.forEach(function (c) {
-                    var li = document.createElement('li');
-                    li.className = 'list-group-item px-0';
-                    li.innerHTML = '<strong>' + esc(c.name) + '</strong>' +
-                        (c.score != null ? ' <span class="badge bg-secondary">' + esc(c.score) + '</span>' : '') +
-                        (c.reason ? '<div class="text-muted">' + esc(c.reason) + '</div>' : '') +
-                        (c.evidence ? '<div class="text-muted fst-italic">' + esc(c.evidence) + '</div>' : '');
-                    critWrap.appendChild(li);
+                    var t = critTier(c.score);
+                    var pct = (c.score != null ? Math.max(0, Math.min(100, c.score)) : 0);
+                    var box = document.createElement('div');
+                    box.className = 'border rounded p-2 mb-2';
+                    box.innerHTML =
+                        '<div class="d-flex justify-content-between align-items-center mb-1">' +
+                            '<span class="fw-semibold small">' + esc(c.name) + '</span>' +
+                            (c.score != null ? '<span class="fw-bold small ' + t.cls + '">' + esc(c.score) + '</span>' : '') +
+                        '</div>' +
+                        '<div style="height:6px;border-radius:4px;background:#eef1f5;overflow:hidden;margin-bottom:6px;">' +
+                            '<div style="height:100%;border-radius:4px;width:' + pct + '%;background:' + t.hex + ';"></div>' +
+                        '</div>' +
+                        (c.reason ? '<div class="small text-body mb-1">' + esc(c.reason) + '</div>' : '') +
+                        (c.evidence ? '<div class="small text-muted" style="background:#fafbfc;border-radius:6px;padding:5px 8px;"><span class="fw-semibold">Bukti:</span> ' + esc(c.evidence) + '</div>' : '');
+                    critWrap.appendChild(box);
                 });
 
                 // CV preview

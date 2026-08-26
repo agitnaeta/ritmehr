@@ -30,6 +30,7 @@ return [
     'approval'           => 'Persetujuan',
     'recruitment'        => 'Rekrutmen',
     'recruitment_pipeline' => 'Papan Pipeline',
+    'recruitment_ranking' => 'Peringkat Kandidat',
     'recruitment_openings'  => 'Lowongan',
     'recruitment_applicants' => 'Pelamar',
     'recruitment_interviews' => 'Jadwal Wawancara',

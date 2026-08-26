@@ -183,6 +183,7 @@
 @if($me?->can('recruitment.view'))
 <x-backpack::menu-dropdown :title="__('menu.recruitment')" icon="la la-user-plus">
     <x-backpack::menu-dropdown-item :title="__('menu.recruitment_pipeline')" icon="la la-columns" :link="backpack_url('recruitment/pipeline')" />
+    <x-backpack::menu-dropdown-item :title="__('menu.recruitment_ranking')" icon="la la-trophy" :link="backpack_url('recruitment/ranking')" />
     <x-backpack::menu-dropdown-item :title="__('menu.recruitment_openings')" icon="la la-briefcase" :link="backpack_url('job-opening')" />
     <x-backpack::menu-dropdown-item :title="__('menu.recruitment_applicants')" icon="la la-user-friends" :link="backpack_url('applicant')" />
     <x-backpack::menu-dropdown-item :title="__('menu.recruitment_interviews')" icon="la la-calendar" :link="backpack_url('recruitment/calendar')" />

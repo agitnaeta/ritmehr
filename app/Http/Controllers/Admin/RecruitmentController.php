@@ -44,15 +44,23 @@ class RecruitmentController extends Controller
 
         $openingId = $request->input('job_opening_id') ?: null;
 
-        // Eager-load to keep the board free of N+1 (each card shows opening +
-        // whether a user was provisioned).
+        // M21 — order by score so the board mirrors the ranking view.
+        // Best first: ai_score → vector_score → date; NULLs sink to the bottom.
         $query = Applicant::with(['jobOpening', 'hiredUser'])
             ->active()
-            ->latest();
+            ->orderByRaw('ai_score IS NULL, ai_score DESC')
+            ->orderByRaw('vector_score IS NULL, vector_score DESC')
+            ->orderByDesc('created_at');
 
         if ($openingId) {
             $query->where('job_opening_id', (int) $openingId);
         }
+
+        // M21 — canonical score rank per opening (so cards can show #N). Only
+        // meaningful when scoped to one opening; global view shows no numbers.
+        $rankMap = $openingId
+            ? app(\App\Services\Matching\MatchingService::class)->rankMap((int) $openingId)
+            : [];
 
         $byStage = [];
         foreach (Applicant::PIPELINE as $stage) {
@@ -66,8 +74,64 @@ class RecruitmentController extends Controller
             'byStage'   => $byStage,
             'openings'  => JobOpening::orderBy('title')->get(),
             'openingId' => $openingId,
+            'rankMap'   => $rankMap,
             'canEdit'   => backpack_user()->can('recruitment.edit'),
             'interviewers' => \App\Models\User::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    /**
+     * M21 — Ranking view: applicants of ONE opening listed by score, rank 1..N.
+     * The # column is the canonical score rank; $orderBy only controls display.
+     */
+    public function ranking(Request $request)
+    {
+        $this->guardView();
+
+        $matcher = app(\App\Services\Matching\MatchingService::class);
+
+        $openings = JobOpening::orderBy('title')->get();
+        // Default to the first opening that actually has applicants, else the first.
+        $openingId = $request->input('job_opening_id') ?: null;
+        if (! $openingId && $openings->isNotEmpty()) {
+            $withApplicants = Applicant::active()
+                ->select('job_opening_id')
+                ->groupBy('job_opening_id')
+                ->pluck('job_opening_id');
+            $openingId = $openings->firstWhere(fn ($o) => $withApplicants->contains($o->id))?->id
+                ?? $openings->first()->id;
+        }
+        $openingId = $openingId ? (int) $openingId : null;
+
+        $allowedSorts = ['ai_score', 'vector_score', 'created_at', 'name'];
+        $orderBy = in_array($request->input('order_by'), $allowedSorts, true)
+            ? $request->input('order_by')
+            : 'ai_score';
+
+        $applicants = collect();
+        $rankMap = [];
+        $stats = ['total' => 0, 'ai_scored' => 0, 'vector_only' => 0, 'unscored' => 0, 'top_score' => null];
+        $applicantCounts = Applicant::active()
+            ->selectRaw('job_opening_id, COUNT(*) as c')
+            ->groupBy('job_opening_id')
+            ->pluck('c', 'job_opening_id');
+
+        if ($openingId) {
+            $applicants = $matcher->rankedApplicants($openingId, $orderBy);
+            $rankMap = $matcher->rankMap($openingId);
+            $stats = $matcher->rankingStats($openingId);
+        }
+
+        return view('admin.recruitment.ranking', [
+            'openings'        => $openings,
+            'openingId'       => $openingId,
+            'orderBy'         => $orderBy,
+            'applicants'      => $applicants,
+            'rankMap'         => $rankMap,
+            'stats'           => $stats,
+            'applicantCounts' => $applicantCounts,
+            'canEdit'         => backpack_user()->can('recruitment.edit'),
+            'interviewers'    => \App\Models\User::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -240,6 +304,16 @@ class RecruitmentController extends Controller
             'stageLogs.actor',
         ])->findOrFail($id);
 
+        // M21 — canonical score rank within the opening (so the drawer can show #N).
+        $rank = null;
+        $rankTotal = null;
+        if ($applicant->job_opening_id) {
+            $map = app(\App\Services\Matching\MatchingService::class)
+                ->rankMap($applicant->job_opening_id);
+            $rank = $map[$applicant->id] ?? null;
+            $rankTotal = count($map) ?: null;
+        }
+
         return response()->json([
             'id'          => $applicant->id,
             'name'        => $applicant->name,
@@ -256,6 +330,8 @@ class RecruitmentController extends Controller
             'vector_score' => $applicant->vector_score,
             'ai_reasoning' => $applicant->ai_reasoning,
             'ai_model'    => $applicant->ai_model,
+            'rank'        => $rank,
+            'rank_total'  => $rankTotal,
             'hired'       => (bool) $applicant->hired_user_id,
             'interviews'  => $applicant->interviews->map(fn ($iv) => [
                 'id'           => $iv->id,

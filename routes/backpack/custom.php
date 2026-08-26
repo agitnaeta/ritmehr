@@ -209,6 +209,7 @@ Route::group([
         Route::crud('applicant', 'ApplicantCrudController');
         Route::crud('interview', 'InterviewCrudController');
         Route::get('recruitment/pipeline', [RecruitmentController::class, 'pipeline'])->name('recruitment.pipeline');
+        Route::get('recruitment/ranking', [RecruitmentController::class, 'ranking'])->name('recruitment.ranking');
         Route::get('recruitment/calendar', [RecruitmentController::class, 'calendar'])->name('recruitment.calendar');
         Route::post('recruitment/applicant/{id}/stage', [RecruitmentController::class, 'moveStage'])
              ->whereNumber('id')->name('recruitment.move_stage');
