@@ -20,6 +20,12 @@ class SalaryRecap extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** M20 — frozen salary breakdown lines for this payslip. */
+    public function allowanceLines()
+    {
+        return $this->hasMany(SalaryRecapAllowance::class, 'salary_recap_id');
+    }
+
     public function getPaidStatusAttribute(){
         $paid = $this->paid ? "Ya|$this->method" :"Belum";
         return $paid;

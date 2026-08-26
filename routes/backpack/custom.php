@@ -34,6 +34,8 @@ Route::group([
     Route::crud('user', 'UserCrudController');
     Route::crud('schedule', 'ScheduleCrudController');
     Route::crud('salary', 'SalaryCrudController');
+    Route::crud('salary-allowance-type', 'SalaryAllowanceTypeCrudController');
+    Route::crud('employee-salary-allowance', 'EmployeeSalaryAllowanceCrudController');
     Route::crud('loan', 'LoanCrudController');
     Route::crud('loan-payment', 'LoanPaymentCrudController');
     Route::crud('presence', 'PresenceCrudController');

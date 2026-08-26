@@ -82,6 +82,8 @@
 <x-backpack::menu-dropdown :title="__('menu.payroll')" icon="la la-money-check-alt">
     @if($me->can('salary.view'))
         <x-backpack::menu-dropdown-item title="Gaji" icon="la la-money-check" :link="backpack_url('salary')" />
+        <x-backpack::menu-dropdown-item title="Jenis Tunjangan" icon="la la-tags" :link="backpack_url('salary-allowance-type')" />
+        <x-backpack::menu-dropdown-item title="Tunjangan Karyawan" icon="la la-hand-holding-usd" :link="backpack_url('employee-salary-allowance')" />
     @endif
     @if($me->can('salary_recap.view'))
         <x-backpack::menu-dropdown-item title="Rekap Gaji" icon="la la-money-check" :link="backpack_url('salary-recap')" />

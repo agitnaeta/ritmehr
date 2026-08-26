@@ -272,7 +272,7 @@ class SalaryRecapCrudController extends CrudController
         $sr =  $request->get('salary_recap');
         $recaps = SalaryRecap::with(['user'=>function($u){
             $u->with('salary');
-        }])
+        }, 'allowanceLines'])
             ->where(function ($q) use ($sr,$ui){
                 if($sr != null){
                     $q->where('recap_month', '=', $sr);

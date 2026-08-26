@@ -7,6 +7,8 @@ use App\Models\NationalHoliday;
 use App\Models\Presence;
 use App\Models\Salary;
 use App\Models\SalaryRecap;
+use App\Models\SalaryRecapAllowance;
+use App\Models\EmployeeSalaryAllowance;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Factories\TranslateFactory;
@@ -98,6 +100,11 @@ class SalaryService
 
             $salaryRecap->saveQuietly();
 
+            // M20 — snapshot the salary breakdown (basic + each allowance) onto
+            // the recap so the payslip shows the detail and stays frozen even if
+            // the master definitions change later.
+            $this->snapshotBreakdown($salaryRecap, $user);
+
             // M05: hitung PPh21/BPJS/net_income otomatis tiap rekap dihitung
             // ulang, seharga gross yang baru saja final. applyToRecap menulis
             // dengan saveQuietly sehingga tidak memicu observer lagi.
@@ -109,6 +116,39 @@ class SalaryService
                 $this->transactionService->updateRecordSalaryToACC($salaryRecap);
             }
         });
+    }
+
+    /**
+     * M20 — Freeze the salary breakdown onto the recap: basic salary plus a
+     * snapshot row per active allowance (label copied so it never changes
+     * retroactively). Idempotent: clears prior snapshot rows first.
+     */
+    private function snapshotBreakdown(SalaryRecap $salaryRecap, User $user): void
+    {
+        $salary = $user->salary;
+        if (! $salary) {
+            return;
+        }
+
+        // basic_salary snapshot on the recap (salary_amount total unchanged).
+        $salaryRecap->basic_salary = (int) $salary->basic_salary;
+        $salaryRecap->saveQuietly();
+
+        // Rebuild the per-allowance snapshot rows.
+        SalaryRecapAllowance::where('salary_recap_id', $salaryRecap->id)->delete();
+
+        $allowances = EmployeeSalaryAllowance::with('type')
+            ->where('user_id', $user->id)
+            ->get()
+            ->filter(fn ($a) => $a->type && $a->type->is_active);
+
+        foreach ($allowances as $a) {
+            SalaryRecapAllowance::create([
+                'salary_recap_id' => $salaryRecap->id,
+                'label'           => $a->type->label,
+                'amount'          => (int) $a->amount,
+            ]);
+        }
     }
 
     /**

@@ -31,7 +31,8 @@ class SalaryRequest extends FormRequest
                 'string',
                 'unique:salaries,user_id'
             ],
-            'amount' => 'required|integer',
+            'basic_salary' => 'required|integer|min:0',
+            'amount' => 'nullable|integer',
             'overtime_amount' => 'required|integer',
             'overtime_type' => 'required|in:flat,hour',
             'fine_type' => 'required',
@@ -45,7 +46,8 @@ class SalaryRequest extends FormRequest
                 'string',
                 Rule::unique('salaries','user_id')->ignore($userId)
             ],
-            'amount' => 'required|integer',
+            'basic_salary' => 'required|integer|min:0',
+            'amount' => 'nullable|integer',
             'overtime_amount' => 'required|integer',
             'overtime_type' => 'required|in:flat,hour',
             'fine_type' => 'required',

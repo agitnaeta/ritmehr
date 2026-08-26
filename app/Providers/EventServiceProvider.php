@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Presence;
+use App\Models\EmployeeSalaryAllowance;
 use App\Models\SalaryRecap;
 use App\Models\User;
+use App\Observers\EmployeeSalaryAllowanceObserver;
 use App\Observers\PresenceObserver;
 use App\Observers\SalaryRecapObserver;
 use App\Observers\UserObserver;
@@ -33,6 +35,7 @@ class EventServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Presence::observe(PresenceObserver::class);
         SalaryRecap::observe(SalaryRecapObserver::class);
+        EmployeeSalaryAllowance::observe(EmployeeSalaryAllowanceObserver::class);
     }
 
     /**

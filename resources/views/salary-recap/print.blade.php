@@ -95,10 +95,27 @@
                     Gaji & Tambahan
                 </td>
             </tr>
+            @if($row->allowanceLines && $row->allowanceLines->count())
+            <tr>
+                <td>Gaji Pokok</td>
+                <td>@rupiah($row->basic_salary)</td>
+            </tr>
+            @foreach($row->allowanceLines as $line)
+            <tr>
+                <td>{{ $line->label }}</td>
+                <td>@rupiah($line->amount)</td>
+            </tr>
+            @endforeach
+            <tr>
+                <td><strong>Jumlah Gaji</strong></td>
+                <td><strong>@rupiah($row->salary_amount)</strong></td>
+            </tr>
+            @else
             <tr>
                 <td>Jumlah Gaji</td>
                 <td>@rupiah($row->salary_amount)</td>
             </tr>
+            @endif
             <tr>
                 <td>Lembur</td>
                 <td>@rupiah($row->overtime_amount)</td>

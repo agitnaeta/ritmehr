@@ -124,8 +124,9 @@ class SalaryCrudController extends CrudController
 
         $cur = app(\App\Services\CurrencyService::class)->symbol();
         $fields = [
+            'basic_salary' => ['Gaji Pokok', $cur],
             'unpaid_leave_deduction' => ['Besaran Potongan Absen', $cur],
-            'amount' => ['Besaran Gaji', $cur],
+            'amount' => ['Total Gaji (otomatis: pokok + tunjangan)', $cur],
             'overtime_amount' => ['Besaran 1x Lembur', $cur],
             'fine_per_minute' => ['Denda Per-Menit', $cur],
             'fine' => ['Besaran Denda Telat - Flat', $cur],
@@ -137,6 +138,14 @@ class SalaryCrudController extends CrudController
             $this->crud->field($fieldName)
                 ->label($label)
                 ->prefix($prefix);
+        }
+
+        // M20 — amount is auto-maintained (basic + Σ allowances); make it read-only
+        // in the form so HR edits basic salary + allowances, not the total directly.
+        if ($this->crud->getCurrentOperation() !== 'show') {
+            $this->crud->field('amount')
+                ->attributes(['readonly' => 'readonly'])
+                ->hint('Terisi otomatis dari Gaji Pokok + total Tunjangan karyawan.');
         }
 
 
