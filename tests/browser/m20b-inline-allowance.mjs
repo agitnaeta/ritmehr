@@ -41,15 +41,24 @@ const hasField = await p.evaluate((n) => !!document.querySelector(`[name="${n}"]
 hasField ? pass('TC-03', 'field tunjangan muncul di form gaji')
          : fail('TC-03', 'field tunjangan tidak muncul');
 
-// 3. Fill the allowance + save
+// 3. Live total calc in UI BEFORE saving (Total = basic + allowance, read-only)
 await p.fill(`[name="${fieldName}"]`, '600000');
+await p.dispatchEvent(`[name="${fieldName}"]`, 'input');
+await p.waitForTimeout(300);
+const liveTotal = await p.evaluate(() => document.querySelector('[name="amount"]').value);
+const amtReadonly = await p.evaluate(() => document.querySelector('[name="amount"]').hasAttribute('readonly'));
+(parseInt(liveTotal) === parseInt(basic) + 600000 && amtReadonly)
+  ? pass('TC-LIVE', `total terkalkulasi live di UI (${liveTotal}) & terkunci`)
+  : fail('TC-LIVE', `live calc gagal: total=${liveTotal} readonly=${amtReadonly}`);
+
+// 4. Save
 await Promise.all([p.waitForNavigation().catch(()=>{}), p.click('button[type="submit"]')]);
 await p.waitForTimeout(1500);
 const saved = h('has_allowance', uid, typeId);
 (parseInt(saved) === 600000) ? pass('TC-04', `tunjangan tersimpan via form (${saved})`)
   : fail('TC-04', `tunjangan tak tersimpan: ${saved}`);
 
-// 4. Total auto-updated
+// 5. Total persisted correctly
 const total = h('amount', uid);
 (parseInt(total) === parseInt(basic) + 600000)
   ? pass('TC-05', `total auto-update ${basic}+600rb=${total}`)

@@ -246,10 +246,47 @@ class SalaryCrudController extends CrudController
                 'prefix'     => $cur,
                 'value'      => $existing[$t->id] ?? null,
                 'wrapper'    => ['class' => 'form-group col-md-6'],
-                'attributes' => ['min' => 0, 'step' => 1000, 'placeholder' => '0'],
+                'attributes' => ['min' => 0, 'step' => 1000, 'placeholder' => '0', 'class' => 'form-control js-allowance'],
             ])->afterField($prev);
             $prev = $name;
         }
+
+        // Live total calculation in the UI (Total = Gaji Pokok + Σ Tunjangan),
+        // so HR sees the total update as they type — not only after saving.
+        $this->crud->addField([
+            'name'  => 'allowance_livecalc',
+            'type'  => 'custom_html',
+            'value' => <<<'HTML'
+<script>
+(function () {
+    function parseNum(el) {
+        if (!el) return 0;
+        var v = parseInt(String(el.value).replace(/[^0-9]/g, ''), 10);
+        return isNaN(v) ? 0 : v;
+    }
+    function recalc() {
+        var basic = parseNum(document.querySelector('[name="basic_salary"]'));
+        var total = basic;
+        document.querySelectorAll('.js-allowance').forEach(function (el) { total += parseNum(el); });
+        var amt = document.querySelector('[name="amount"]');
+        if (amt) amt.value = total;
+    }
+    function bind() {
+        var basic = document.querySelector('[name="basic_salary"]');
+        if (!basic) { setTimeout(bind, 200); return; }
+        basic.addEventListener('input', recalc);
+        document.querySelectorAll('.js-allowance').forEach(function (el) {
+            el.addEventListener('input', recalc);
+        });
+        recalc();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind);
+    } else { bind(); }
+})();
+</script>
+HTML,
+        ])->afterField('amount');
     }
 
     public function autoSetupShowOperation()
