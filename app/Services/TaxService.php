@@ -7,6 +7,7 @@ use App\Models\EmployeeTaxProfile;
 use App\Models\Pph21Bracket;
 use App\Models\PtkpRate;
 use App\Models\SalaryRecap;
+use App\Models\TerRate;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -26,6 +27,21 @@ class TaxService
 
     /** Surcharge applied to employees without an NPWP. */
     private const NO_NPWP_SURCHARGE = 0.20;
+
+    /**
+     * M19 — Mapping of PTKP status → TER category (PMK 168/2023).
+     *   A = TK/0, TK/1, K/0
+     *   B = TK/2, TK/3, K/1, K/2
+     *   C = K/3
+     * K/I/n (combined spouse income) is a year-end SPT matter, not monthly
+     * withholding by one employer; we withhold monthly following the K/n row.
+     */
+    public const TER_CATEGORY = [
+        'TK/0' => 'A', 'TK/1' => 'A', 'K/0' => 'A',
+        'TK/2' => 'B', 'TK/3' => 'B', 'K/1' => 'B', 'K/2' => 'B',
+        'K/3'  => 'C',
+        'K/I/0' => 'A', 'K/I/1' => 'B', 'K/I/2' => 'B', 'K/I/3' => 'C',
+    ];
 
     // ── BPJS ───────────────────────────────────────────────
 
@@ -200,6 +216,111 @@ class TaxService
         return (int) ($fallback->amount ?? 0);
     }
 
+    // ── PPh 21 TER (M19, since 2024 / PP 58/2023) ──────────
+
+    /**
+     * TER category (A/B/C) for a PTKP status. Falls back to A with a warning
+     * for unknown statuses rather than throwing mid-payroll.
+     */
+    public function terCategory(string $status): string
+    {
+        if (isset(self::TER_CATEGORY[$status])) {
+            return self::TER_CATEGORY[$status];
+        }
+
+        \Illuminate\Support\Facades\Log::channel('daily_log')
+            ->warning("[TER] unknown tax_status '{$status}', defaulting to category A.");
+
+        return 'A';
+    }
+
+    /**
+     * Monthly PPh 21 for Masa Pajak January–November using the TER method:
+     * effective rate × gross, no monthly deduction of biaya jabatan/PTKP (those
+     * are baked into the effective rate). The no-NPWP surcharge still applies.
+     *
+     * Returns 0 (and logs) when no TER table is configured for the year, rather
+     * than inventing a rate.
+     *
+     * @param  int  $grossMonthly  gross taxable income for the month
+     */
+    public function calculatePPh21TER(User $user, int $grossMonthly, ?int $year = null): int
+    {
+        $year ??= (int) now()->year;
+
+        if ($grossMonthly <= 0) {
+            return 0;
+        }
+
+        $category = $this->terCategory($this->profileFor($user)->tax_status);
+        $rate = TerRate::rateFor($year, $category, $grossMonthly);
+
+        if ($rate === null) {
+            \Illuminate\Support\Facades\Log::channel('daily_log')
+                ->warning("[TER] no rate table for year {$year} category {$category}; PPh21 monthly = 0.");
+            return 0;
+        }
+
+        $tax = (int) round($grossMonthly * $rate / 100);
+
+        if (! $this->profileFor($user)->hasNpwp()) {
+            $tax = (int) round($tax * (1 + self::NO_NPWP_SURCHARGE));
+        }
+
+        return $tax;
+    }
+
+    /**
+     * Masa Pajak December (or the employee's final month): reconcile the whole
+     * year with the progressive Pasal 17 method against the actual accumulated
+     * gross, then subtract what was already withheld Jan–Nov. May be negative
+     * (over-withheld → refunded on the December slip).
+     *
+     * @param  int  $annualGross      actual accumulated gross Jan–Dec
+     * @param  int  $withheldToDate   sum of PPh 21 already withheld Jan–Nov
+     */
+    public function calculateDecemberCorrection(
+        User $user,
+        int $annualGross,
+        int $withheldToDate,
+        ?int $year = null
+    ): int {
+        $year ??= (int) now()->year;
+
+        if ($annualGross <= 0) {
+            return -$withheldToDate; // refund anything already taken
+        }
+
+        // Biaya jabatan — 5% of gross, capped.
+        $occupationalCost = min(
+            (int) round($annualGross * self::OCCUPATIONAL_COST_RATE),
+            self::OCCUPATIONAL_COST_ANNUAL_CAP
+        );
+
+        // Employee-borne JHT + JP for the year are deductible; health is not.
+        // Derive from the monthly base for a stable annual figure.
+        $monthlyBase = (int) ($user->salary->amount ?? 0);
+        $bpjs = $this->calculateBPJS($user, $monthlyBase, $year);
+        $deductibleBpjs = ($bpjs['jht_employee'] + $bpjs['jp_employee']) * 12;
+
+        $netAnnual = $annualGross - $occupationalCost - $deductibleBpjs;
+        $ptkp = $this->getApplicablePTKP($user, $year);
+        $taxable = $netAnnual - $ptkp;
+
+        if ($taxable <= 0) {
+            return -$withheldToDate;
+        }
+
+        $taxable = (int) (floor($taxable / 1000) * 1000);
+        $annualTax = $this->applyBrackets($taxable, $year);
+
+        if (! $this->profileFor($user)->hasNpwp()) {
+            $annualTax = (int) round($annualTax * (1 + self::NO_NPWP_SURCHARGE));
+        }
+
+        return $annualTax - $withheldToDate;
+    }
+
     // ── THR ────────────────────────────────────────────────
 
     /**
@@ -245,6 +366,7 @@ class TaxService
         }
 
         $year = $this->recapYear($recap);
+        $month = $this->recapMonth($recap);
 
         $gross = (int) $recap->salary_amount
                + (int) $recap->overtime_amount
@@ -253,7 +375,16 @@ class TaxService
                + (int) $recap->bonus;
 
         $bpjs = $this->calculateBPJS($user, (int) $recap->salary_amount, $year);
-        $pph21 = $this->calculatePPh21($user, $gross, $year);
+
+        // M19 — PPh 21 uses TER for Jan–Nov and a progressive year-end
+        // reconciliation for December (Masa Pajak terakhir).
+        if ($month === 12) {
+            $annualGross = $this->accumulatedGross($user, $year) + $gross;
+            $withheld = $this->accumulatedPph21($user, $year);
+            $pph21 = $this->calculateDecemberCorrection($user, $annualGross, $withheld, $year);
+        } else {
+            $pph21 = $this->calculatePPh21TER($user, $gross, $year);
+        }
 
         $otherDeductions = (int) $recap->loan_cut + (int) $recap->late_cut + (int) $recap->abstain_cut;
         $net = $gross - $otherDeductions - $bpjs['employee_total'] - $pph21;
@@ -382,6 +513,34 @@ class TaxService
         } catch (\Throwable $e) {
             return (int) now()->year;
         }
+    }
+
+    /** Month number (1–12) parsed from the recap's m-Y label. */
+    private function recapMonth(SalaryRecap $recap): int
+    {
+        try {
+            return (int) Carbon::createFromFormat('m-Y', $recap->recap_month)->month;
+        } catch (\Throwable $e) {
+            return (int) now()->month;
+        }
+    }
+
+    /** Sum of gross income across a user's recaps for a year (excludes December). */
+    private function accumulatedGross(User $user, int $year): int
+    {
+        return (int) SalaryRecap::where('user_id', $user->id)
+            ->where('recap_month', 'like', '%-' . $year)
+            ->where('recap_month', 'not like', '12-%')
+            ->sum('gross_income');
+    }
+
+    /** Sum of PPh 21 already withheld across a user's recaps for a year (excludes December). */
+    private function accumulatedPph21(User $user, int $year): int
+    {
+        return (int) SalaryRecap::where('user_id', $user->id)
+            ->where('recap_month', 'like', '%-' . $year)
+            ->where('recap_month', 'not like', '12-%')
+            ->sum('pph21');
     }
 
     private function pct(int $base, float $rate): int

@@ -155,6 +155,7 @@
     <x-backpack::menu-dropdown-item title="Profil Pajak Karyawan" icon="la la-user-tag" :link="backpack_url('tax-profile')" />
     <x-backpack::menu-dropdown-item title="Tarif PTKP" icon="la la-percent" :link="backpack_url('ptkp-rate')" />
     <x-backpack::menu-dropdown-item title="Lapisan PPh 21" icon="la la-layer-group" :link="backpack_url('pph21-bracket')" />
+    <x-backpack::menu-dropdown-item title="Tarif TER (PPh 21)" icon="la la-percentage" :link="backpack_url('ter-rate')" />
     <x-backpack::menu-dropdown-item title="Tarif BPJS" icon="la la-sliders-h" :link="backpack_url('bpjs-rate')" />
 </x-backpack::menu-dropdown>
 @endif

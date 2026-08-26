@@ -32,6 +32,7 @@ class SalaryTaxAutoCalcTest extends TestCase
         parent::setUp();
 
         $this->seed(TaxRateSeeder::class);
+        $this->seed(\Database\Seeders\TerRateSeeder::class);
         $this->salary = app(SalaryService::class);
 
         $schedule = Schedule::create([

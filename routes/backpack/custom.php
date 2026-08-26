@@ -192,6 +192,7 @@ Route::group([
         Route::crud('tax-profile', 'EmployeeTaxProfileCrudController');
         Route::crud('ptkp-rate', 'PtkpRateCrudController');
         Route::crud('pph21-bracket', 'Pph21BracketCrudController');
+        Route::crud('ter-rate', 'TerRateCrudController');
         Route::crud('bpjs-rate', 'BpjsRateCrudController');
         Route::group(['prefix' => 'tax-report'], function () {
             Route::get('/annual', [TaxReportController::class, 'annual'])->name('tax-report.annual');

@@ -18,6 +18,7 @@ class HrisSeeder extends Seeder
             LeaveTypeSeeder::class,
             DocumentTypeSeeder::class,
             TaxRateSeeder::class,
+            TerRateSeeder::class,
             ChartOfAccountsSeeder::class,
         ]);
 
