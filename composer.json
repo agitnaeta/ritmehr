@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.1",
         "backpack/basset": "^1.2",
-        "backpack/crud": "^6.5",
+        "backpack/crud": "^6.8",
         "backpack/theme-tabler": "^1.2",
         "barryvdh/laravel-dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
