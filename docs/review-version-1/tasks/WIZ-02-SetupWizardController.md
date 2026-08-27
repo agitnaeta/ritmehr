@@ -1,6 +1,6 @@
 # WIZ-02 — SetupWizardController (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · flow company→...→dashboard terverifikasi via UI asli
 **File:** `app/Http/Controllers/Admin/SetupWizardController.php` (BARU)
 **Referensi desain:** [`../mockup/setup-wizard.html`](../mockup/setup-wizard.html)
 **Bagian dari:** Setup Wizard (RV1-001) · **Depends:** WIZ-03 (service), WIZ-04 (views)

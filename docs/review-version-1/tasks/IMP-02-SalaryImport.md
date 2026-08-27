@@ -1,6 +1,6 @@
 # IMP-02 — SalaryImport (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · 5/5 test ExcelImportTest hijau
 **File:** `app/Imports/SalaryImport.php` (BARU)
 **Referensi desain:** [`../mockup/import.html`](../mockup/import.html) (tab "Import Gaji") · **Pola:** `app/Imports/PresenceImport.php`
 **Bagian dari:** Import Gaji (RV1-002, Lensa 4)

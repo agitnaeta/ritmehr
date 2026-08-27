@@ -1,6 +1,6 @@
 # IMP-04 — Import Operation di SalaryCrudController
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · end-to-end: basic 7.5jt→8.25jt, amount auto-recalc, unmatched email dikumpulkan
 **File:** `app/Http/Controllers/Admin/SalaryCrudController.php` (UBAH) + `routes/backpack/custom.php` (UBAH)
 **Referensi desain:** [`../mockup/import.html`](../mockup/import.html) (tab "Import Gaji")
 **Bagian dari:** Import Gaji (RV1-002) · **Depends:** IMP-02 (SalaryImport), IMP-05 (view+template)

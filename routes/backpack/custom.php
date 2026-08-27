@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PerformanceController;
 use App\Http\Controllers\Admin\PresenceCrudController;
 use App\Http\Controllers\Admin\RecruitmentController;
 use App\Http\Controllers\Admin\SalaryRecapCrudController;
+use App\Http\Controllers\Admin\TrainingController;
 use App\Http\Controllers\Admin\TaxReportController;
 use App\Http\Controllers\Admin\ScheduleCrudController;
 use App\Http\Controllers\Admin\UserCrudController;
@@ -32,8 +33,22 @@ Route::group([
     'namespace' => 'App\Http\Controllers\Admin',
 ], function () { // custom admin routes
     Route::crud('user', 'UserCrudController');
+
+    // WIZ-01 — Setup Wizard onboarding
+    Route::get ('setup',        [\App\Http\Controllers\Admin\SetupWizardController::class, 'index'])->name('setup.index');
+    Route::match(['get','post'], 'setup/finish', [\App\Http\Controllers\Admin\SetupWizardController::class, 'finish'])->name('setup.finish');
+    Route::get ('setup/{step}', [\App\Http\Controllers\Admin\SetupWizardController::class, 'step'])->name('setup.step');
+    Route::post('setup/{step}', [\App\Http\Controllers\Admin\SetupWizardController::class, 'save'])->name('setup.save');
+
     Route::crud('schedule', 'ScheduleCrudController');
     Route::crud('salary', 'SalaryCrudController');
+    Route::group(['prefix'=>'salary'],function (){
+        // IMP-04 — import struktur gaji dari Excel
+        Route::get("/import",[\App\Http\Controllers\Admin\SalaryCrudController::class,'importForm'])->name('salary.import.form');
+        Route::get("/import/template",[\App\Http\Controllers\Admin\SalaryCrudController::class,'importTemplate'])->name('salary.import.template');
+        Route::post("/import/preview",[\App\Http\Controllers\Admin\SalaryCrudController::class,'importPreview'])->name('salary.import.preview');
+        Route::post("/import",[\App\Http\Controllers\Admin\SalaryCrudController::class,'importStore'])->name('salary.import.store');
+    });
     Route::crud('salary-allowance-type', 'SalaryAllowanceTypeCrudController');
     Route::crud('employee-salary-allowance', 'EmployeeSalaryAllowanceCrudController');
     Route::crud('loan', 'LoanCrudController');
@@ -45,6 +60,11 @@ Route::group([
         Route::get("/{id}/print",[UserCrudController::class,'print'])->name('user.print');
         Route::get("/print-all",[UserCrudController::class,'printAll'])->name('user.print.all');
         Route::get("/export",[UserCrudController::class,'export'])->name('user.export.all');
+        // IMP-03 — import karyawan dari Excel
+        Route::get("/import",[UserCrudController::class,'importForm'])->name('user.import.form');
+        Route::get("/import/template",[UserCrudController::class,'importTemplate'])->name('user.import.template');
+        Route::post("/import/preview",[UserCrudController::class,'importPreview'])->name('user.import.preview');
+        Route::post("/import",[UserCrudController::class,'importStore'])->name('user.import.store');
     });
     Route::group(['prefix'=>'presence'],function (){
         Route::get("/scan",[PresenceCrudController::class,'scan'])->name('presence.scan');
@@ -254,6 +274,44 @@ Route::group([
          ->whereNumber('id')->name('performance.review');
     Route::post('performance/review/{id}/self', [PerformanceController::class, 'submitSelf'])
          ->whereNumber('id')->name('performance.submit_self');
+
+    // M11 — Training & Development (mini-LMS). Admin authoring is edit-gated;
+    // the tabbed manage page carries materials + quiz + participants.
+    Route::group(['middleware' => 'permission:training.view'], function () {
+        Route::get('training', [TrainingController::class, 'index'])->name('training.index');
+        Route::get('training/create', [TrainingController::class, 'create'])->name('training.create');
+        Route::post('training', [TrainingController::class, 'store'])->name('training.store');
+        Route::get('training/{id}/manage', [TrainingController::class, 'manage'])
+             ->whereNumber('id')->name('training.manage');
+        Route::post('training/{id}', [TrainingController::class, 'update'])
+             ->whereNumber('id')->name('training.update');
+        // Materials
+        Route::post('training/{id}/material', [TrainingController::class, 'storeMaterial'])
+             ->whereNumber('id')->name('training.material.store');
+        Route::post('training/{id}/material/{materialId}/delete', [TrainingController::class, 'deleteMaterial'])
+             ->whereNumber('id')->whereNumber('materialId')->name('training.material.delete');
+        Route::post('training/{id}/material/{materialId}/move', [TrainingController::class, 'moveMaterial'])
+             ->whereNumber('id')->whereNumber('materialId')->name('training.material.move');
+        // Questions
+        Route::post('training/{id}/question', [TrainingController::class, 'storeQuestion'])
+             ->whereNumber('id')->name('training.question.store');
+        Route::post('training/{id}/question/{questionId}/delete', [TrainingController::class, 'deleteQuestion'])
+             ->whereNumber('id')->whereNumber('questionId')->name('training.question.delete');
+        // Participants
+        Route::post('training/{id}/enroll', [TrainingController::class, 'enroll'])
+             ->whereNumber('id')->name('training.enroll');
+        Route::post('training/{id}/enrollment/{enrollmentId}/remove', [TrainingController::class, 'unenroll'])
+             ->whereNumber('id')->whereNumber('enrollmentId')->name('training.unenroll');
+        Route::post('training/{id}/enrollment/{enrollmentId}/reset', [TrainingController::class, 'resetAttempt'])
+             ->whereNumber('id')->whereNumber('enrollmentId')->name('training.reset_attempt');
+        // Lifecycle
+        Route::post('training/{id}/publish', [TrainingController::class, 'publish'])
+             ->whereNumber('id')->name('training.publish');
+        Route::post('training/{id}/archive', [TrainingController::class, 'archive'])
+             ->whereNumber('id')->name('training.archive');
+        Route::post('training/{id}/restore', [TrainingController::class, 'restore'])
+             ->whereNumber('id')->name('training.restore');
+    });
 
     Route::crud('approval-flow', 'ApprovalFlowCrudController');
     Route::crud('approval-flow-step', 'ApprovalFlowStepCrudController');

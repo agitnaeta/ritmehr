@@ -1,6 +1,6 @@
 # IMP-05 — View import + template Excel (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · template xlsx ter-generate, 3 blade + 2 export
 **Referensi desain:** [`../mockup/import.html`](../mockup/import.html) · bukti: `../mockup/preview-import-upload.png`, `../mockup/preview-import-preview.png`
 **Bagian dari:** Import Excel (RV1-002, Lensa 4) · **Depends:** IMP-03, IMP-04
 

@@ -1,6 +1,6 @@
 # IMP-03 — Import Operation di UserCrudController
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · form render OK (browser), end-to-end import 2 masuk/1 skip (handler asli)
 **File:** `app/Http/Controllers/Admin/UserCrudController.php` (UBAH) + `routes/backpack/custom.php` (UBAH)
 **Referensi desain:** [`../mockup/import.html`](../mockup/import.html)
 **Bagian dari:** Import Karyawan (RV1-002) · **Depends:** IMP-01 (UserImport), IMP-05 (view+template)

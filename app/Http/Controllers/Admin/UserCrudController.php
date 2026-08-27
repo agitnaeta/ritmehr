@@ -141,6 +141,7 @@ class UserCrudController extends CrudController
         $this->crud->addButtonFromView('line','user-print','user-print','end');
         $this->crud->allowAccess("user_export");
         $this->crud->addButtonFromView('top','user_export','user_export','end');
+        $this->crud->addButtonFromView('top','user_import','user_import','end'); // IMP-03
         $this->printAllIdCard();
 
 
@@ -420,5 +421,72 @@ class UserCrudController extends CrudController
 
     public function export(){
         return Excel::download(new UserExport,'user-export.xlsx');
+    }
+
+    // ── IMP-03 — Import karyawan dari Excel ────────────────
+
+    public function importForm()
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        return view('admin.import.user', ['preview' => null, 'result' => null]);
+    }
+
+    public function importTemplate()
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        return Excel::download(new \App\Exports\UserTemplateExport, 'template-karyawan.xlsx');
+    }
+
+    public function importPreview(\Illuminate\Http\Request $request)
+    {
+        $this->crud->hasAccessOrFail('create');
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:2048']);
+
+        // Simpan file supaya bisa dipakai lagi saat konfirmasi impor.
+        $token = (string) Str::uuid();
+        $path = $request->file('file')->storeAs('imports', "user-$token.xlsx", 'local');
+
+        $preview = \App\Support\ImportPreview::build(
+            Storage::disk('local')->path($path),
+            ['email', 'nama'],                 // kolom wajib
+            ['nama', 'email', 'departemen', 'cabang'] // kolom yang ditampilkan
+        );
+        $preview['token'] = $token;
+
+        return view('admin.import.user', ['preview' => $preview, 'result' => null]);
+    }
+
+    public function importStore(\Illuminate\Http\Request $request)
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        // Dua jalur: konfirmasi dari preview (token) ATAU upload langsung (file).
+        if ($request->filled('token')) {
+            $path = Storage::disk('local')->path('imports/user-' . $request->token . '.xlsx');
+            abort_unless(is_file($path), 404, 'File impor kadaluarsa, unggah ulang.');
+        } else {
+            $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:2048']);
+            $path = $request->file('file')->getRealPath();
+        }
+
+        $import = new \App\Imports\UserImport;
+        Excel::import($import, $path);
+
+        if ($request->filled('token')) {
+            Storage::disk('local')->delete('imports/user-' . $request->token . '.xlsx');
+        }
+
+        $result = [
+            'imported' => $import->imported,
+            'skipped'  => count($import->failures()),
+            'errors'   => collect($import->failures())
+                ->map(fn ($f) => 'Baris ' . $f->row() . ' — ' . implode(', ', $f->errors()))
+                ->all(),
+        ];
+        Alert::success("{$result['imported']} karyawan berhasil diimpor.")->flash();
+
+        return view('admin.import.user', ['preview' => null, 'result' => $result]);
     }
 }

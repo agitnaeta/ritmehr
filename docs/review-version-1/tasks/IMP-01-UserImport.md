@@ -1,6 +1,6 @@
 # IMP-01 — UserImport (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · 5/5 test ExcelImportTest hijau
 **File:** `app/Imports/UserImport.php` (BARU)
 **Referensi desain:** [`../mockup/import.html`](../mockup/import.html) · **Pola:** `app/Imports/PresenceImport.php` (sudah ada)
 **Bagian dari:** Import Karyawan (RV1-002, Lensa 4)

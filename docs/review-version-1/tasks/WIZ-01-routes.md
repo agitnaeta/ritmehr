@@ -1,6 +1,6 @@
 # WIZ-01 — Route Setup Wizard
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · 4 route terdaftar; finish match get/post (fix 404)
 **File:** `routes/backpack/custom.php` (UBAH)
 **Referensi desain:** [`../mockup/setup-wizard.html`](../mockup/setup-wizard.html)
 **Bagian dari:** Setup Wizard (RV1-001) · **Depends:** WIZ-02

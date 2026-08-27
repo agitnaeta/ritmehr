@@ -1,6 +1,6 @@
 # WIZ-04 — View Setup Wizard (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · 4 step render sesuai mockup (stepper ✓, prefilled), finish→dashboard
 **Referensi desain:** [`../mockup/setup-wizard.html`](../mockup/setup-wizard.html) · bukti: `../mockup/preview-wizard-step1.png`, `../mockup/preview-wizard-step4.png`
 **Bagian dari:** Setup Wizard (menutup RV1-001, Lensa 2)
 **Depends:** WIZ-02 (controller)

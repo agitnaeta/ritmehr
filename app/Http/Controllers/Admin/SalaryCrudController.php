@@ -218,6 +218,8 @@ class SalaryCrudController extends CrudController
             $this->crud->removeColumn('fine');
         }
 
+        $this->crud->addButtonFromView('top','salary_import','salary_import','end'); // IMP-04
+
         $this->renderAllowanceFields();
     }
 
@@ -377,5 +379,79 @@ HTML,
 
         // Make sure the total is fresh even if nothing triggered the observer.
         optional(Salary::where('user_id', $userId)->first())->recalcTotal();
+    }
+
+    // ── IMP-04 — Import struktur gaji dari Excel ───────────
+
+    public function importForm()
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        return view('admin.import.salary', ['preview' => null, 'result' => null]);
+    }
+
+    public function importTemplate()
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\SalaryTemplateExport, 'template-gaji.xlsx'
+        );
+    }
+
+    public function importPreview(\Illuminate\Http\Request $request)
+    {
+        $this->crud->hasAccessOrFail('create');
+        $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:2048']);
+
+        $token = (string) \Illuminate\Support\Str::uuid();
+        $path = $request->file('file')->storeAs('imports', "salary-$token.xlsx", 'local');
+
+        $preview = \App\Support\ImportPreview::build(
+            \Illuminate\Support\Facades\Storage::disk('local')->path($path),
+            ['email', 'gaji_pokok'],
+            ['email', 'gaji_pokok', 'lembur_1x', 'denda_per_menit']
+        );
+        $preview['token'] = $token;
+
+        return view('admin.import.salary', ['preview' => $preview, 'result' => null]);
+    }
+
+    public function importStore(\Illuminate\Http\Request $request)
+    {
+        $this->crud->hasAccessOrFail('create');
+
+        $disk = \Illuminate\Support\Facades\Storage::disk('local');
+
+        if ($request->filled('token')) {
+            $path = $disk->path('imports/salary-' . $request->token . '.xlsx');
+            abort_unless(is_file($path), 404, 'File impor kadaluarsa, unggah ulang.');
+        } else {
+            $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:2048']);
+            $path = $request->file('file')->getRealPath();
+        }
+
+        $import = new \App\Imports\SalaryImport;
+        \Maatwebsite\Excel\Facades\Excel::import($import, $path);
+
+        if ($request->filled('token')) {
+            $disk->delete('imports/salary-' . $request->token . '.xlsx');
+        }
+
+        $errors = collect($import->failures())
+            ->map(fn ($f) => 'Baris ' . $f->row() . ' — ' . implode(', ', $f->errors()))
+            ->all();
+        foreach ($import->unmatched as $email) {
+            $errors[] = "Email tidak ditemukan: $email";
+        }
+
+        $result = [
+            'imported' => $import->imported,
+            'skipped'  => count($import->failures()) + count($import->unmatched),
+            'errors'   => $errors,
+        ];
+        Alert::success("{$result['imported']} struktur gaji berhasil diimpor.")->flash();
+
+        return view('admin.import.salary', ['preview' => null, 'result' => $result]);
     }
 }

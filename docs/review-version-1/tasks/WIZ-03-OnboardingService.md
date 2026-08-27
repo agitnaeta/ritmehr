@@ -1,6 +1,6 @@
 # WIZ-03 — OnboardingService (baru)
 
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `(uncommitted)` · 6/6 OnboardingServiceTest hijau
 **File:** `app/Services/OnboardingService.php` (BARU)
 **Referensi desain:** [`../mockup/setup-wizard.html`](../mockup/setup-wizard.html)
 **Bagian dari:** Setup Wizard (RV1-001)
