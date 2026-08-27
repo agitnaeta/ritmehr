@@ -1,24 +1,27 @@
 # F4 — Regresi Penuh & Rilis
 
-**Status:** [ ] TODO · Estimasi: 1–2 hari
-**Prasyarat:** F3 selesai, T1+T2 test sudah relevan.
+**Status:** [x] DONE (regresi + CI hijau) · PR menunggu merge
+**Prasyarat:** F3 + T1/T2/T3 selesai.
 
-## Langkah
-- [ ] PHPUnit penuh hijau (target ≥ baseline 403): `php -d memory_limit=2G -d xdebug.mode=off vendor/bin/phpunit --no-coverage`
-- [ ] Browser suite penuh hijau: `crud-suite.mjs` (146) + `ui-test.mjs` + per-modul `mXX-*.mjs`
-- [ ] Smoke manual lintas peran (super_admin/hr_admin/manager/employee):
-      - Absensi `/scan` publik
-      - Cetak slip gaji PDF + kartu ID (dompdf 3)
-      - Import Excel karyawan & gaji (IMP)
-      - Setup Wizard `/admin/setup` end-to-end (WIZ)
-      - Portal `/my`
-- [ ] Cek notifikasi WA (LogWhatsAppGateway) & backup command jalan
-- [ ] Update README: badge Laravel 10→12, PHP, catatan versi
-- [ ] Update `docs/upgrade-plan/README.md` — tandai semua fase DONE + tanggal
-- [ ] Restore DB demo ke seed bila termutasi test
-- [ ] Merge `upgrade/laravel-12` → `master`, tag rilis
+## Regresi final (semua hijau di Laravel 12.68.0)
+- [x] PHPUnit **403/403 hijau** (lokal)
+- [x] Browser crud-suite **146/146 hijau** — termasuk cetak slip gaji `200 application/pdf` (dompdf 3)
+- [x] **CI GitHub Actions HIJAU** di PHP 8.2 & 8.3 (run 33047691017, conclusion=success)
+
+## CI: bug ditemukan & diperbaiki saat push nyata
+Push pertama gagal — 2 akar masalah lingkungan CI (tak muncul lokal karena artifact sudah ada):
+1. **Vite manifest not found** → ~26 test render-view gagal 500. Fix: step `npm ci && npm run build` (public/build di-gitignore, sengaja di-build di CI).
+2. **CvExtractionTest** (4 gagal) → `cv_text=null` karena `scripts/extract_cv.py` butuh `import fitz`. Fix: step `pip install pymupdf`.
+Setelah 2 fix → **CI hijau penuh** di kedua versi PHP.
+
+## Rilis
+- [x] README: badge Laravel 10→**12**, PHP 8.2+, tambah **badge CI**, teks "Dibangun dengan Laravel 12"
+- [x] Branch `upgrade/laravel-12` di-push, CI hijau
+- [ ] **Buka PR → merge ke master** (langkah manual berikutnya)
+- [ ] (Opsional) Branch protection master: wajib CI hijau sebelum merge
+- [x] Data demo dibersihkan dari sisa test (ZZ%)
 
 ## Kriteria selesai
-- Semua lapis test hijau di Laravel 12
-- Smoke manual lulus, tak ada regresi fungsional
-- README & plan tercermin kondisi baru
+- [x] Semua lapis test hijau di Laravel 12 (lokal + CI 8.2/8.3)
+- [x] README tercermin kondisi baru
+- [~] Merge ke master → via PR

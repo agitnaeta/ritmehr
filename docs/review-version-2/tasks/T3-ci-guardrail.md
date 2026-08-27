@@ -20,11 +20,13 @@
       (termasuk training/ter/salary-breakdown terbaru)
 - [x] PHPUnit penuh **403/403 hijau**
 
-## Sisa (manual, butuh akses GitHub)
-- [ ] Push branch → cek run Actions hijau di PHP 8.2 & 8.3
-- [ ] Tambah badge CI ke README (ganti/temani badge "tests 403 passing" statis)
-- [ ] Branch protection `master`: wajib CI hijau sebelum merge
+## Hasil CI nyata (run 33047691017)
+- [x] Push branch → **CI HIJAU di PHP 8.2 & 8.3** (conclusion=success)
+- [x] 2 bug lingkungan CI diperbaiki: Vite build + pymupdf (lihat F4)
+- [ ] Badge CI di README → sudah ditambah (F4)
+- [ ] Branch protection `master` → manual di GitHub
 
 ## Kriteria selesai
 - [x] Workflow ditulis + tervalidasi lokal (migrate + phpunit hijau)
-- [~] Run Actions nyata + badge + branch protection → saat push ke GitHub (F4)
+- [x] Run Actions nyata HIJAU di 8.2 & 8.3
+- [~] Badge (done) + branch protection (manual)
