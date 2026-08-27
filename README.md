@@ -79,6 +79,7 @@ operasi di controller. Manager hanya melihat bawahan langsungnya.
 
 ## Tampilan
 
+### Dashboard admin
 ![Dashboard admin](docs/images/dashboard.png)
 
 Dashboard admin dengan data demo pada sebuah hari kerja: kehadiran hari ini,
@@ -88,6 +89,20 @@ Kartu penggajian menunjukkan Rp 0 karena tangkapan layar ini diambil di
 pertengahan bulan — rekap gaji mengukur satu bulan penuh, sehingga baru terisi
 setelah perhitungan bulanan dijalankan. Perilaku ini disengaja, bukan kekosongan
 data.
+
+### Penggajian & Portal Karyawan
+
+| Daftar Penggajian | Portal Karyawan |
+|---|---|
+| ![Penggajian](docs/review-version-1/screenshots/08-salary-list-AFTER.png) | ![Portal karyawan](docs/review-version-1/screenshots/06-portal-home.png) |
+| Tabel gaji dengan format Rupiah, tunjangan, lembur, dan denda per karyawan. | Layanan mandiri karyawan: saldo cuti, slip gaji terakhir, kasbon, dan kehadiran. |
+
+### Absensi QR (kiosk publik)
+![Scan kiosk](docs/review-version-1/screenshots/07-scan-kiosk.png)
+
+Halaman scan publik `/scan` — kiosk absensi berbasis QR + geolokasi, tanpa perlu
+login. Karyawan tinggal memindai untuk mencatat kehadiran beserta validasi radius
+cabang.
 
 ---
 
