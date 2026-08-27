@@ -44,7 +44,6 @@ Dibangun dengan Laravel 12 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 - [Pengujian](#pengujian)
 - [Dokumentasi](#dokumentasi)
 - [Catatan penerapan](#catatan-penerapan)
-- [Rencana pengembangan](#rencana-pengembangan)
 - [Melaporkan bug](#melaporkan-bug)
 - [Kontribusi](#kontribusi)
 - [Lisensi](#lisensi)
@@ -89,20 +88,6 @@ Kartu penggajian menunjukkan Rp 0 karena tangkapan layar ini diambil di
 pertengahan bulan — rekap gaji mengukur satu bulan penuh, sehingga baru terisi
 setelah perhitungan bulanan dijalankan. Perilaku ini disengaja, bukan kekosongan
 data.
-
-### Penggajian & Portal Karyawan
-
-| Daftar Penggajian | Portal Karyawan |
-|---|---|
-| ![Penggajian](docs/review-version-1/screenshots/08-salary-list-AFTER.png) | ![Portal karyawan](docs/review-version-1/screenshots/06-portal-home.png) |
-| Tabel gaji dengan format Rupiah, tunjangan, lembur, dan denda per karyawan. | Layanan mandiri karyawan: saldo cuti, slip gaji terakhir, kasbon, dan kehadiran. |
-
-### Absensi QR (kiosk publik)
-![Scan kiosk](docs/review-version-1/screenshots/07-scan-kiosk.png)
-
-Halaman scan publik `/scan` — kiosk absensi berbasis QR + geolokasi, tanpa perlu
-login. Karyawan tinggal memindai untuk mencatat kehadiran beserta validasi radius
-cabang.
 
 ---
 
@@ -323,7 +308,6 @@ Rujukan lebih dalam:
 |---|---|
 | [HRIS_SETUP.md](docs/HRIS_SETUP.md) | Referensi modul dan keputusan arsitekturnya |
 | [BUSINESS_FLOW.md](docs/BUSINESS_FLOW.md) | Alur bisnis |
-| [review-version-1/](docs/review-version-1/README.md) | Review menyeluruh + rencana perbaikan per file |
 
 ---
 
@@ -349,20 +333,6 @@ Unduhan mengalir lewat aplikasi setelah pemeriksaan hak akses.
 
 Daftar periksa lengkap sebelum rilis ada di
 [Panduan Developer](docs/PANDUAN-DEVELOPER.md#sebelum-rilis).
-
----
-
-## Rencana pengembangan
-
-Modul inti M0–M21 sudah dibangun, termasuk **Rekrutmen** (portal karier, CV,
-wawancara, peringkat kandidat), **Manajemen kinerja** (siklus review, KPI),
-**Akuntansi internal** (opsional), PPh 21 TER, dan komponen gaji dinamis.
-
-Sedang berjalan / berikutnya:
-
-- **Pelatihan** — skema tabel sudah ada, modul belum lengkap
-- Portal dokumen — karyawan belum bisa mengunduh dokumennya sendiri dari `/my`
-  (route dokumen portal belum ada)
 
 ---
 
