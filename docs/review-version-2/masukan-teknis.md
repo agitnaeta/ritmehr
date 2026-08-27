@@ -6,7 +6,7 @@ Semua temuan berbasis audit kode nyata (2026-08-27, commit `953cfed`). Severity:
 | ID | Judul | Severity | Bukti | Lokasi / Perbaikan |
 |---|---|---|---|---|
 | RV2-001 | Laravel 10 tertinggal 2 mayor dari terbaru (12) | 🟠 Tinggi | `laravel/framework 10.39.0` | Fase F1–F3 |
-| RV2-002 | Backpack CRUD 6 mengunci upgrade Laravel 12 | 🔴 Kritis | `composer why-not` → BP6 `^L10` | Fase F1 |
+| RV2-002 | Backpack CRUD perlu dinaikkan 6.5→6.8 agar support L11/L12 | 🟠 Tinggi | `composer why-not` + packagist | Fase F1 (revisi) |
 | RV2-003 | Tidak ada CI/CD — regres tak terdeteksi | 🟠 Tinggi | tak ada `.github/workflows` | Fase T3 |
 | RV2-004 | Browser test rapuh thd perubahan DOM Backpack 7 | 🟠 Tinggi | 37 suite + 20 custom view | Fase T2 |
 | RV2-005 | PHPUnit 10 pakai `@dataProvider` docblock (dihapus di 11) | 🟡 Sedang | 2 file test | Fase T1 |
@@ -19,11 +19,12 @@ Semua temuan berbasis audit kode nyata (2026-08-27, commit `953cfed`). Severity:
 
 ## Detail
 
-### RV2-002 — Backpack CRUD 6 mengunci Laravel 12 🔴
-- **Gejala:** `composer require laravel/framework:^12` gagal; `composer why-not laravel/framework 12.0` menunjuk `backpack/crud 6.5.1 requires laravel/framework ^10.0`.
-- **Dampak:** tidak bisa naik ke Laravel 11/12 tanpa Backpack 7 lebih dulu. Ini **critical path** seluruh upgrade.
-- **Perbaikan:** Fase F1 — Backpack 6→7 (7.1.15 tersedia) selagi masih di Laravel 10.
-- **Risiko:** 37 CRUD controller + 20 custom view kena API/DOM baru → ditangani per modul + T2.
+### RV2-002 — Backpack CRUD 6.5→6.8 (bukan blocker fatal) 🟠
+- **Temuan F0 (revisi rencana):** Backpack CRUD **7.x butuh Laravel ^12** — tidak ada Backpack 7 untuk L10/L11. TAPI **Backpack 6.8.16 mendukung Laravel `^10|^11|^12`**.
+- **Implikasi:** TIDAK perlu lompat ke Backpack 7 untuk sampai Laravel 12. Cukup naik Backpack 6.5→6.8 (minor, low-risk) yang jalan di L10/11/12.
+- **Dampak:** upgrade jauh lebih murah dari perkiraan awal — critical path Backpack 7 hilang. Backpack 6→7 jadi fase opsional terpisah (butuh doctrine/dbal 4, DOM baru theme-tabler 2).
+- **Perbaikan:** F1 revisi — `composer require backpack/crud:^6.8` selagi masih L10, verifikasi 37 controller + 20 view tetap render.
+- **Bukti:** packagist p2 — BP 6.8.16 = `^10.0|^11.0|^12`; BP 7.0.31+ = `^12`.
 
 ### RV2-001 — Laravel 10 tertinggal 🟠
 - **Gejala:** `laravel/framework 10.39.0`; terbaru 12.x.

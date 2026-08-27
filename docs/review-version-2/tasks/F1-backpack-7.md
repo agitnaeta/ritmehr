@@ -1,27 +1,23 @@
-# F1 — Backpack CRUD 6 → 7 (di Laravel 10) · CRITICAL PATH
+# F1 — Backpack CRUD 6.5 → 6.8 (di Laravel 10)
 
-**Status:** [ ] TODO · Estimasi: 3–5 hari
-**Kenapa duluan:** Backpack 6 tak support Laravel 12. Naikkan ke 7 selagi masih di L10 supaya breaking change Backpack terisolasi & test lama masih jadi jaring pengaman.
+**Status:** [ ] TODO · Estimasi: 0.5–1 hari *(REVISI dari 3–5 hari — lihat temuan F0)*
+**Temuan F0 yang mengubah rencana:** Backpack 7 = Laravel 12-only (tak ada BP7 utk L10/11).
+Tapi **Backpack 6.8.16 mendukung `^10|^11|^12`** → cukup naik minor 6.5→6.8, TIDAK perlu BP7
+untuk sampai Laravel 12. Critical-path Backpack 7 hilang; upgrade jadi jauh lebih murah.
 
 ## Langkah
-- [ ] Baca upgrade guide resmi Backpack 6→7 (view namespace, operation, field/column changes)
-- [ ] Bump paket:
-      ```
-      composer require backpack/crud:^7.0 backpack/theme-tabler:^2.0 backpack/basset:^2.0 -W
-      ```
-- [ ] Jalankan `php artisan backpack:upgrade` bila tersedia
-- [ ] Publish ulang config/asset Backpack yang berubah; bandingkan dengan yang lama
-- [ ] **20 custom view** `resources/views/vendor/backpack/**` — cek tiap file terhadap struktur baru theme-tabler 2 (tombol `user_import`, `salary_import`, `user_export`, `user-print`, dll)
-- [ ] **37 CRUD controller** — verifikasi API fluent masih valid: `addColumn/addField/->type()/addButtonFromView/setupListOperation`. Perbaiki per modul.
-- [ ] Fokus khusus modul yang baru & kompleks: SalaryCrud (kolom number+priority QW-02), UserCrud (import op IMP-03), SetupWizard, Import views
-- [ ] Render manual tiap list admin — pastikan `#crudTable` AJAX tetap jalan
+- [ ] Bump minor: `composer require backpack/crud:^6.8 backpack/theme-tabler:^1.2 backpack/basset:^1.2 -W`
+- [ ] `php artisan config:clear && view:clear && route:clear`
+- [ ] Verifikasi 37 CRUD controller render (list/create/edit/show) — API fluent BP6 stabil antar minor, risiko rendah
+- [ ] Verifikasi 20 custom view `vendor/backpack/**` masih cocok (BP6 minor jarang ubah DOM)
+- [ ] PHPUnit hijau + crud-suite browser hijau
 
-## Pitfalls
-- Filter berbayar tetap dihindari — pertahankan trait `HasSimpleFilters`
-- Guard `backpack` vs `web` (Spatie) — jangan berubah saat upgrade
-- Jangan campur langkah ini dengan upgrade Laravel; selesaikan Backpack dulu sampai hijau
+## Kenapa bukan Backpack 7 sekarang
+BP7 butuh `doctrine/dbal ^4` + theme-tabler 2 (DOM baru) + Laravel 12. Menaikkan BP7
+**bersamaan** dengan Laravel 12 di F3 lebih efisien daripada 2 kali refactor view.
+Backpack 6→7 dijadikan **fase opsional terpisah** setelah Laravel 12 stabil (bila diinginkan).
 
 ## Kriteria selesai
-- `composer show backpack/crud` = 7.x
-- Semua list/create/edit/show 37 modul render tanpa error di L10
-- PHPUnit tetap hijau (browser suite mungkin merah → ditangani di T2)
+- `composer show backpack/crud` = 6.8.x
+- Semua modul render tanpa error di Laravel 10
+- 403 PHPUnit + 146 browser tetap hijau
