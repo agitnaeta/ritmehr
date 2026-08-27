@@ -59,6 +59,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'recruitment.view', 'recruitment.edit',
             // Performance (M10). performance.review_self = isi self-review sendiri.
             'performance.view', 'performance.edit', 'performance.review_self',
+            // Training (M11). training.enroll_self = ikut pelatihan yang ditugaskan.
+            'training.view', 'training.edit', 'training.enroll_self',
             // Role & permission management — super_admin only
             'role.view', 'role.edit', 'permission.view',
         ];
@@ -98,6 +100,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'tax.view', 'tax.edit',
             'recruitment.view', 'recruitment.edit',
             'performance.view', 'performance.edit', 'performance.review_self',
+            'training.view', 'training.edit', 'training.enroll_self',
             // Deliberately NOT granted: approval.configure, role.*, permission.*
             // — changing who can approve what is a super_admin decision.
         ]);
@@ -121,6 +124,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'org.view',
             // Manager menilai timnya + mengisi self-review sendiri.
             'performance.view', 'performance.edit', 'performance.review_self',
+            'training.view', 'training.enroll_self',
         ]);
 
         // 4. Employee — self-service only
@@ -135,6 +139,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'schedule.view',
             // Karyawan mengisi self-review kinerjanya sendiri.
             'performance.review_self',
+            // Karyawan mengikuti pelatihan yang ditugaskan.
+            'training.enroll_self',
         ]);
     }
 }

@@ -24,6 +24,7 @@ return [
     'loan'               => 'Loan (Kasbon)',
     'organization'       => 'Organization',
     'performance'        => 'Performance',
+    'training'           => 'Training',
     'reports'            => 'Reports',
     'tax_bpjs'           => 'Tax & BPJS',
     'settings'           => 'Settings',

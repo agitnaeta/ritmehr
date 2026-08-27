@@ -116,6 +116,16 @@
 </x-backpack::menu-dropdown>
 @endif
 
+{{-- Pelatihan (M11) --}}
+@if($me?->canAny(['training.view', 'training.enroll_self']))
+<x-backpack::menu-dropdown :title="__('menu.training')" icon="la la-graduation-cap">
+    <x-backpack::menu-dropdown-item title="Pelatihan Saya" icon="la la-book-reader" :link="url('my/training')" />
+    @if($me->can('training.view'))
+        <x-backpack::menu-dropdown-item title="Kelola Pelatihan" icon="la la-chalkboard-teacher" :link="backpack_url('training')" />
+    @endif
+</x-backpack::menu-dropdown>
+@endif
+
 {{-- Laporan — hub laporan terpadu (M08). Sub-item A-Z, tiap link tetap ter-gate izinnya. --}}
 @if($me?->canAny(['report.view', 'tax.view', 'leave.view_all']))
 <x-backpack::menu-dropdown :title="__('menu.reports')" icon="la la-chart-bar">

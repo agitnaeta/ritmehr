@@ -91,4 +91,17 @@ Route::group([
          ->whereNumber('id')->name('notifications.read');
     Route::post('/notifications/mark-all-read', [PortalController::class, 'notificationsMarkAllRead'])
          ->name('notifications.mark_all_read');
+
+    // M11 — Training (participant side). All scoped to the current user.
+    Route::get('/training', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'index'])->name('training.index');
+    Route::get('/training/{id}', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'show'])
+         ->whereNumber('id')->name('training.show');
+    Route::get('/training/{id}/quiz', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'quiz'])
+         ->whereNumber('id')->name('training.quiz');
+    Route::post('/training/{id}/quiz', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'submit'])
+         ->whereNumber('id')->name('training.submit');
+    Route::get('/training/{id}/result', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'result'])
+         ->whereNumber('id')->name('training.result');
+    Route::get('/training/{id}/certificate', [\App\Http\Controllers\Portal\TrainingPortalController::class, 'certificate'])
+         ->whereNumber('id')->name('training.certificate');
 });

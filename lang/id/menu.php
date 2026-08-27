@@ -24,6 +24,7 @@ return [
     'loan'               => 'Kasbon',
     'organization'       => 'Organisasi',
     'performance'        => 'Kinerja',
+    'training'           => 'Pelatihan',
     'reports'            => 'Laporan',
     'tax_bpjs'           => 'Pajak & BPJS',
     'settings'           => 'Pengaturan',
