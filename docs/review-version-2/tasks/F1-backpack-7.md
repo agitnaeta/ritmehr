@@ -6,11 +6,11 @@ Tapi **Backpack 6.8.16 mendukung `^10|^11|^12`** → cukup naik minor 6.5→6.8,
 untuk sampai Laravel 12. Critical-path Backpack 7 hilang; upgrade jadi jauh lebih murah.
 
 ## Langkah
-- [ ] Bump minor: `composer require backpack/crud:^6.8 backpack/theme-tabler:^1.2 backpack/basset:^1.2 -W`
-- [ ] `php artisan config:clear && view:clear && route:clear`
-- [ ] Verifikasi 37 CRUD controller render (list/create/edit/show) — API fluent BP6 stabil antar minor, risiko rendah
-- [ ] Verifikasi 20 custom view `vendor/backpack/**` masih cocok (BP6 minor jarang ubah DOM)
-- [ ] PHPUnit hijau + crud-suite browser hijau
+- [x] Bump minor: `composer require backpack/crud:^6.8 backpack/theme-tabler:^1.2 backpack/basset:^1.2 -W`
+- [x] `php artisan config:clear && view:clear && route:clear`
+- [x] Verifikasi 37 CRUD controller render (list/create/edit/show) — API fluent BP6 stabil antar minor, risiko rendah
+- [x] Verifikasi 20 custom view `vendor/backpack/**` masih cocok (BP6 minor jarang ubah DOM)
+- [x] PHPUnit hijau + crud-suite browser hijau
 
 ## Kenapa bukan Backpack 7 sekarang
 BP7 butuh `doctrine/dbal ^4` + theme-tabler 2 (DOM baru) + Laravel 12. Menaikkan BP7

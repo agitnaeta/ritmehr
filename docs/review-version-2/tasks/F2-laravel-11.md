@@ -29,4 +29,4 @@ redirect 302 ke `/admin/branch`. (Test diagnosa dihapus setelah konfirmasi.)
 - [x] `php artisan --version` = 11.x
 - [x] PHPUnit hijau (403)
 - [x] Create/store fungsional terverifikasi via HTTP test
-- [~] Browser suite: 2 item harness perlu realign di T2 (bukan regresi app)
+- [x] Browser suite: 2 item harness sudah beres di T2 (146/146 hijau — root cause data test, bukan regresi app)

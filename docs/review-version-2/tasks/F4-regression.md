@@ -17,8 +17,8 @@ Setelah 2 fix → **CI hijau penuh** di kedua versi PHP.
 ## Rilis
 - [x] README: badge Laravel 10→**12**, PHP 8.2+, tambah **badge CI**, teks "Dibangun dengan Laravel 12"
 - [x] Branch `upgrade/laravel-12` di-push, CI hijau
-- [ ] **Buka PR → merge ke master** (langkah manual berikutnya)
-- [ ] (Opsional) Branch protection master: wajib CI hijau sebelum merge
+- [x] **PR #32 → merged ke master** (commit `88b2f27`); branch upgrade dihapus
+- [ ] (Opsional, manual) Branch protection master: wajib CI hijau sebelum merge
 - [x] Data demo dibersihkan dari sisa test (ZZ%)
 
 ## Kriteria selesai

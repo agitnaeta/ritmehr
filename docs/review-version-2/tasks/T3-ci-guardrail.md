@@ -23,10 +23,10 @@
 ## Hasil CI nyata (run 33047691017)
 - [x] Push branch → **CI HIJAU di PHP 8.2 & 8.3** (conclusion=success)
 - [x] 2 bug lingkungan CI diperbaiki: Vite build + pymupdf (lihat F4)
-- [ ] Badge CI di README → sudah ditambah (F4)
-- [ ] Branch protection `master` → manual di GitHub
+- [x] Badge CI di README → sudah ditambah (F4)
+- [ ] (Opsional, manual) Branch protection `master` → set di GitHub Settings
 
 ## Kriteria selesai
 - [x] Workflow ditulis + tervalidasi lokal (migrate + phpunit hijau)
-- [x] Run Actions nyata HIJAU di 8.2 & 8.3
-- [~] Badge (done) + branch protection (manual)
+- [x] Run Actions nyata HIJAU di 8.2 & 8.3 (juga hijau di master pasca-merge)
+- [x] Badge CI done; branch protection = opsional/manual
