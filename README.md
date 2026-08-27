@@ -107,8 +107,8 @@ Ekstensi PHP yang dibutuhkan mengikuti kebutuhan standar Laravel 10, ditambah
 ## Pemasangan
 
 ```bash
-git clone git@github.com:agitnaeta/absensi.git
-cd absensi
+git clone git@github.com:agitnaeta/ritmehr.git
+cd ritmehr
 
 composer install
 cp .env.example .env
@@ -352,7 +352,7 @@ Sedang berjalan / berikutnya:
 
 ## Melaporkan bug
 
-Laporkan bug dan usulan fitur lewat **[GitHub Issues](https://github.com/agitnaeta/absensi/issues)**.
+Laporkan bug dan usulan fitur lewat **[GitHub Issues](https://github.com/agitnaeta/ritmehr/issues)**.
 
 Agar laporannya bisa langsung ditindaklanjuti, sertakan:
 
