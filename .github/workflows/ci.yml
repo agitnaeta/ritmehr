@@ -71,6 +71,10 @@ jobs:
           npm ci
           npm run build
 
+      - name: Install PyMuPDF (CV extraction)
+        # CvExtractionService memakai python3 + pymupdf untuk baca teks PDF.
+        run: pip install --quiet pymupdf
+
       - name: Prepare environment
         run: |
           cp .env.example .env
