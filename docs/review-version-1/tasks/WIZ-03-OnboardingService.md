@@ -2,40 +2,45 @@
 
 **Status:** [ ] TODO — commit: `______`
 **File:** `app/Services/OnboardingService.php` (BARU)
-**Bagian dari:** Setup Wizard (menutup RV1-001, Lensa 2)
+**Referensi desain:** [`../mockup/setup-wizard.html`](../mockup/setup-wizard.html)
+**Bagian dari:** Setup Wizard (RV1-001)
 
 ## Tanggung jawab
-Logika bisnis wizard: validasi tiap step, **merge langsung ke DB** (tanpa tabel perantara/tombol import manual — sesuai preferensi Capt), progres, dan penanda selesai.
+Validasi + **merge langsung ke DB** per step (tanpa tabel perantara — preferensi Capt), sediakan data untuk render, dan penanda selesai (tabel `settings`).
 
-## Kontrak method
+## Field aktual (dari skema DB — pakai ini persis)
+- `company_profiles`: `name, address, phone, email, image`
+- `departments`: `name, code, parent_id, head_user_id`
+- `branches`: `company_profile_id, name, code, address, phone, is_active`
+- admin = update `users` row yang login (name, email, department_id); opsi buat HR user baru.
+
+## Kontrak
 ```php
 namespace App\Services;
 
 class OnboardingService
 {
-    /** data + state utk render satu step */
-    public function context(string $step): array;
-
-    /** validasi + simpan step ke DB (CompanyProfile / Department+Branch / User admin / import) */
-    public function save(string $step, array $input): void;
-
-    /** step berikutnya atau null bila terakhir */
-    public function nextStep(string $step): ?string;
-
-    /** true bila setup sudah pernah diselesaikan (baca settings) */
-    public function isComplete(): bool;
-
-    /** tandai selesai (settings key 'onboarding_complete' = true) */
+    public function context(string $step): array;   // data utk view (mis. daftar dept utk select admin)
+    public function save(string $step, array $in): void;
+    public function isComplete(): bool;              // settings 'onboarding_complete'
     public function markComplete(): void;
+
+    // internal per step:
+    // company → CompanyProfile::updateOrCreate([], [name,address,phone,email])
+    // orgunit → validasi min 1; Department::firstOrCreate(name), Branch::firstOrCreate(name, company_profile_id)
+    // admin   → backpack_user()->update(name,email,department_id); if buat_hr → User::create + assignRole('hr_admin')
+    // import  → jika ada file → Excel::import(new UserImport, file); else skip
 }
 ```
-- Step `company` → upsert `CompanyProfile`.
-- Step `orgunit` → buat `Department` + `Branch`.
-- Step `admin` → lengkapi profil admin / buat HR user.
-- Step `import` → panggil `UserImport` (IMP-01) bila file diunggah, else skip.
-- Simpan flag di tabel `settings` (sudah ada) supaya QW-04 & middleware bisa cek.
 
-## Verifikasi
-1. Unit test `OnboardingServiceTest`: tiap `save()` menulis row DB yang benar.
-2. `isComplete()` true setelah `markComplete()`.
-3. `phpunit` hijau.
+## Validasi per step (rules)
+- company: `name required`
+- orgunit: minimal satu departemen & satu cabang non-kosong
+- admin: `name required`, `email required|email`
+- import: `file nullable|file|mimes:xlsx,xls,csv`
+
+## Cek per file (verifikasi)
+- [ ] Unit test `OnboardingServiceTest`: tiap `save()` menulis row DB benar (company/dept/branch/user).
+- [ ] `orgunit` menolak bila semua input kosong.
+- [ ] `isComplete()` false → true setelah `markComplete()`.
+- [ ] `phpunit` hijau.

@@ -2,19 +2,22 @@
 
 **Status:** [ ] TODO — commit: `______`
 **File:** `app/Imports/UserImport.php` (BARU)
-**Bagian dari:** Import Excel Karyawan (menutup RV1-002, Lensa 4)
-**Referensi pola:** `app/Imports/PresenceImport.php` (sudah ada, pakai Maatwebsite Excel)
+**Referensi desain:** [`../mockup/import.html`](../mockup/import.html) · **Pola:** `app/Imports/PresenceImport.php` (sudah ada)
+**Bagian dari:** Import Karyawan (RV1-002, Lensa 4)
 
 ## Tanggung jawab
-Baca Excel karyawan → validasi baris → **merge langsung ke tabel `users`** (tanpa tabel perantara). Upsert by email/kode agar idempoten.
+Baca Excel karyawan → validasi → **upsert langsung ke `users`** (tanpa tabel perantara). Idempoten by email. Dept/cabang dicari-atau-dibuat dari nama.
+
+## Field aktual `users` (pakai ini persis)
+`name, email, password, department_id, branch_id, position_id, employee_id, join_date, employment_status`
 
 ## Kerangka
 ```php
 namespace App\Imports;
 
-use App\Models\User;
-use Maatwebsite\Excel\Concerns\{ToModel, WithHeadingRow, WithValidation, SkipsOnError};
+use App\Models\{User, Department, Branch, Position};
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Concerns\{ToModel, WithHeadingRow, WithValidation};
 
 class UserImport implements ToModel, WithHeadingRow, WithValidation
 {
@@ -25,24 +28,21 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
             [
                 'name'          => $row['nama'],
                 'join_date'     => $row['tgl_bergabung'] ?? null,
-                'department_id' => $this->resolveDept($row['departemen'] ?? null),
-                'branch_id'     => $this->resolveBranch($row['cabang'] ?? null),
+                'department_id' => $this->firstOrCreateId(Department::class, $row['departemen'] ?? null),
+                'branch_id'     => $this->firstOrCreateId(Branch::class,     $row['cabang'] ?? null),
+                'position_id'   => $this->firstOrCreateId(Position::class,   $row['jabatan'] ?? null),
                 'password'      => Hash::make($row['password'] ?? 'password'),
-                // ...map kolom lain
+                'employment_status' => $row['status'] ?? 'active',
             ]
         );
     }
-
-    public function rules(): array
-    {
-        return ['email' => 'required|email', 'nama' => 'required'];
-    }
-    // resolveDept/resolveBranch: cari-atau-buat by name → id
+    public function rules(): array { return ['email' => 'required|email', 'nama' => 'required']; }
+    // firstOrCreateId: null-safe cari-atau-buat by name → id
 }
 ```
-Kolom template mengikuti IMP-05 (heading Bahasa Indonesia).
 
-## Verifikasi
-1. Unit test: import file contoh 3 baris → 3 user di DB dgn dept/cabang benar.
-2. Import ulang file sama → tetap 3 (idempoten), bukan duplikat.
-3. Baris invalid (email kosong) ditolak & dilaporkan, tak menggagalkan seluruh batch.
+## Cek per file (verifikasi)
+- [ ] Unit test: import 3 baris → 3 user, dept/cabang ter-resolve ke id.
+- [ ] Import ulang file sama → tetap 3 (idempoten, bukan duplikat).
+- [ ] Baris email kosong → ditolak `WithValidation`, batch lain tetap masuk.
+- [ ] `phpunit` hijau.

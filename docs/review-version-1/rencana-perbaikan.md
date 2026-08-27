@@ -21,24 +21,26 @@ Cara flag DONE:
 | [x] | [QW-03](tasks/QW-03-UserCrudController-labels.md) | `app/Http/Controllers/Admin/UserCrudController.php` | RV1-005 label EN | P2 |
 | [x] | [QW-04](tasks/QW-04-dashboard-emptystate.md) | `resources/views/admin/dashboard.blade.php` + `DashboardController.php` (+2 test) | Lensa 1 empty-state | P1 |
 
-**Struktural — Setup Wizard** (menutup RV1-001, lensa 2)
+**Struktural — Setup Wizard** (menutup RV1-001, lensa 2) — 🎨 desain: [`mockup/setup-wizard.html`](mockup/setup-wizard.html)
 
 | ✔ | ID | File yang disentuh | Jenis |
 |---|---|---|---|
 | [ ] | [WIZ-01](tasks/WIZ-01-routes.md) | `routes/backpack/custom.php` | ubah |
 | [ ] | [WIZ-02](tasks/WIZ-02-SetupWizardController.md) | `app/Http/Controllers/Admin/SetupWizardController.php` | baru |
 | [ ] | [WIZ-03](tasks/WIZ-03-OnboardingService.md) | `app/Services/OnboardingService.php` | baru |
-| [ ] | [WIZ-04](tasks/WIZ-04-wizard-views.md) | `resources/views/admin/setup/*.blade.php` | baru |
+| [ ] | [WIZ-04](tasks/WIZ-04-wizard-views.md) | `resources/views/admin/setup/*.blade.php` (5 file) | baru |
 
-**Struktural — Import Excel Karyawan & Gaji** (menutup RV1-002, lensa 4)
+**Struktural — Import Excel Karyawan & Gaji** (menutup RV1-002, lensa 4) — 🎨 desain: [`mockup/import.html`](mockup/import.html)
 
 | ✔ | ID | File yang disentuh | Jenis |
 |---|---|---|---|
 | [ ] | [IMP-01](tasks/IMP-01-UserImport.md) | `app/Imports/UserImport.php` | baru |
 | [ ] | [IMP-02](tasks/IMP-02-SalaryImport.md) | `app/Imports/SalaryImport.php` | baru |
-| [ ] | [IMP-03](tasks/IMP-03-UserCrud-import-op.md) | `app/Http/Controllers/Admin/UserCrudController.php` | ubah |
-| [ ] | [IMP-04](tasks/IMP-04-SalaryCrud-import-op.md) | `app/Http/Controllers/Admin/SalaryCrudController.php` | ubah |
-| [ ] | [IMP-05](tasks/IMP-05-templates.md) | `resources/views/admin/import/*` + template Excel | baru |
+| [ ] | [IMP-03](tasks/IMP-03-UserCrud-import-op.md) | `app/Http/Controllers/Admin/UserCrudController.php` + route | ubah |
+| [ ] | [IMP-04](tasks/IMP-04-SalaryCrud-import-op.md) | `app/Http/Controllers/Admin/SalaryCrudController.php` + route | ubah |
+| [ ] | [IMP-05](tasks/IMP-05-templates.md) | `resources/views/admin/import/*` + `app/Exports/*TemplateExport.php` | baru |
+
+> **Desain UI sudah dibuat & di-review** (mockup HTML Tabler, screenshot bukti di `mockup/preview-*.png`). Tiap task WIZ/IMP kini merujuk mockup + memakai field DB aktual, dengan checklist "Cek per file" di masing-masing task.
 
 ---
 

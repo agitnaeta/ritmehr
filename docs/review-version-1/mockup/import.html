@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup — Import Excel RitmeHR</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css">
+<style>
+  body{ background:#f5f7fb; }
+  .shell{ max-width:960px; margin:28px auto; }
+  .note{ font-size:12px; color:#909aad; }
+  .drop{ border:2px dashed #c7cfe0; border-radius:10px; padding:28px; text-align:center; background:#fbfcfe; }
+  .phase{ display:none; } .phase.active{ display:block; }
+  .stepline{ display:flex; gap:8px; margin-bottom:18px; font-size:13px; }
+  .stepline span{ padding:4px 12px; border-radius:20px; background:#eef1f7; color:#7a8398; }
+  .stepline span.active{ background:#206bc4; color:#fff; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- Header + entity switch -->
+  <div class="d-flex align-items-center mb-3">
+    <span class="h2 text-primary mb-0 me-3" style="font-weight:700">RitmeHR</span>
+    <div class="btn-group" role="group">
+      <button class="btn btn-primary" onclick="setEntity('user')" id="tabUser">Import Karyawan</button>
+      <button class="btn btn-outline-primary" onclick="setEntity('salary')" id="tabSalary">Import Gaji</button>
+    </div>
+    <a href="#" class="btn btn-link ms-auto">← Kembali ke daftar</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3 class="card-title" id="hdr">Import Karyawan dari Excel</h3></div>
+    <div class="card-body">
+      <div class="stepline">
+        <span class="active" data-p="0">1 · Unduh template</span>
+        <span data-p="1">2 · Unggah file</span>
+        <span data-p="2">3 · Pratinjau &amp; validasi</span>
+        <span data-p="3">4 · Hasil</span>
+      </div>
+
+      <!-- PHASE 0: download template + upload -->
+      <div class="phase active" data-p="0">
+        <div class="card card-sm bg-azure-lt mb-3">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <strong>Langkah 1 — Unduh template</strong>
+              <div class="note" id="tplNote">Header: nama, email, tgl_bergabung, departemen, cabang, jabatan, password</div>
+            </div>
+            <a class="btn btn-outline-primary" id="tplBtn" href="#">⬇ Unduh Template</a>
+          </div>
+        </div>
+        <label class="form-label"><strong>Langkah 2 — Unggah file terisi</strong></label>
+        <div class="drop">
+          <div class="mb-2">Tarik file ke sini atau klik untuk pilih</div>
+          <input type="file" class="form-control" style="max-width:360px;margin:0 auto" accept=".xlsx,.xls,.csv">
+          <div class="note mt-2">Format .xlsx / .xls / .csv — maks 2MB</div>
+        </div>
+        <div class="text-end mt-3"><button class="btn btn-primary" onclick="go(2)">Pratinjau →</button></div>
+      </div>
+
+      <!-- PHASE 2: preview + validation -->
+      <div class="phase" data-p="2">
+        <div class="alert alert-warning">
+          <strong>8 baris terbaca.</strong> 6 valid · <span class="text-danger">2 bermasalah</span> — perbaiki atau lanjut impor yang valid saja.
+        </div>
+        <div class="table-responsive">
+          <table class="table table-vcenter card-table">
+            <thead><tr id="prevHead"></tr></thead>
+            <tbody id="prevBody"></tbody>
+          </table>
+        </div>
+        <div class="d-flex mt-2">
+          <button class="btn" onclick="go(0)">← Ganti file</button>
+          <div class="ms-auto d-flex gap-2">
+            <label class="form-check form-switch align-self-center me-2">
+              <input class="form-check-input" type="checkbox" checked>
+              <span class="form-check-label note">Lewati baris bermasalah</span>
+            </label>
+            <button class="btn btn-success" onclick="go(3)">Impor 6 baris valid</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 3: result -->
+      <div class="phase" data-p="3">
+        <div class="empty">
+          <div class="empty-icon" style="font-size:40px">✅</div>
+          <p class="empty-title">Impor selesai</p>
+          <p class="empty-subtitle text-muted">
+            6 baris berhasil masuk &amp; digabung ke database. 2 baris dilewati karena error.
+          </p>
+          <div class="text-start mx-auto" style="max-width:520px">
+            <div class="mb-2 note">Baris yang dilewati:</div>
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Baris 4 — email kosong</span><span class="badge bg-red-lt">error</span></li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Baris 7 — format email salah</span><span class="badge bg-red-lt">error</span></li>
+            </ul>
+          </div>
+          <div class="mt-3">
+            <a href="#" class="btn btn-primary">Lihat daftar</a>
+            <button class="btn" onclick="go(0)">Impor lagi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center note mt-3">Mockup statis — untuk review desain IMP. Bukan aplikasi hidup.</div>
+</div>
+
+<script>
+  const SCHEMA = {
+    user: {
+      hdr:'Import Karyawan dari Excel',
+      note:'Header: nama, email, tgl_bergabung, departemen, cabang, jabatan, password',
+      cols:['Status','nama','email','departemen','cabang'],
+      rows:[
+        ['ok','Ahmad Fauzi','ahmad@demo.test','Teknologi','Kantor Pusat'],
+        ['ok','Rina Kartika','rina@demo.test','HRD','Kantor Pusat'],
+        ['err','(kosong)','','Operasional','Kantor Jakarta'],
+        ['ok','Budi Santoso','budi@demo.test','Operasional','Kantor Jakarta'],
+      ]
+    },
+    salary: {
+      hdr:'Import Struktur Gaji dari Excel',
+      note:'Header: email, gaji_pokok, lembur_1x, denda_per_menit, potongan_absen',
+      cols:['Status','email','gaji_pokok','lembur_1x','denda_per_menit'],
+      rows:[
+        ['ok','ahmad@demo.test','7.500.000','75.000','1.000'],
+        ['ok','rina@demo.test','9.000.000','75.000','1.000'],
+        ['err','tidak_ada@x.test','5.000.000','0','0'],
+        ['ok','budi@demo.test','15.000.000','75.000','1.000'],
+      ]
+    }
+  };
+  let entity='user';
+  function setEntity(e){ entity=e;
+    document.getElementById('tabUser').className   = e==='user'?'btn btn-primary':'btn btn-outline-primary';
+    document.getElementById('tabSalary').className = e==='salary'?'btn btn-primary':'btn btn-outline-primary';
+    document.getElementById('hdr').textContent = SCHEMA[e].hdr;
+    document.getElementById('tplNote').textContent = SCHEMA[e].note;
+    go(0);
+  }
+  function renderPreview(){
+    const s=SCHEMA[entity];
+    document.getElementById('prevHead').innerHTML = s.cols.map(c=>`<th>${c}</th>`).join('');
+    document.getElementById('prevBody').innerHTML = s.rows.map(r=>{
+      const bad = r[0]==='err';
+      const badge = bad?'<span class="badge bg-red-lt">error</span>':'<span class="badge bg-green-lt">ok</span>';
+      const tds = r.slice(1).map((c,idx)=>`<td class="${bad&&(c===''||c==='(kosong)')?'text-danger':''}">${c||'—'}</td>`).join('');
+      return `<tr class="${bad?'table-danger':''}"><td>${badge}</td>${tds}</tr>`;
+    }).join('');
+  }
+  function go(p){
+    document.querySelectorAll('.phase').forEach(el=>el.classList.toggle('active',+el.dataset.p===p));
+    document.querySelectorAll('.stepline span').forEach(el=>el.classList.toggle('active',+el.dataset.p<=p));
+    if(p===2) renderPreview();
+  }
+  setEntity('user');
+</script>
+</body>
+</html>

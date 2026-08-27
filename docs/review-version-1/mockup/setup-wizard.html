@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup — Setup Wizard RitmeHR</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css">
+<style>
+  body { background:#f5f7fb; }
+  .wz-shell { max-width: 820px; margin: 32px auto; }
+  .wz-brand { font-weight:700; letter-spacing:.5px; }
+  .step-pane { display:none; }
+  .step-pane.active { display:block; }
+  .stepper { display:flex; gap:0; margin-bottom:24px; }
+  .stepper .st { flex:1; text-align:center; position:relative; padding-top:34px; font-size:13px; color:#909aad; }
+  .stepper .st .dot { position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:28px; height:28px; border-radius:50%; background:#e6e9f0; color:#7a8398;
+      display:flex; align-items:center; justify-content:center; font-weight:600; z-index:2; }
+  .stepper .st::before { content:''; position:absolute; top:13px; left:0; width:50%; height:2px; background:#e6e9f0; }
+  .stepper .st::after  { content:''; position:absolute; top:13px; right:0; width:50%; height:2px; background:#e6e9f0; }
+  .stepper .st:first-child::before, .stepper .st:last-child::after { display:none; }
+  .stepper .st.done .dot { background:#2fb344; color:#fff; }
+  .stepper .st.active .dot { background:#206bc4; color:#fff; }
+  .stepper .st.active { color:#206bc4; font-weight:600; }
+  .stepper .st.done::before, .stepper .st.done::after,
+  .stepper .st.active::before { background:#206bc4; }
+  .note { font-size:12px; color:#909aad; }
+</style>
+</head>
+<body>
+<div class="wz-shell">
+  <div class="text-center mb-3">
+    <span class="wz-brand h2 text-primary">RitmeHR</span>
+    <div class="note">Penyiapan awal — 4 langkah cepat agar aplikasi siap dipakai</div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <!-- Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="st active" data-i="0"><span class="dot">1</span>Perusahaan</div>
+        <div class="st" data-i="1"><span class="dot">2</span>Struktur</div>
+        <div class="st" data-i="2"><span class="dot">3</span>Admin</div>
+        <div class="st" data-i="3"><span class="dot">4</span>Import</div>
+      </div>
+
+      <!-- STEP 1: Company -->
+      <div class="step-pane active" data-i="0">
+        <h3 class="mb-1">Profil Perusahaan</h3>
+        <p class="note mb-3">Identitas ini muncul di slip gaji, laporan, dan portal karyawan.</p>
+        <div class="mb-3">
+          <label class="form-label required">Nama Perusahaan</label>
+          <input class="form-control" placeholder="PT Contoh Nusantara">
+        </div>
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label class="form-label">Alamat</label>
+            <input class="form-control" placeholder="Jl. ...">
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label">Telepon</label>
+            <input class="form-control" placeholder="021-...">
+          </div>
+        </div>
+        <div class="mb-1">
+          <label class="form-label">Logo</label>
+          <input type="file" class="form-control">
+          <div class="note mt-1">Opsional. PNG/JPG, maks 1MB.</div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Org unit -->
+      <div class="step-pane" data-i="1">
+        <h3 class="mb-1">Departemen &amp; Cabang</h3>
+        <p class="note mb-3">Minimal satu departemen dan satu cabang agar karyawan bisa ditempatkan.</p>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Departemen</strong>
+              <button class="btn btn-sm btn-outline-primary">+ Baris</button>
+            </div>
+            <input class="form-control mb-2" value="Operasional">
+            <input class="form-control mb-2" value="HRD">
+            <input class="form-control mb-2" placeholder="Tambah departemen...">
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Cabang</strong>
+              <button class="btn btn-sm btn-outline-primary">+ Baris</button>
+            </div>
+            <input class="form-control mb-2" value="Kantor Pusat">
+            <input class="form-control mb-2" placeholder="Tambah cabang...">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Admin -->
+      <div class="step-pane" data-i="2">
+        <h3 class="mb-1">Akun Admin &amp; HR</h3>
+        <p class="note mb-3">Lengkapi profil kamu, dan (opsional) buat satu akun HR.</p>
+        <div class="mb-3">
+          <label class="form-label required">Nama Anda</label>
+          <input class="form-control" value="Siti Rahayu">
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label required">Email</label>
+            <input class="form-control" value="admin@perusahaan.test">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Departemen Anda</label>
+            <select class="form-select"><option>HRD</option><option>Operasional</option></select>
+          </div>
+        </div>
+        <label class="form-check">
+          <input class="form-check-input" type="checkbox"> <span class="form-check-label">Buat juga akun HR terpisah</span>
+        </label>
+      </div>
+
+      <!-- STEP 4: Import -->
+      <div class="step-pane" data-i="3">
+        <h3 class="mb-1">Import Karyawan</h3>
+        <p class="note mb-3">Bawa data karyawan dari Excel, atau lewati dan tambah manual nanti.</p>
+        <div class="card card-sm bg-azure-lt mb-3">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+              <strong>Belum punya file?</strong>
+              <div class="note">Unduh template, isi, lalu unggah di sini.</div>
+            </div>
+            <a class="btn btn-outline-primary" href="#">⬇ Unduh Template Karyawan</a>
+          </div>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">File Excel Karyawan</label>
+          <input type="file" class="form-control" accept=".xlsx,.xls,.csv">
+        </div>
+        <div class="note">Kolom: nama, email, tgl_bergabung, departemen, cabang, jabatan, password</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="d-flex mt-4">
+        <button class="btn" id="btnBack" style="visibility:hidden">← Kembali</button>
+        <div class="ms-auto d-flex gap-2">
+          <button class="btn btn-link text-muted" id="btnSkip" style="display:none">Lewati</button>
+          <button class="btn btn-primary" id="btnNext">Lanjut →</button>
+          <button class="btn btn-success" id="btnFinish" style="display:none">Selesai &amp; Masuk Dashboard</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center note mt-3">Mockup statis — untuk review desain WIZ. Bukan aplikasi hidup.</div>
+</div>
+
+<script>
+  let i = 0; const N = 4;
+  const panes = [...document.querySelectorAll('.step-pane')];
+  const steps = [...document.querySelectorAll('#stepper .st')];
+  const back = document.getElementById('btnBack'), next = document.getElementById('btnNext'),
+        skip = document.getElementById('btnSkip'), finish = document.getElementById('btnFinish');
+  function render(){
+    panes.forEach(p=>p.classList.toggle('active', +p.dataset.i===i));
+    steps.forEach(s=>{ const si=+s.dataset.i;
+      s.classList.toggle('active', si===i); s.classList.toggle('done', si<i); });
+    back.style.visibility = i===0 ? 'hidden' : 'visible';
+    const last = i===N-1;
+    next.style.display = last ? 'none':'inline-block';
+    finish.style.display = last ? 'inline-block':'none';
+    skip.style.display = last ? 'inline-block':'none'; // import boleh dilewati
+  }
+  next.onclick=()=>{ if(i<N-1){i++;render();} };
+  back.onclick=()=>{ if(i>0){i--;render();} };
+  skip.onclick=()=>alert('(mockup) lewati import → langsung selesai');
+  finish.onclick=()=>alert('(mockup) setup selesai → redirect ke /admin/dashboard');
+  render();
+</script>
+</body>
+</html>
