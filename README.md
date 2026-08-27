@@ -6,10 +6,11 @@
 </p>
 
 <p align="center">
-  <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-10-FF2D20?logo=laravel&logoColor=white">
-  <img alt="PHP 8.2" src="https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white">
+  <img alt="Laravel 12" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white">
+  <img alt="PHP 8.2+" src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white">
   <img alt="MySQL 8" src="https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white">
   <img alt="Backpack CRUD 6" src="https://img.shields.io/badge/Backpack%20CRUD-6-2C3E50">
+  <img alt="CI" src="https://github.com/agitnaeta/ritmehr/actions/workflows/ci.yml/badge.svg">
   <img alt="Tests 403 passing" src="https://img.shields.io/badge/tests-403%20passing-2fb344">
   <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue">
 </p>
@@ -25,7 +26,7 @@ Cocok sebagai **aplikasi absensi karyawan**, **software payroll Indonesia**, dan
 **sistem HR** untuk UMKM hingga perusahaan multi-cabang — self-hosted, open source,
 tanpa biaya lisensi per pengguna.
 
-Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
+Dibangun dengan Laravel 12 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 
 **Dokumentasi:** [Panduan Pengguna](docs/PANDUAN-PENGGUNA.md) ·
 [Panduan Developer](docs/PANDUAN-DEVELOPER.md)
@@ -99,7 +100,7 @@ data.
 | Docker | untuk MySQL 8 |
 | Node.js | 18+ — hanya bila menjalankan pengujian browser |
 
-Ekstensi PHP yang dibutuhkan mengikuti kebutuhan standar Laravel 10, ditambah
+Ekstensi PHP yang dibutuhkan mengikuti kebutuhan standar Laravel 12, ditambah
 `gd` untuk pembuatan QR dan kartu karyawan.
 
 ---

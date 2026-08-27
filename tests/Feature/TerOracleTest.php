@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\TaxService;
 use Database\Seeders\TerRateSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -43,9 +44,7 @@ class TerOracleTest extends TestCase
         return $user->fresh();
     }
 
-    /**
-     * @dataProvider oracleProvider
-     */
+    #[DataProvider('oracleProvider')]
     public function test_ter_monthly_matches_oracle(string $status, int $gross, bool $npwp, int $expected): void
     {
         $user = $this->employee($status, $npwp);

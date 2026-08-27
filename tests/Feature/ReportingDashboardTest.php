@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Services\SettingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -57,7 +58,7 @@ class ReportingDashboardTest extends TestCase
 
     // ── Route guard ────────────────────────────────────────
 
-    /** @dataProvider reportRoutes */
+    #[DataProvider('reportRoutes')]
     public function test_report_routes_require_report_view_permission(string $path): void
     {
         // An employee-like user WITHOUT report.view must be blocked.
@@ -67,7 +68,7 @@ class ReportingDashboardTest extends TestCase
         $this->assertSame(403, $resp->status(), "$path should be forbidden without report.view");
     }
 
-    /** @dataProvider reportRoutes */
+    #[DataProvider('reportRoutes')]
     public function test_report_routes_open_with_report_view_permission(string $path): void
     {
         $allowed = $this->userWith(['report.view']);
