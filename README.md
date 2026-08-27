@@ -1,8 +1,8 @@
-# Absensi
+# Absensi (RitmeHR)
 
-Sistem absensi berbasis pemindaian QR yang berkembang menjadi HRIS: penggajian,
-cuti, kasbon, dokumen karyawan, pajak & BPJS, serta portal layanan mandiri
-karyawan.
+Sistem absensi berbasis pemindaian QR yang berkembang menjadi HRIS lengkap:
+penggajian, cuti, kasbon, dokumen karyawan, pajak & BPJS, rekrutmen, kinerja,
+akuntansi internal, serta portal layanan mandiri karyawan.
 
 Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 
@@ -41,8 +41,12 @@ Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 | **Organisasi** | Cabang, departemen bersarang, jabatan, bagan struktur |
 | **Dokumen** | Dokumen karyawan di penyimpanan privat, checklist kelengkapan, peringatan kedaluwarsa |
 | **Pajak & BPJS** | PPh 21 progresif, PTKP, BPJS Kesehatan/JHT/JP/JKK/JKM, THR |
+| **Rekrutmen** | Lowongan, portal karier, pelamar, CV, wawancara, peringkat kandidat |
+| **Kinerja** | Siklus review, KPI, item penilaian |
+| **Akuntansi** | Bagan akun, jurnal, buku besar (opsional, `ACC_ACTIVE=true`) |
 | **Portal Karyawan** | Riwayat kehadiran, slip gaji, cuti, kasbon, profil, notifikasi |
 | **Dashboard & Laporan** | Ringkasan harian, tren 12 bulan, laporan kehadiran/gaji/kasbon/headcount |
+| **Onboarding & Import** | Setup wizard 4 langkah untuk instance baru; import karyawan & gaji dari Excel |
 | **Audit & Notifikasi** | Jejak audit seluruh perubahan; kanal database, email, dan WhatsApp |
 
 Hak akses dibagi empat peran — `super_admin`, `hr_admin`, `manager`, `employee`
@@ -69,7 +73,7 @@ data.
 
 | Kebutuhan | Versi |
 |---|---|
-| PHP | 8.1 atau lebih baru |
+| PHP | 8.1 atau lebih baru (diuji pada 8.2) |
 | Composer | 2.x |
 | Docker | untuk MySQL 8 |
 | Node.js | 18+ — hanya bila menjalankan pengujian browser |
@@ -148,6 +152,11 @@ Aplikasi punya tiga pintu masuk:
 
 Membuka `/` akan mengarahkan ke `/scan`.
 
+Untuk instance yang benar-benar baru, buka **`/admin/setup`** — Setup Wizard
+memandu empat langkah: profil perusahaan, departemen & cabang, akun admin,
+lalu import karyawan dari Excel. Dashboard juga menampilkan checklist "Mulai di
+sini" selama data inti belum lengkap.
+
 Alur harian paling umum: karyawan menunjukkan QR di kartunya ke kamera pada
 halaman `/scan`. Pemindaian pertama tercatat sebagai jam masuk, berikutnya
 sebagai jam keluar. Keterlambatan, lembur, dan pemeriksaan lokasi dihitung
@@ -187,7 +196,7 @@ akses.
 
 ```
 app/
-├── Http/Controllers/Admin/     29 CRUD controller
+├── Http/Controllers/Admin/     37 CRUD controller
 ├── Http/Controllers/Portal/    seluruh /my/*
 ├── Services/                   aturan bisnis sesungguhnya
 ├── Observers/                  perhitungan turunan presensi & gaji
@@ -220,7 +229,11 @@ Sebelum menyentuh kode, baca bagian **empat jebakan** di
 | `leave:generate-balances --carry-over --max-carry=6` | Saldo cuti tahunan | tahunan |
 | `calculate:salary` | Hitung rekap gaji | manual |
 | `salary:recalculate` | Hitung ulang gaji per user/bulan | manual |
-| `import:presence-command` | Impor presensi | manual |
+| `import:presence-command` | Impor presensi (CLI) | manual |
+
+Import karyawan & struktur gaji dari Excel tersedia lewat UI (tombol **Import
+Excel** di daftar Users dan Gaji), lengkap dengan template dan pratinjau
+validasi. Instance baru bisa memakai **Setup Wizard** di `/admin/setup`.
 
 Penjadwalan berjalan lewat `php artisan schedule:work` atau cron. Log aplikasi
 bisa dibaca di `/log-viewer`.
@@ -235,7 +248,7 @@ Dua lapis, keduanya perlu dijalankan sebelum rilis.
 ./vendor/bin/phpunit
 ```
 
-150 test pada skema `absensi_testing` yang terpisah, jadi tidak menyentuh data
+403 test pada skema `absensi_testing` yang terpisah, jadi tidak menyentuh data
 pengembangan.
 
 ```bash
@@ -271,12 +284,9 @@ Rujukan lebih dalam:
 
 | Dokumen | Isi |
 |---|---|
-| [HRIS_SETUP.md](docs/HRIS_SETUP.md) | Referensi modul M0–M8 dan keputusan arsitekturnya |
+| [HRIS_SETUP.md](docs/HRIS_SETUP.md) | Referensi modul dan keputusan arsitekturnya |
 | [BUSINESS_FLOW.md](docs/BUSINESS_FLOW.md) | Alur bisnis |
-| [test-cases/](docs/test-cases/README.md) | 725 test case CRUD operasional per modul |
-| [bug-list/](docs/bug-list/README.md) | 12 bug beserta akar masalah dan perbaikannya |
-| [UI_TEST_CASES.md](docs/UI_TEST_CASES.md) | Test case UI lintas modul dan matriks akses per peran |
-| [MODULE_PLANS.md](docs/MODULE_PLANS.md) | Rencana modul |
+| [review-version-1/](docs/review-version-1/README.md) | Review menyeluruh + rencana perbaikan per file |
 
 ---
 
@@ -307,16 +317,15 @@ Daftar periksa lengkap sebelum rilis ada di
 
 ## Rencana pengembangan
 
-Modul M0–M8 sudah dibangun. Tiga modul berikut direncanakan namun belum
-dikerjakan, dan ditandai prioritas rendah di
-[MODULE_PLANS.md](docs/MODULE_PLANS.md):
+Modul inti M0–M21 sudah dibangun, termasuk **Rekrutmen** (portal karier, CV,
+wawancara, peringkat kandidat), **Manajemen kinerja** (siklus review, KPI),
+**Akuntansi internal** (opsional), PPh 21 TER, dan komponen gaji dinamis.
 
-- Rekrutmen
-- Manajemen kinerja
-- Pelatihan
+Sedang berjalan / berikutnya:
 
-Satu celah fungsional yang diketahui: karyawan belum bisa mengunduh dokumennya
-sendiri dari portal, karena route dokumen di `/my` belum ada.
+- **Pelatihan** — skema tabel sudah ada, modul belum lengkap
+- Portal dokumen — karyawan belum bisa mengunduh dokumennya sendiri dari `/my`
+  (route dokumen portal belum ada)
 
 ---
 
@@ -339,15 +348,11 @@ Dua hal yang sangat membantu:
 - **Sebutkan perannya.** Sebagian besar bug yang sudah ditemukan di proyek ini
   hanya muncul pada peran tertentu — beberapa hanya kelihatan sebagai manager,
   satu bahkan hanya muncul bagi pengunjung **tanpa login**.
-- **Periksa dulu apakah memang bug.** Beberapa perilaku sering disalahartikan,
-  dan sudah didaftar di
-  [bug-list/README.md](docs/bug-list/README.md#yang-bukan-bug--sudah-diverifikasi)
-  — misalnya kartu penggajian yang menunjukkan Rp 0 di pertengahan bulan, atau
-  karyawan yang dialihkan dari `/admin` ke `/my`.
+- **Periksa dulu apakah memang bug.** Beberapa perilaku sering disalahartikan
+  sebagai bug — misalnya kartu penggajian yang menunjukkan Rp 0 di pertengahan
+  bulan, atau karyawan yang dialihkan dari `/admin` ke `/my`.
 
-Bug yang sudah dikonfirmasi dicatat di [docs/bug-list/](docs/bug-list/README.md)
-beserta akar masalah dan perbaikannya — silakan dilihat lebih dulu untuk
-memastikan temuanmu belum pernah dilaporkan.
+Bug yang sudah dikonfirmasi ditangani lewat GitHub Issues.
 
 ---
 
@@ -361,10 +366,8 @@ memastikan temuanmu belum pernah dilaporkan.
 3. Jalankan kedua lapis pengujian sampai hijau
 4. Tulis pesan commit yang menjelaskan **mengapa**, bukan hanya apa
 
-Bila perbaikanmu menutup sebuah bug, tambahkan catatannya di
-[docs/bug-list/](docs/bug-list/README.md) mengikuti format berkas yang sudah
-ada: langkah reproduksi, akar masalah bertautan ke `file:baris`, dan cara
-memverifikasinya.
+Bila perbaikanmu menutup sebuah bug, jelaskan di deskripsi PR: langkah
+reproduksi, akar masalah bertautan ke `file:baris`, dan cara memverifikasinya.
 
 ---
 
