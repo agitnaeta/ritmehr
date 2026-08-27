@@ -1,6 +1,6 @@
 # Absensi → HRIS — Setup & Module Reference
 
-Implements M0–M8 of [MODULE_PLANS.md](MODULE_PLANS.md).
+Implements M0–M8 dari evolusi Absensi → HRIS.
 M9–M11 (Recruitment, Performance, Training) are not built — they are marked
 optional/LOW in the plan.
 

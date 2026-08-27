@@ -34,6 +34,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.salary.index') }}">Slip Gaji</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.leave.index') }}">Cuti</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ route('portal.loan.index') }}">Kasbon</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('portal.training.index') }}">Pelatihan</a></li>
             </ul>
 
             <ul class="navbar-nav">

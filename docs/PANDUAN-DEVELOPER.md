@@ -554,7 +554,3 @@ Log viewer tersedia di `/log-viewer`.
 |---|---|
 | [HRIS_SETUP.md](HRIS_SETUP.md) | Referensi modul M0–M8 dan keputusan arsitekturnya |
 | [BUSINESS_FLOW.md](BUSINESS_FLOW.md) | Alur bisnis |
-| [test-cases/](test-cases/README.md) | 725 test case CRUD per modul |
-| [bug-list/](bug-list/README.md) | 12 bug beserta akar masalah dan perbaikannya |
-| [UI_TEST_CASES.md](UI_TEST_CASES.md) | Test case UI + matriks akses per peran |
-| [MODULE_PLANS.md](MODULE_PLANS.md) | Rencana modul |
