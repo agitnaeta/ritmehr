@@ -1,8 +1,29 @@
-# Absensi (RitmeHR)
+<h1 align="center">RitmeHR — Aplikasi Absensi & HRIS Indonesia</h1>
 
-Sistem absensi berbasis pemindaian QR yang berkembang menjadi HRIS lengkap:
-penggajian, cuti, kasbon, dokumen karyawan, pajak & BPJS, rekrutmen, kinerja,
+<p align="center">
+  <strong>Absensi QR, penggajian otomatis, PPh 21 & BPJS, cuti, kasbon, dan portal karyawan — dalam satu aplikasi.</strong><br>
+  Software HR & payroll siap pakai untuk UMKM dan perusahaan di Indonesia, dibangun dengan Laravel.
+</p>
+
+<p align="center">
+  <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-10-FF2D20?logo=laravel&logoColor=white">
+  <img alt="PHP 8.2" src="https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white">
+  <img alt="MySQL 8" src="https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white">
+  <img alt="Backpack CRUD 6" src="https://img.shields.io/badge/Backpack%20CRUD-6-2C3E50">
+  <img alt="Tests 403 passing" src="https://img.shields.io/badge/tests-403%20passing-2fb344">
+  <img alt="License MIT" src="https://img.shields.io/badge/license-MIT-blue">
+</p>
+
+---
+
+**RitmeHR** adalah sistem **absensi berbasis pemindaian QR** yang berkembang menjadi
+**HRIS (Human Resource Information System) lengkap**: penggajian otomatis, cuti,
+kasbon, dokumen karyawan, pajak **PPh 21** & **BPJS**, rekrutmen, kinerja,
 akuntansi internal, serta portal layanan mandiri karyawan.
+
+Cocok sebagai **aplikasi absensi karyawan**, **software payroll Indonesia**, dan
+**sistem HR** untuk UMKM hingga perusahaan multi-cabang — self-hosted, open source,
+tanpa biaya lisensi per pengguna.
 
 Dibangun dengan Laravel 10 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
 
