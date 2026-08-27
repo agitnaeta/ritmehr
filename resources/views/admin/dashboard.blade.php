@@ -18,6 +18,32 @@
 
 @section('content')
 
+@if($needsOnboarding)
+<div class="card mb-4 border-primary">
+    <div class="card-body">
+        <h5 class="mb-1"><i class="la la-rocket"></i> Mulai di sini</h5>
+        <p class="text-muted small mb-3">Lengkapi langkah berikut agar RitmeHR siap dipakai.</p>
+        <div class="list-group">
+            @foreach($onboardingSteps as $step)
+            <a href="{{ $step['url'] }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <span>
+                    @if($step['done'])
+                        <i class="la la-check-circle text-success"></i>
+                    @else
+                        <i class="la la-circle-o text-muted"></i>
+                    @endif
+                    {{ $step['label'] }}
+                </span>
+                @unless($step['done'])
+                    <span class="badge bg-primary">Atur</span>
+                @endunless
+            </a>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
 <h5 class="mb-2">Hari Ini</h5>
 <div class="row">
     @php

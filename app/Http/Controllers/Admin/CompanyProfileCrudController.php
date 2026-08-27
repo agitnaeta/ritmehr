@@ -31,7 +31,7 @@ class CompanyProfileCrudController extends CrudController
     {
         CRUD::setModel(\App\Models\CompanyProfile::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/company-profile');
-        CRUD::setEntityNameStrings('Profile Perusahaan', 'Pofile Perusahaan');
+        CRUD::setEntityNameStrings('Profil Perusahaan', 'Profil Perusahaan');
     }
 
     public function autoSetupShowOperation()

@@ -127,4 +127,45 @@ class ReportingDashboardTest extends TestCase
         $settings->set('default_currency', 'IDR');
         $settings->flush();
     }
+
+    // ── Onboarding empty-state (QW-04) ─────────────────────
+
+    /**
+     * Instance baru (hanya 1 user admin, belum ada struktur gaji) harus
+     * menampilkan kartu panduan "Mulai di sini" di dashboard.
+     */
+    public function test_dashboard_shows_onboarding_card_on_empty_instance(): void
+    {
+        $admin = $this->userWith(['report.view']);
+
+        $this->actingAs($admin, $this->guard())
+            ->get(backpack_url('dashboard'))
+            ->assertOk()
+            ->assertSee('Mulai di sini')
+            ->assertSee('Lengkapi Profil Perusahaan')
+            ->assertSee('Atur Struktur Gaji');
+    }
+
+    /**
+     * Setelah ada karyawan + struktur gaji, kartu onboarding harus hilang.
+     */
+    public function test_dashboard_hides_onboarding_card_when_data_exists(): void
+    {
+        $admin = $this->userWith(['report.view']);
+
+        // Tambah karyawan kedua + struktur gaji supaya needsOnboarding = false.
+        $employee = $this->user('Karyawan Satu');
+        \App\Models\Salary::create([
+            'user_id'         => $employee->id,
+            'basic_salary'    => 5_000_000,
+            'amount'          => 5_000_000,
+            'overtime_amount' => 0,
+            'overtime_type'   => 'flat',
+        ]);
+
+        $this->actingAs($admin, $this->guard())
+            ->get(backpack_url('dashboard'))
+            ->assertOk()
+            ->assertDontSee('Mulai di sini');
+    }
 }

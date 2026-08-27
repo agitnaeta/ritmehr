@@ -182,23 +182,37 @@ class SalaryCrudController extends CrudController
         // oleh responsive collapse — buang dari list, "Gaji" (total) sudah cukup.
         $this->crud->removeColumn('basic_salary');
 
+        // [label, prefix, priority, isMoney]
+        // priority 0 = jangan pernah di-collapse oleh responsive DataTables.
+        // Kolom "Gaji" (amount) dipin priority 1 (setelah Nama Karyawan) supaya
+        // nilai gaji selalu terlihat tanpa perlu expand baris.
         $fields = [
-            'amount' => ['Gaji', $cur,1],
-            'overtime_amount' => ['1x Lembur', $cur,3],
-            'overtime_type' => ['Tipe Lembur', '',4],
-            'fine_type' => ['Jenis Denda', '',5],
-            'fine_per_minute' => ['Denda Per-Menit', $cur,6],
-            'fine' => ['Denda Flat',$cur,7],
-            'unpaid_leave_deduction' => ['Potongan Absen', $cur,8],
-            'extra_time' => ['Besaran lebih waktu (per-menit)', $cur,9],
-            'extra_time_rule' => ['Aturan Lebih Waktu', '',10],
+            'amount' => ['Gaji', $cur, 1, true],
+            'overtime_amount' => ['1x Lembur', $cur, 3, true],
+            'overtime_type' => ['Tipe Lembur', '', 4, false],
+            'fine_type' => ['Jenis Denda', '', 5, false],
+            'fine_per_minute' => ['Denda Per-Menit', $cur, 6, true],
+            'fine' => ['Denda Flat', $cur, 7, true],
+            'unpaid_leave_deduction' => ['Potongan Absen', $cur, 8, true],
+            'extra_time' => ['Besaran lebih waktu (per-menit)', $cur, 9, true],
+            'extra_time_rule' => ['Aturan Lebih Waktu', '', 10, false],
         ];
 
-        foreach ($fields as $fieldName => [$label, $prefix,$prior]) {
-            $this->crud->column($fieldName)
+        foreach ($fields as $fieldName => [$label, $prefix, $prior, $isMoney]) {
+            $column = $this->crud->column($fieldName)
                 ->label($label)
-                ->priority($prior)
-                ->prefix($prefix);
+                ->priority($prior);
+
+            if ($isMoney) {
+                // Format ribuan ala Indonesia: "Rp 12.031.000" (konsisten dgn dashboard).
+                $column->type('number')
+                    ->decimals(0)
+                    ->dec_point(',')
+                    ->thousands_sep('.')
+                    ->prefix($prefix !== '' ? $prefix . ' ' : '');
+            } else {
+                $column->prefix($prefix);
+            }
         }
         if($this->crud->getCurrentOperation() != 'show'){
             $this->crud->removeColumn('fine');

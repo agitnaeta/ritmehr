@@ -130,6 +130,14 @@ class UserCrudController extends CrudController
 
         $this->orgListColumns();
 
+        // QW-03 — setFromDb() meng-humanize kolom DB jadi label Inggris
+        // ("Name/Email/Locale/Employee/Join date"). Seragamkan ke Bahasa Indonesia.
+        $this->crud->column('name')->label('Nama');
+        $this->crud->column('email')->label('Email');
+        $this->crud->column('locale')->label('Bahasa');
+        $this->crud->column('employee_id')->label('Karyawan');
+        $this->crud->column('join_date')->label('Tgl Bergabung');
+
         $this->crud->addButtonFromView('line','user-print','user-print','end');
         $this->crud->allowAccess("user_export");
         $this->crud->addButtonFromView('top','user_export','user_export','end');

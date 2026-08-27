@@ -17,6 +17,18 @@ class DashboardController extends Controller
 
     public function index()
     {
+        // QW-04 — instance baru (hanya admin, belum ada data inti) butuh panduan
+        // "mulai di sini" alih-alih deretan angka nol tanpa arah.
+        $needsOnboarding = \App\Models\User::count() <= 1
+            || ! \App\Models\Salary::exists();
+
+        $onboardingSteps = [
+            ['label' => 'Lengkapi Profil Perusahaan', 'done' => \App\Models\CompanyProfile::exists(), 'url' => backpack_url('company-profile')],
+            ['label' => 'Tambah Departemen & Cabang', 'done' => \App\Models\Department::exists() && \App\Models\Branch::exists(), 'url' => backpack_url('department')],
+            ['label' => 'Tambah / Import Karyawan', 'done' => \App\Models\User::count() > 1, 'url' => backpack_url('user')],
+            ['label' => 'Atur Struktur Gaji', 'done' => \App\Models\Salary::exists(), 'url' => backpack_url('salary')],
+        ];
+
         return view('admin.dashboard', [
             'today'        => $this->dashboard->todaySnapshot(),
             'month'        => $this->dashboard->monthSnapshot(),
@@ -25,6 +37,8 @@ class DashboardController extends Controller
             'leaveThisWeek' => $this->dashboard->leaveThisWeek(),
             'headcount'    => $this->dashboard->headcount(),
             'recapMonth'   => now()->format('m-Y'),
+            'needsOnboarding' => $needsOnboarding,
+            'onboardingSteps' => $onboardingSteps,
         ]);
     }
 
