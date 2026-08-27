@@ -24,4 +24,4 @@ Setelah 2 fix → **CI hijau penuh** di kedua versi PHP.
 ## Kriteria selesai
 - [x] Semua lapis test hijau di Laravel 12 (lokal + CI 8.2/8.3)
 - [x] README tercermin kondisi baru
-- [~] Merge ke master → via PR
+- [x] Merge ke master → PR #32 merged (commit `88b2f27`)
