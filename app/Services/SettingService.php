@@ -51,6 +51,17 @@ class SettingService
                 'fallback' => 'app.office_radius',
             ],
 
+            // ── Mode Absensi (M22 — QR vs Camera Location) ─────
+            'attendance_mode' => [
+                'group' => 'lokasi', 'type' => 'select', 'label' => 'Mode Absensi',
+                'options' => ['qr' => 'QR Mode (scanner di pintu)', 'camera' => 'Camera Location Mode (absen mandiri)'],
+                'help' => 'QR = pemindai bersama di pintu. Camera = karyawan absen mandiri dari HP (selfie + lokasi + peta).',
+            ],
+            'camera_require_selfie' => [
+                'group' => 'lokasi', 'type' => 'bool', 'label' => 'Wajib Selfie (Camera Mode)',
+                'help' => 'Jika aktif, karyawan wajib mengambil foto saat absen mandiri.',
+            ],
+
             // ── Notifikasi (WhatsApp via WAHA self-hosted) ─────
             'whatsapp_enabled' => [
                 'group' => 'notifikasi', 'type' => 'bool', 'label' => 'Aktifkan WhatsApp',

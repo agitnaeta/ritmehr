@@ -23,6 +23,12 @@ class Presence extends Model
         'outside',
         'extra_time',
         'branch_id',
+        'selfie_path',
+        'source',
+        'accuracy',
+        'approval_status',
+        'approval_note',
+        'approved_by',
     ];
 
     public function user(){
@@ -31,5 +37,19 @@ class Presence extends Model
 
     public function branch(){
         return $this->belongsTo(Branch::class);
+    }
+
+    public function approver(){
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /** Authorized stream URL for the selfie proof, or null when there is none. */
+    public function selfieUrl(): ?string
+    {
+        if (! $this->selfie_path) {
+            return null;
+        }
+
+        return route('portal.attendance.selfie', $this->id);
     }
 }

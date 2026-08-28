@@ -3,6 +3,30 @@
 @section('heading', 'Halo, ' . $user->name)
 
 @section('content')
+{{-- M22 — mode-aware attendance action --}}
+@php $attMode = setting('attendance_mode', 'qr'); @endphp
+@if($attMode === 'camera')
+    <div class="card mb-4 border-0" style="background:linear-gradient(135deg,#2563eb,#1e3a8a);">
+        <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="text-white">
+                <div class="fw-bold fs-5"><i class="la la-camera"></i> Absen Mandiri</div>
+                <div class="small opacity-75">Ambil foto selfie + lokasi langsung dari HP Anda.</div>
+            </div>
+            <a href="{{ route('portal.attendance.checkin') }}" class="btn btn-light btn-lg fw-semibold">
+                <i class="la la-fingerprint"></i> Absen Sekarang
+            </a>
+        </div>
+    </div>
+@else
+    <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+        <i class="la la-qrcode la-2x"></i>
+        <div>
+            <b>Mode Absensi: QR</b><br>
+            <span class="small">Pindai QR pribadi Anda di perangkat pemindai yang tersedia di pintu masuk.</span>
+        </div>
+    </div>
+@endif
+
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="card stat-card h-100">

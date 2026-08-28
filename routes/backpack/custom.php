@@ -70,6 +70,10 @@ Route::group([
         Route::get("/scan",[PresenceCrudController::class,'scan'])->name('presence.scan');
         Route::post("/record",[PresenceCrudController::class,'record'])->name('presence.record');
         Route::get("/record",[PresenceCrudController::class,'record'])->name('presence.record.get');
+        // M22-5 — approval absen luar-radius (Camera Mode)
+        Route::get("/approvals",[PresenceCrudController::class,'approvals'])->name('presence.approvals');
+        Route::post("/{id}/approve",[PresenceCrudController::class,'approveAction'])->name('presence.approve');
+        Route::post("/{id}/reject",[PresenceCrudController::class,'rejectAction'])->name('presence.reject');
     });
 
     Route::group(['prefix'=>'schedule'],function (){

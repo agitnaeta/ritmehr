@@ -3,6 +3,13 @@
 @section('heading', 'Riwayat Kehadiran')
 
 @section('content')
+@if(setting('attendance_mode', 'qr') === 'camera')
+<div class="mb-3 text-end">
+    <a href="{{ route('portal.attendance.checkin') }}" class="btn btn-primary">
+        <i class="la la-camera"></i> Absen Sekarang
+    </a>
+</div>
+@endif
 <div class="card mb-3">
     <div class="card-body">
         <form method="GET" class="row g-2 align-items-end">
@@ -93,6 +100,7 @@
                                             @endif
                                             @if($p->is_overtime)<span class="badge bg-info">Lembur</span>@endif
                                             @if($p->outside)<span class="badge bg-danger">Luar</span>@endif
+                                            @if($p->source === 'camera')<span class="badge bg-primary" title="Absen kamera"><i class="la la-camera"></i></span>@endif
                                         </div>
                                     </div>
                                 @endif
@@ -116,8 +124,10 @@
                         <th>Tanggal</th>
                         <th>Masuk</th>
                         <th>Pulang</th>
+                        <th>Sumber</th>
                         <th>Status</th>
                         <th class="text-end">Telat (menit)</th>
+                        <th class="text-center">Bukti</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,6 +137,13 @@
                             <td>{{ \Carbon\Carbon::parse($p->in)->format('H:i') }}</td>
                             <td>{{ $p->out ? \Carbon\Carbon::parse($p->out)->format('H:i') : '—' }}</td>
                             <td>
+                                @if($p->source === 'camera')
+                                    <span class="badge bg-primary"><i class="la la-camera"></i> Kamera</span>
+                                @else
+                                    <span class="badge bg-secondary"><i class="la la-qrcode"></i> QR</span>
+                                @endif
+                            </td>
+                            <td>
                                 @if($p->is_late)
                                     <span class="badge bg-warning text-dark">Terlambat</span>
                                 @else
@@ -134,11 +151,26 @@
                                 @endif
                                 @if($p->is_overtime)<span class="badge bg-info">Lembur</span>@endif
                                 @if($p->outside)<span class="badge bg-danger">Luar Radius</span>@endif
+                                @if($p->approval_status === 'pending')<span class="badge bg-warning text-dark">Menunggu Persetujuan</span>
+                                @elseif($p->approval_status === 'rejected')<span class="badge bg-dark">Ditolak</span>@endif
                             </td>
                             <td class="text-end">{{ $p->late_minute ?: '—' }}</td>
+                            <td class="text-center">
+                                @if($p->selfie_path || ($p->lat && $p->lng))
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-bukti"
+                                            data-selfie="{{ $p->selfieUrl() ?? '' }}"
+                                            data-lat="{{ $p->lat }}" data-lng="{{ $p->lng }}"
+                                            data-date="{{ \Carbon\Carbon::parse($p->in)->format('d/m/Y H:i') }}"
+                                            data-outside="{{ $p->outside ? 1 : 0 }}">
+                                        <i class="la la-eye"></i> Lihat
+                                    </button>
+                                @else
+                                    <span class="text-muted small">—</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center text-muted p-4">
+                        <tr><td colspan="7" class="text-center text-muted p-4">
                             Belum ada kehadiran tercatat pada bulan ini.
                         </td></tr>
                     @endforelse
@@ -147,6 +179,73 @@
         </div>
     </div>
 </div>
+
+{{-- Modal bukti kehadiran (selfie + peta) --}}
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<div class="modal fade" id="buktiModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="la la-map-marked-alt"></i> Bukti Kehadiran</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-muted small mb-2" id="bukti-date"></div>
+                <div id="bukti-selfie-wrap" class="mb-3 text-center">
+                    <img id="bukti-selfie" src="" alt="Selfie bukti" class="img-fluid rounded" style="max-height:280px;">
+                </div>
+                <div id="bukti-map" style="height:220px; border-radius:12px;"></div>
+                <div id="bukti-outside" class="alert alert-warning small mt-2 mb-0 d-none">
+                    <i class="la la-exclamation-triangle"></i> Absen di luar radius kantor — menunggu persetujuan manajer.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    let bmap = null, bmarker = null;
+    const modalEl = document.getElementById('buktiModal');
+    if (!modalEl) return;
+    const modal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll('.btn-bukti').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const d = btn.dataset;
+
+            // Selfie
+            const wrap = document.getElementById('bukti-selfie-wrap');
+            const img = document.getElementById('bukti-selfie');
+            if (d.selfie) { img.src = d.selfie; wrap.classList.remove('d-none'); }
+            else { wrap.classList.add('d-none'); }
+
+            document.getElementById('bukti-date').textContent = 'Direkam: ' + (d.date || '-');
+            document.getElementById('bukti-outside').classList.toggle('d-none', d.outside !== '1');
+
+            modal.show();
+
+            // Map — build after modal is shown so Leaflet sizes correctly.
+            setTimeout(() => {
+                const lat = parseFloat(d.lat), lng = parseFloat(d.lng);
+                const hasCoord = !isNaN(lat) && !isNaN(lng);
+                if (!bmap) {
+                    bmap = L.map('bukti-map', { zoomControl:false, attributionControl:false });
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(bmap);
+                }
+                if (hasCoord) {
+                    bmap.setView([lat, lng], 16);
+                    if (bmarker) bmap.removeLayer(bmarker);
+                    bmarker = L.circleMarker([lat, lng], { radius:9, color:'#2563eb', fillColor:'#2563eb', fillOpacity:.9, weight:3 })
+                        .addTo(bmap).bindTooltip('Lokasi absen');
+                }
+                bmap.invalidateSize();
+            }, 300);
+        });
+    });
+})();
+</script>
 
 <script>
 (function () {

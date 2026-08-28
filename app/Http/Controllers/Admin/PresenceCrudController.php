@@ -186,6 +186,30 @@ class PresenceCrudController extends CrudController
         return view('presence.scan');
     }
 
+    /**
+     * Custom Show — presents the attendance record as a readable report with
+     * the selfie proof, a location map, and source/approval badges instead of a
+     * raw column dump (M22-3).
+     */
+    public function show($id)
+    {
+        $this->crud->hasAccessOrFail('show');
+
+        $presence = Presence::with(['user', 'branch', 'approver'])->findOrFail($id);
+
+        // Reuse the same team-scoping as the list, so managers can't open a
+        // record outside their team by guessing the id.
+        $me = backpack_auth()->check() ? backpack_user() : null;
+        if ($me && ! $me->can('presence.view')) {
+            abort(403, 'Anda tidak berhak melihat data kehadiran.');
+        }
+
+        return view('admin.presence.show', [
+            'presence' => $presence,
+            'crud'     => $this->crud,
+        ]);
+    }
+
     public function record(Request $request){
         if($request->qr){
             $user = User::with('schedule')
@@ -199,5 +223,73 @@ class PresenceCrudController extends CrudController
             return response()->json($p);
         }
         return response()->json("Not Found",404);
+    }
+
+    // ── M22-5 — Approval absen luar-radius (Camera Mode) ───
+
+    /** List camera check-ins awaiting approval, scoped to the viewer's team. */
+    public function approvals()
+    {
+        $me = backpack_user();
+        abort_unless($me?->can('presence.edit'), 403, 'Anda tidak berhak menyetujui kehadiran.');
+
+        $pending = Presence::with(['user', 'branch'])
+            ->where('source', 'camera')
+            ->where('approval_status', 'pending')
+            ->whereHas('user', fn ($q) => $q->visibleTo($me))
+            ->orderByDesc('in')
+            ->get();
+
+        return view('admin.presence.approvals', [
+            'pending' => $pending,
+            'crud'    => $this->crud,
+        ]);
+    }
+
+    public function approveAction($id, Request $request)
+    {
+        return $this->decide($id, 'approve', $request);
+    }
+
+    public function rejectAction($id, Request $request)
+    {
+        return $this->decide($id, 'reject', $request);
+    }
+
+    private function decide($id, string $action, Request $request)
+    {
+        $me = backpack_user();
+        abort_unless($me?->can('presence.edit'), 403);
+
+        $presence = Presence::with('user')
+            ->where('source', 'camera')
+            ->where('approval_status', 'pending')
+            ->whereHas('user', fn ($q) => $q->visibleTo($me))
+            ->findOrFail($id);
+
+        $service = app(PresenceService::class);
+        $note = $request->input('note');
+
+        if ($action === 'approve') {
+            $service->approve($presence, $me, $note);
+            $type = 'attendance_approved';
+            $title = 'Absensi Disetujui';
+            $msg = 'Absensi Anda pada ' . \Carbon\Carbon::parse($presence->in)->format('d M Y H:i') . ' telah disetujui.';
+        } else {
+            $service->reject($presence, $me, $note);
+            $type = 'attendance_rejected';
+            $title = 'Absensi Ditolak';
+            $msg = 'Absensi Anda pada ' . \Carbon\Carbon::parse($presence->in)->format('d M Y H:i') . ' ditolak.'
+                . ($note ? ' Alasan: ' . $note : '');
+        }
+
+        app(\App\Services\NotificationService::class)->notify($presence->user, $type, [
+            'title' => $title,
+            'body'  => $msg,
+        ]);
+
+        Alert::add('success', $action === 'approve' ? 'Kehadiran disetujui.' : 'Kehadiran ditolak.')->flash();
+
+        return redirect(route('presence.approvals'));
     }
 }

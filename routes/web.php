@@ -68,6 +68,16 @@ Route::group([
 
     Route::get('/attendance', [PortalController::class, 'attendance'])->name('attendance');
 
+    // M22 — Self-Attendance (Camera Location Mode). Guarded to camera mode
+    // inside the controller; the record is always for the session user.
+    Route::get('/attendance/check-in', [\App\Http\Controllers\Portal\PortalAttendanceController::class, 'create'])
+         ->name('attendance.checkin');
+    Route::post('/attendance/check-in', [\App\Http\Controllers\Portal\PortalAttendanceController::class, 'store'])
+         ->name('attendance.checkin.store');
+    // Authorized selfie proof stream (owner or presence.view). Private disk.
+    Route::get('/attendance/selfie/{presence}', [\App\Http\Controllers\Portal\PortalAttendanceController::class, 'selfie'])
+         ->whereNumber('presence')->name('attendance.selfie');
+
     Route::get('/salary', [PortalController::class, 'salaryIndex'])->name('salary.index');
     Route::get('/salary/{id}', [PortalController::class, 'salaryShow'])
          ->whereNumber('id')->name('salary.show');

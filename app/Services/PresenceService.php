@@ -243,6 +243,43 @@ class PresenceService
 
         return $distance > $radius;
     }
+
+    /**
+     * Approve a pending (out-of-radius) camera check-in. Idempotent — only a
+     * pending record transitions. Records who decided and notifies the employee.
+     */
+    public function approve(Presence $presence, User $approver, ?string $note = null): Presence
+    {
+        if ($presence->approval_status !== 'pending') {
+            return $presence;
+        }
+
+        $presence->approval_status = 'approved';
+        $presence->approval_note   = $note;
+        $presence->approved_by     = $approver->id;
+        $presence->saveQuietly();
+
+        return $presence;
+    }
+
+    /**
+     * Reject a pending camera check-in. The record stays (audit trail) but is
+     * not counted as valid attendance.
+     */
+    public function reject(Presence $presence, User $approver, ?string $note = null): Presence
+    {
+        if ($presence->approval_status !== 'pending') {
+            return $presence;
+        }
+
+        $presence->approval_status = 'rejected';
+        $presence->approval_note   = $note;
+        $presence->approved_by     = $approver->id;
+        $presence->saveQuietly();
+
+        return $presence;
+    }
+
     public function calculateExtraTime(Presence $presence){
         $user = User::with('schedule')
             ->where('id',$presence->user_id)

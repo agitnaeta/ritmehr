@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup — Absen Mandiri (Camera Location Mode)</title>
+<link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta20/dist/css/tabler.min.css" rel="stylesheet">
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+<style>
+  body { background:#f5f7fb; }
+  .phone {
+    max-width: 430px; margin: 24px auto; background:#fff; border-radius:22px;
+    box-shadow:0 20px 60px rgba(15,23,42,.16); overflow:hidden; border:1px solid #e6e9f0;
+  }
+  .phone-head {
+    background:linear-gradient(135deg,#2563eb,#1e3a8a); color:#fff; padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .phone-head .t { font-weight:600; font-size:15px; }
+  .phone-head .clock { font-variant-numeric:tabular-nums; font-weight:700; font-size:15px; opacity:.95;}
+  .cam {
+    position:relative; aspect-ratio:3/4; background:#0b1120; overflow:hidden;
+  }
+  .cam .selfie {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:saturate(1.05);
+  }
+  .cam .reticle {
+    position:absolute; left:50%; top:44%; transform:translate(-50%,-50%);
+    width:190px; height:190px; border-radius:50%;
+    box-shadow:0 0 0 3px rgba(255,255,255,.55), 0 0 0 9999px rgba(11,17,32,.28);
+  }
+  .cam .badge-live {
+    position:absolute; top:12px; left:12px; background:rgba(239,68,68,.92); color:#fff;
+    font-size:11px; font-weight:600; padding:4px 9px; border-radius:999px; letter-spacing:.02em;
+    display:flex; align-items:center; gap:5px;
+  }
+  .cam .badge-live .d { width:7px; height:7px; border-radius:50%; background:#fff; animation:pulse 1.2s infinite;}
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .cam .cam-hint {
+    position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+    background:rgba(20,20,26,.72); color:#f1f5f9; font-size:12px; padding:6px 12px;
+    border-radius:999px; white-space:nowrap; backdrop-filter:blur(10px);
+  }
+  #map { height:180px; }
+  .geo-row {
+    display:flex; align-items:center; gap:10px; padding:12px 16px; background:#ecfdf5;
+    border-top:1px solid #d1fae5; border-bottom:1px solid #d1fae5;
+  }
+  .geo-row.out { background:#fef2f2; border-color:#fee2e2; }
+  .geo-row .ic {
+    width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
+    background:#22c55e; color:#fff; flex:none;
+  }
+  .geo-row.out .ic { background:#ef4444; }
+  .geo-row .txt b { display:block; font-size:14px; color:#0f172a; }
+  .geo-row .txt span { font-size:12px; color:#475569; }
+  .meta { padding:10px 16px 2px; }
+  .meta .kv { display:flex; justify-content:space-between; font-size:12.5px; padding:3px 0; }
+  .meta .kv span:first-child { color:#64748b; }
+  .meta .kv span:last-child { color:#0f172a; font-weight:500; font-variant-numeric:tabular-nums; }
+  .actions { padding:14px 16px 20px; }
+  .btn-absen { font-size:16px; font-weight:600; padding:14px; border-radius:14px; }
+  .caption { max-width:430px; margin:0 auto 30px; text-align:center; color:#64748b; font-size:13px; }
+  .tag-proto {
+    max-width:430px; margin:20px auto 0; text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="tag-proto">
+  <span class="badge bg-yellow-lt" style="font-size:12px;">PROTOTIPE VISUAL — bukan kode produksi (M22 Camera Location Mode)</span>
+</div>
+
+<div class="phone">
+  <div class="phone-head">
+    <span class="t">📸 Absen Mandiri</span>
+    <span class="clock" id="clk">08:03:14</span>
+  </div>
+
+  <!-- Preview kamera + selfie -->
+  <div class="cam">
+    <img class="selfie" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80&auto=format&fit=crop" alt="preview kamera">
+    <div class="reticle"></div>
+    <div class="badge-live"><span class="d"></span> KAMERA AKTIF</div>
+    <div class="cam-hint">Posisikan wajah di dalam lingkaran</div>
+  </div>
+
+  <!-- Status geofence -->
+  <div class="geo-row">
+    <div class="ic">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
+    <div class="txt">
+      <b>Dalam area kantor</b>
+      <span>Kantor Pusat · 34 m dari titik pusat (radius 100 m)</span>
+    </div>
+  </div>
+
+  <!-- Map layer bukti -->
+  <div id="map"></div>
+
+  <!-- Meta bukti -->
+  <div class="meta">
+    <div class="kv"><span>Karyawan</span><span>Ahmad Setiawan</span></div>
+    <div class="kv"><span>Koordinat</span><span>-6.20124, 106.81693</span></div>
+    <div class="kv"><span>Akurasi GPS</span><span>±8 m</span></div>
+    <div class="kv"><span>Waktu</span><span>Kamis, 28 Agu 2026 · 08:03</span></div>
+  </div>
+
+  <!-- Aksi -->
+  <div class="actions">
+    <button class="btn btn-primary w-100 btn-absen">
+      Ambil Foto &amp; Absen Masuk
+    </button>
+    <p class="text-center text-muted mt-2 mb-0" style="font-size:12px;">Foto &amp; lokasi disimpan sebagai bukti kehadiran</p>
+  </div>
+</div>
+
+<p class="caption">Layar <b>/my/attendance/check-in</b> — preview kamera (selfie bukti) · peta Leaflet posisi + radius geofence · status dalam/luar area · 1 tombol absen. Mobile-first.</p>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const office = [-6.2012, 106.8169];
+  const me = [-6.20124, 106.81693];
+  const map = L.map('map', { zoomControl:false, attributionControl:false }).setView(me, 17);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  // radius geofence (hijau = dalam)
+  L.circle(office, { radius:100, color:'#22c55e', fillColor:'#22c55e', fillOpacity:.12, weight:2 }).addTo(map);
+  L.marker(office).addTo(map).bindTooltip('Kantor Pusat');
+  // posisi karyawan
+  L.circleMarker(me, { radius:9, color:'#2563eb', fillColor:'#2563eb', fillOpacity:.9, weight:3 }).addTo(map).bindTooltip('Anda di sini');
+  setTimeout(()=>map.invalidateSize(), 200);
+</script>
+</body>
+</html>

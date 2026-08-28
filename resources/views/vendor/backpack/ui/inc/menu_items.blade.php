@@ -25,6 +25,9 @@
     @if($me->can('presence.view'))
         <x-backpack::menu-dropdown-item title="Kehadiran" icon="la la-calendar-check" :link="backpack_url('presence')" />
     @endif
+    @if($me->can('presence.edit'))
+        <x-backpack::menu-dropdown-item title="Persetujuan Absensi" icon="la la-user-check" :link="route('presence.approvals')" />
+    @endif
     @if($me->can('national_holiday.view'))
         <x-backpack::menu-dropdown-item title="Libur Nasional" icon="la la-sun" :link="backpack_url('national-holiday')" />
     @endif
