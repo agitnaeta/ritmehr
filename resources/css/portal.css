@@ -733,5 +733,28 @@ h4, .h4 { font-size: var(--fs-card);    line-height: var(--lh-card);    letter-s
 .portal-mobile .attendance-filter__pick { display: flex; align-items: flex-end; gap: var(--sp-2); }
 .portal-mobile .attendance-filter__view .btn { flex: 1 1 0; }
 
+/* ── Kolom isian: beri batas tegas ────────────────────────────────────────
+   Token --field-bg = --n-100 (#f1f5f9) memakai gaya "filled field" yang
+   mengandalkan latar kartu PUTIH. Di portal, kartu justru sunken (--bg-sunken
+   = --n-100), warnanya identik dengan field → kolom isian jadi tak terlihat.
+   Beri latar putih + garis tegas agar batas kolom terbaca (sama seperti yang
+   sudah diterapkan di portal karir). */
+.portal-mobile .form-control,
+.portal-mobile .form-select {
+    background-color: var(--bg-surface);
+    border-color: var(--border-strong);
+}
+.portal-mobile .form-control:hover:not(:focus),
+.portal-mobile .form-select:hover:not(:focus) {
+    background-color: var(--bg-surface);
+    border-color: var(--text-muted);
+}
+.portal-mobile .form-control:focus,
+.portal-mobile .form-select:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+}
+
+
 
 
