@@ -726,4 +726,12 @@ h4, .h4 { font-size: var(--fs-card);    line-height: var(--lh-card);    letter-s
 .portal-mobile .portal-title { font-size: 1.5rem; }
 .portal-mobile .btn-group.flex-wrap-mobile { flex-wrap: wrap; }
 
+/* ── Filter kehadiran: pilih bulan (atas) + toggle tampilan (bawah) ────────
+   Di bingkai sempit, layout sebaris lama membuat toggle Kalender/Tabel jatuh
+   ke baris kedua dan menumpuk. Dipisah tegas jadi dua baris. */
+.portal-mobile .attendance-filter { display: flex; flex-direction: column; gap: var(--sp-3); }
+.portal-mobile .attendance-filter__pick { display: flex; align-items: flex-end; gap: var(--sp-2); }
+.portal-mobile .attendance-filter__view .btn { flex: 1 1 0; }
+
+
 

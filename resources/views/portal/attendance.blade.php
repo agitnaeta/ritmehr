@@ -12,22 +12,23 @@
 @endif
 <div class="card mb-3">
     <div class="card-body">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-auto">
-                <label class="form-label mb-0">Bulan</label>
-                <input type="month" name="month" class="form-control form-control-sm"
-                       value="{{ $month->format('Y-m') }}">
-            </div>
-            <div class="col-auto"><button class="btn btn-sm btn-primary">Tampilkan</button></div>
-            <div class="col-auto ms-auto">
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary active" id="btnViewCalendar">
-                        <i class="la la-calendar"></i> Kalender
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" id="btnViewTable">
-                        <i class="la la-list"></i> Tabel
-                    </button>
+        <form method="GET" class="attendance-filter">
+            <div class="attendance-filter__pick">
+                <div class="flex-grow-1">
+                    <label class="form-label mb-1">Bulan</label>
+                    <input type="month" name="month" class="form-control form-control-sm"
+                           value="{{ $month->format('Y-m') }}">
                 </div>
+                <button class="btn btn-sm btn-primary">Tampilkan</button>
+            </div>
+
+            <div class="btn-group btn-group-sm attendance-filter__view w-100" role="group">
+                <button type="button" class="btn btn-outline-secondary active" id="btnViewCalendar">
+                    <i class="la la-calendar"></i> Kalender
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="btnViewTable">
+                    <i class="la la-list"></i> Tabel
+                </button>
             </div>
         </form>
     </div>
