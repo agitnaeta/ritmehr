@@ -51,6 +51,10 @@ class DemoDataSeeder extends Seeder
         $this->loans($people, $calendar);
         $this->payroll($people, $calendar);
 
+        // Neraca/laporan keuangan demo (idempoten; butuh ACC_ACTIVE untuk
+        // muncul di menu, tapi datanya aman diseed kapan saja).
+        $this->call(DemoAccountingSeeder::class);
+
         $this->command?->newLine();
         $this->command?->info('Demo data ready. Log in at /admin/login:');
         $this->command?->table(
@@ -390,6 +394,10 @@ class DemoDataSeeder extends Seeder
             // tax and BPJS on top.
             app(\App\Services\SalaryService::class)->calculateSalaryRecap($recap);
             $tax->applyToRecap($recap->fresh());
+
+            // Tandai rekap bulan penuh sebagai sudah dibayar supaya slip gaji
+            // demo terlihat lengkap (status Dibayar), bukan menggantung.
+            $recap->fresh()->forceFill(['paid' => true, 'method' => 'transfer'])->saveQuietly();
         }
 
         $this->command?->info("Applied tax & BPJS to salary recaps for {$recapMonth}.");

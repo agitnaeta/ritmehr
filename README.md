@@ -84,12 +84,32 @@ operasi di controller. Manager hanya melihat bawahan langsungnya.
 Dashboard admin dengan data demo pada sebuah hari kerja: kehadiran hari ini,
 tren 12 bulan, headcount per departemen, dan daftar keterlambatan.
 
-Kartu penggajian menunjukkan Rp 0 karena tangkapan layar ini diambil di
-pertengahan bulan — rekap gaji mengukur satu bulan penuh, sehingga baru terisi
-setelah perhitungan bulanan dijalankan. Perilaku ini disengaja, bukan kekosongan
-data.
+Kartu penggajian pada bagian "Bulan Ini" menunjukkan Rp 0 karena rekap gaji
+mengukur satu bulan penuh — baru terisi setelah perhitungan bulanan dijalankan.
+Perilaku ini disengaja, bukan kekosongan data.
+
+### Slip gaji karyawan
+![Slip gaji karyawan](docs/images/employee-payslip.png)
+
+Portal karyawan (`/my`) yang dikunci ke tampilan ponsel. Slip gaji memuat rincian
+pendapatan, potongan (PPh 21 & BPJS), nilai bersih diterima, dan status pembayaran.
+
+### Kehadiran karyawan
+![Kehadiran karyawan](docs/images/employee-attendance.png)
+
+Riwayat kehadiran mode agenda: ringkasan bulanan (hadir, terlambat, lembur, di
+luar radius) diikuti kartu per-hari lengkap dengan jam masuk/pulang, sumber
+absen (QR/kamera), dan bukti kehadiran.
+
+### Neraca keuangan
+![Neraca keuangan](docs/images/balance-sheet.png)
+
+Laporan neraca dari modul akuntansi internal (`ACC_ACTIVE=true`): aset, kewajiban,
+dan ekuitas dengan laba berjalan — selalu ditampilkan dengan penanda keseimbangan
+(Aset = Kewajiban + Ekuitas).
 
 ---
+
 
 ## Prasyarat
 
@@ -326,8 +346,9 @@ pemisah antar pelanggan; tidak ada kolom tenant di tabel inti.
 **Dokumen karyawan** disimpan di disk `local` yang privat, bukan `public`.
 Unduhan mengalir lewat aplikasi setelah pemeriksaan hak akses.
 
-**WhatsApp** memakai `LogWhatsAppGateway` yang hanya mencatat, sampai
-`FONNTE_TOKEN` diisi — supaya tidak ada notifikasi yang berpura-pura terkirim.
+**WhatsApp** memakai `LogWhatsAppGateway` yang hanya mencatat, sampai server
+**WAHA** (self-hosted, `waha_url` di pengaturan) dikonfigurasi — supaya tidak ada
+notifikasi yang berpura-pura terkirim.
 
 **Integrasi akuntansi** nonaktif kecuali `ACC_ACTIVE=true` diset di `.env`.
 
