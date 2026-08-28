@@ -11,7 +11,7 @@
          dengan token proyek, sehingga urutannya menentukan. --}}
     @vite('resources/css/portal.css')
 </head>
-<body>
+<body class="portal-mobile">
 
 {{-- Bidang biru: memuat navigasi mengapung dan judul halaman.
      Markup di dalam <nav> sengaja tidak diubah agar collapse dan dropdown

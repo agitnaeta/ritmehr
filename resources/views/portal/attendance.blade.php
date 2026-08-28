@@ -315,12 +315,12 @@
     }
     bCal.addEventListener('click', () => show('calendar'));
     bTbl.addEventListener('click', () => show('table'));
-    // Di mobile, agenda (tabel) lebih terbaca daripada kalender 7-kolom yang sempit,
-    // jadi jadikan default bila pengguna belum pernah memilih.
+    // Portal dikunci ke tampilan mobile → agenda lebih terbaca daripada kalender
+    // 7-kolom. Jadikan default bila pengguna belum pernah memilih.
     let saved = null;
     try { saved = localStorage.getItem(KEY); } catch (e) {}
-    const isMobile = window.matchMedia('(max-width: 991.98px)').matches;
-    show(saved || (isMobile ? 'table' : 'calendar'));
+    const lockedMobile = document.body.classList.contains('portal-mobile');
+    show(saved || (lockedMobile ? 'table' : 'calendar'));
 })();
 </script>
 @endsection
