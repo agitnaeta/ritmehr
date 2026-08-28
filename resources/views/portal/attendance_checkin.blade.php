@@ -27,6 +27,9 @@
     .geo-status .ic { width:38px; height:38px; border-radius:10px; display:grid; place-items:center; background:#94a3b8; color:#fff; flex:none; font-size:20px; }
     .geo-status.in .ic { background:#22c55e; }
     .geo-status.out .ic { background:#ef4444; }
+    .rm-icon { width:72px; height:72px; border-radius:50%; display:grid; place-items:center; margin:0 auto; font-size:40px; color:#fff; background:#22c55e; }
+    .rm-icon.is-warn { background:#f59e0b; }
+    .rm-icon.is-error { background:#ef4444; }
 </style>
 
 <div class="row justify-content-center g-3">
@@ -72,6 +75,25 @@
 </div>
 
 <div id="result" class="alert d-none mt-3" role="alert"></div>
+
+{{-- Modal konfirmasi hasil absen — feedback yang jelas & di tengah layar,
+     supaya karyawan langsung tahu absennya berhasil atau perlu tindakan. --}}
+<div class="modal fade" id="resultModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+            <div class="modal-body p-4">
+                <div id="rm-icon" class="rm-icon mb-3"><i class="la la-check"></i></div>
+                <h4 id="rm-title" class="mb-1">Absen tercatat</h4>
+                <div id="rm-time" class="text-muted mb-2"></div>
+                <div id="rm-note" class="alert alert-warning small py-2 mb-3 d-none"></div>
+                <a href="{{ route('portal.dashboard') }}" class="btn btn-primary w-100 btn-lg">
+                    <i class="la la-home"></i> Kembali ke Beranda
+                </a>
+                <a href="{{ route('portal.attendance') }}" class="btn btn-link w-100 mt-1">Lihat Riwayat Kehadiran</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -193,25 +215,49 @@
             const data = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-                resultBox.className = 'alert alert-danger mt-3';
-                resultBox.textContent = data.message || 'Gagal menyimpan absensi.';
-                resultBox.classList.remove('d-none');
+                showResult('error', 'Gagal menyimpan', data.message || 'Gagal menyimpan absensi.', null);
                 btn.disabled = false;
                 return;
             }
 
-            resultBox.className = 'alert ' + (data.outside ? 'alert-warning' : 'alert-success') + ' mt-3';
-            resultBox.innerHTML = '<b>' + data.message + '</b>' +
-                (data.outside ? '<br>Di luar radius — menunggu persetujuan manajer.' : '');
-            resultBox.classList.remove('d-none');
+            // Stop kamera setelah sukses supaya lampu kamera mati & hemat baterai.
+            try { (video.srcObject?.getTracks() || []).forEach(t => t.stop()); } catch (e) {}
+
+            const timeStr = data.time ? new Date(data.time.replace(' ', 'T')).toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' }) : '';
+            showResult(
+                data.outside ? 'warn' : 'success',
+                data.message || 'Absen tercatat.',
+                timeStr ? ('Pukul ' + timeStr + ' WIB') : '',
+                data.outside ? 'Lokasi di luar radius kantor — menunggu persetujuan manajer.' : null
+            );
             hint.textContent = 'Selesai.';
         } catch (e) {
-            resultBox.className = 'alert alert-danger mt-3';
-            resultBox.textContent = 'Gagal terhubung — periksa koneksi.';
-            resultBox.classList.remove('d-none');
+            showResult('error', 'Gagal terhubung', 'Periksa koneksi lalu coba lagi.', null);
             btn.disabled = false;
         }
     });
+
+    // Tampilkan modal hasil di tengah layar + fallback ke alert box.
+    const resultModalEl = document.getElementById('resultModal');
+    const resultModal = resultModalEl ? new bootstrap.Modal(resultModalEl) : null;
+
+    function showResult(kind, title, time, note) {
+        // Alert box (fallback bila modal gagal).
+        resultBox.className = 'alert mt-3 ' + (kind === 'success' ? 'alert-success' : kind === 'warn' ? 'alert-warning' : 'alert-danger');
+        resultBox.innerHTML = '<b>' + title + '</b>' + (note ? '<br>' + note : '');
+        resultBox.classList.remove('d-none');
+
+        if (!resultModal) return;
+        const icon = document.getElementById('rm-icon');
+        icon.className = 'rm-icon mb-3' + (kind === 'warn' ? ' is-warn' : kind === 'error' ? ' is-error' : '');
+        icon.querySelector('i').className = 'la ' + (kind === 'error' ? 'la-times' : kind === 'warn' ? 'la-exclamation' : 'la-check');
+        document.getElementById('rm-title').textContent = title;
+        document.getElementById('rm-time').textContent = time || '';
+        const noteEl = document.getElementById('rm-note');
+        if (note) { noteEl.textContent = note; noteEl.classList.remove('d-none'); }
+        else { noteEl.classList.add('d-none'); }
+        resultModal.show();
+    }
 })();
 </script>
 @endsection
