@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <a href="https://ritmehr.com"><strong>🌐 ritmehr.com</strong></a>
+</p>
+
+<p align="center">
   <img alt="Laravel 12" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white">
   <img alt="PHP 8.2+" src="https://img.shields.io/badge/PHP-8.2+-777BB4?logo=php&logoColor=white">
   <img alt="MySQL 8" src="https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white">
@@ -27,6 +31,8 @@ Cocok sebagai **aplikasi absensi karyawan**, **software payroll Indonesia**, dan
 tanpa biaya lisensi per pengguna.
 
 Dibangun dengan Laravel 12 dan Backpack CRUD 6 (edisi gratis) di atas MySQL 8.
+
+**Situs:** [ritmehr.com](https://ritmehr.com)
 
 **Dokumentasi:** [Panduan Pengguna](docs/PANDUAN-PENGGUNA.md) ·
 [Panduan Developer](docs/PANDUAN-DEVELOPER.md)
