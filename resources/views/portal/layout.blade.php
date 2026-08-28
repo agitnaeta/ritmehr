@@ -18,6 +18,34 @@
      Bootstrap tetap berjalan tanpa JavaScript tambahan. --}}
 <div class="portal-hero">
     <div class="container">
+        {{-- App bar ringkas untuk mobile (disembunyikan di desktop via CSS).
+             Menyediakan brand + lonceng notifikasi + akses profil tanpa hamburger,
+             karena navigasi utama pindah ke bottom tab bar. --}}
+        <div class="portal-appbar">
+            <div class="portal-appbar__row">
+                <a class="portal-appbar__brand" href="{{ route('portal.dashboard') }}">
+                    <i class="la la-user-clock"></i> Portal Karyawan
+                </a>
+                <div class="portal-appbar__actions">
+                    <a class="portal-appbar__btn" href="{{ route('portal.notifications') }}" aria-label="Notifikasi">
+                        <i class="la la-bell"></i>
+                        @php $portalUnreadTop = app(\App\Services\NotificationService::class)->unreadCount(backpack_user()); @endphp
+                        @if($portalUnreadTop > 0)
+                            <span class="badge">{{ $portalUnreadTop > 99 ? '99+' : $portalUnreadTop }}</span>
+                        @endif
+                    </a>
+                    @if(backpack_user()->hasAnyRole(['super_admin', 'hr_admin', 'manager']))
+                        <a class="portal-appbar__btn" href="{{ backpack_url('dashboard') }}" aria-label="Admin">
+                            <i class="la la-cogs"></i>
+                        </a>
+                    @endif
+                    <a class="portal-appbar__btn" href="{{ route('portal.profile') }}" aria-label="Profil">
+                        <i class="la la-user"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <nav class="navbar navbar-expand-lg navbar-dark portal-nav">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ route('portal.dashboard') }}">
@@ -101,6 +129,31 @@
 
     @yield('content')
 </div>
+
+{{-- Bottom tab bar (mobile only, disembunyikan di desktop via CSS).
+     Lima menu utama. "Lainnya" mengarah ke profil sebagai pusat menu sekunder
+     (kasbon, pelatihan, notifikasi bisa dijangkau dari sana / top-nav desktop). --}}
+@php
+    $rn = \Illuminate\Support\Facades\Route::currentRouteName();
+    $isTab = fn($prefixes) => collect((array) $prefixes)->contains(fn($p) => str_starts_with($rn ?? '', $p));
+@endphp
+<nav class="portal-tabbar">
+    <a class="tab {{ $rn === 'portal.dashboard' ? 'active' : '' }}" href="{{ route('portal.dashboard') }}">
+        <i class="la la-home"></i>Beranda
+    </a>
+    <a class="tab {{ $isTab('portal.attendance') ? 'active' : '' }}" href="{{ route('portal.attendance') }}">
+        <i class="la la-calendar-check"></i>Hadir
+    </a>
+    <a class="tab {{ $isTab('portal.salary') ? 'active' : '' }}" href="{{ route('portal.salary.index') }}">
+        <i class="la la-money-check"></i>Gaji
+    </a>
+    <a class="tab {{ $isTab('portal.leave') ? 'active' : '' }}" href="{{ route('portal.leave.index') }}">
+        <i class="la la-plane-departure"></i>Cuti
+    </a>
+    <a class="tab {{ $isTab(['portal.loan','portal.training','portal.profile','portal.notifications']) ? 'active' : '' }}" href="{{ route('portal.profile') }}">
+        <i class="la la-ellipsis-h"></i>Lainnya
+    </a>
+</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

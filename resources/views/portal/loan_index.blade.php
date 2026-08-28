@@ -35,7 +35,7 @@
         <div class="card">
             <div class="card-header"><strong>Riwayat Pinjaman</strong></div>
             <div class="card-body p-0">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0 hide-on-mobile">
                     <thead><tr><th>Tanggal</th><th class="text-end">Jumlah</th></tr></thead>
                     <tbody>
                         @forelse($loans as $loan)
@@ -48,6 +48,18 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="data-cards p-3">
+                    @forelse($loans as $loan)
+                        <div class="data-card">
+                            <div class="data-card__top">
+                                <div class="data-card__title">{{ $loan->date }}</div>
+                                <div class="data-card__amt">@rupiah($loan->amount)</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state"><i class="la la-hand-holding-usd"></i>Belum ada kasbon.</div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -56,7 +68,7 @@
         <div class="card">
             <div class="card-header"><strong>Riwayat Pembayaran</strong></div>
             <div class="card-body p-0">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0 hide-on-mobile">
                     <thead><tr><th>Tanggal</th><th class="text-end">Jumlah</th></tr></thead>
                     <tbody>
                         @forelse($payments as $payment)
@@ -69,6 +81,18 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="data-cards p-3">
+                    @forelse($payments as $payment)
+                        <div class="data-card">
+                            <div class="data-card__top">
+                                <div class="data-card__title">{{ $payment->date }}</div>
+                                <div class="data-card__amt text-success">@rupiah($payment->amount)</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="empty-state"><i class="la la-money-bill-wave"></i>Belum ada pembayaran.</div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup Mobile-First — Portal /my</title>
+<link href="https://cdn.jsdelivr.net/npm/line-awesome@1.3.0/dist/line-awesome/css/line-awesome.min.css" rel="stylesheet">
+<style>
+  :root{
+    --brand:#2563eb; --brand-deep:#1e3a8a; --brand-text:#1d4ed8; --brand-subtle:#eff6ff; --brand-border:#bfdbfe;
+    --bg-page:#f8fafc; --bg-surface:#fff; --bg-sunken:#f1f5f9;
+    --text-primary:#0f172a; --text-secondary:#475569; --text-muted:#94a3b8;
+    --border:#e2e8f0; --border-strong:#cbd5e1;
+    --ok:#16a34a; --ok-text:#15803d; --ok-subtle:#f0fdf4; --ok-border:#bbf7d0;
+    --warn-text:#b45309; --warn-subtle:#fffbeb; --warn-border:#fde68a;
+    --danger:#dc2626; --danger-text:#b91c1c; --danger-subtle:#fef2f2; --danger-border:#fecaca;
+    --info-text:#0e7490; --info-subtle:#ecfeff; --info-border:#a5f3fc;
+    --r:14px; --r-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:var(--sans);background:var(--bg-page);color:var(--text-primary);
+       font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:76px}
+
+  /* ── Top app bar (mobile) ─────────────────────────────── */
+  .appbar{position:sticky;top:0;z-index:20;
+          background:linear-gradient(150deg,#2563eb,#1e3a8a);color:#fff;
+          padding:14px 16px calc(14px + 26px);}
+  .appbar .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .appbar .brand{display:flex;align-items:center;gap:8px;font-weight:650;font-size:15px}
+  .appbar .greet{margin:14px 0 0;font-size:1.5rem;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+  .appbar-actions{display:flex;gap:6px}
+  .icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
+            background:rgba(2,6,23,.20);color:#fff;display:grid;place-items:center;font-size:20px;
+            position:relative;text-decoration:none}
+  .icon-btn .dot{position:absolute;top:6px;right:7px;min-width:16px;height:16px;padding:0 4px;
+                 background:var(--danger);border-radius:8px;font-size:10px;font-weight:700;
+                 display:grid;place-items:center;border:2px solid #1e3a8a}
+
+  /* ── Sheet naik menimpa hero ──────────────────────────── */
+  .sheet{position:relative;z-index:1;margin-top:-18px;background:var(--bg-surface);
+         border-radius:20px 20px 0 0;min-height:60vh;padding:18px 16px 8px}
+
+  /* ── Absen mandiri CTA ────────────────────────────────── */
+  .cta{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#2563eb,#1e3a8a);
+       color:#fff;border-radius:var(--r);padding:16px;margin-bottom:16px;text-decoration:none}
+  .cta .ic{font-size:30px;opacity:.9}
+  .cta .t{font-weight:700}
+  .cta .s{font-size:12.5px;opacity:.8}
+  .cta .go{margin-left:auto;background:#fff;color:var(--brand-deep);font-weight:600;
+           padding:10px 14px;border-radius:10px;font-size:13.5px;white-space:nowrap}
+
+  /* ── Stat grid: 2 kolom ───────────────────────────────── */
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+  .stat{background:var(--bg-sunken);border-radius:var(--r);padding:14px}
+  .stat .lbl{font-size:12px;color:var(--text-secondary)}
+  .stat .val{font-size:1.5rem;font-weight:650;letter-spacing:-.015em;font-variant-numeric:tabular-nums}
+  .stat .val.ok{color:var(--ok-text)} .stat .val.warn{color:var(--warn-text)}
+  .stat .val.info{color:var(--info-text)} .stat .val.danger{color:var(--danger-text)}
+  .stat .sub{font-size:11.5px;color:var(--text-muted)}
+
+  /* ── Section ──────────────────────────────────────────── */
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px}
+  .sec-head h2{font-size:1rem;margin:0;font-weight:700}
+  .sec-head a{font-size:13px;color:var(--brand-text);text-decoration:none;font-weight:600}
+
+  /* ── Kartu bertumpuk (pengganti tabel) ────────────────── */
+  .list{display:flex;flex-direction:column;gap:10px}
+  .item{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+  .item .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .item .title{font-weight:650}
+  .item .meta{font-size:12.5px;color:var(--text-secondary);margin-top:2px}
+  .item .amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  .item .amt .rcv{color:var(--ok-text)} .item .amt .cut{color:var(--danger-text);font-size:12.5px;font-weight:500}
+  .kv{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px;border-bottom:1px solid var(--border)}
+  .kv:last-child{border-bottom:0}
+  .kv .k{color:var(--text-secondary)}
+  .item .foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;
+         padding:3px 9px;border-radius:999px;border:1px solid transparent}
+  .b-ok{background:var(--ok-subtle);color:var(--ok-text);border-color:var(--ok-border)}
+  .b-warn{background:var(--warn-subtle);color:var(--warn-text);border-color:var(--warn-border)}
+  .b-danger{background:var(--danger-subtle);color:var(--danger-text);border-color:var(--danger-border)}
+  .b-info{background:var(--info-subtle);color:var(--info-text);border-color:var(--info-border)}
+  .b-muted{background:var(--bg-sunken);color:var(--text-secondary);border-color:var(--border)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;
+       padding:0 16px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;
+       border:1px solid transparent;cursor:pointer}
+  .btn-primary{background:var(--brand-deep);color:#fff}
+  .btn-outline{background:transparent;border-color:var(--border-strong);color:var(--text-primary)}
+  .btn-sm{min-height:38px;font-size:13px;padding:0 12px}
+  .btn-block{width:100%}
+
+  /* ── Bottom tab bar ───────────────────────────────────── */
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;
+          grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.92);
+          backdrop-filter:blur(16px) saturate(180%);border-top:1px solid var(--border);
+          padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;
+       color:var(--text-muted);text-decoration:none;font-size:10.5px;font-weight:600;min-height:52px;justify-content:center}
+  .tab i{font-size:22px}
+  .tab.active{color:var(--brand)}
+  .tab.active i{transform:translateY(-1px)}
+
+  /* ── Screen switcher (mockup only) ────────────────────── */
+  .screens{display:flex;gap:8px;padding:12px 16px;background:#0f172a;overflow:auto}
+  .screens button{flex:0 0 auto;background:#1e293b;color:#cbd5e1;border:1px solid #334155;
+                  border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .screens button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .screen{display:none} .screen.on{display:block}
+
+  /* Filter chips (kehadiran) */
+  .chips{display:flex;gap:8px;overflow:auto;padding-bottom:4px;margin-bottom:6px}
+  .chip{flex:0 0 auto;padding:7px 13px;border-radius:999px;background:var(--bg-sunken);
+        border:1px solid var(--border);font-size:12.5px;font-weight:600;color:var(--text-secondary)}
+  .chip.on{background:var(--brand-subtle);border-color:var(--brand-border);color:var(--brand-text)}
+  .day-group{margin-top:14px}
+  .day-group .dh{font-size:12px;color:var(--text-muted);font-weight:700;text-transform:uppercase;
+                 letter-spacing:.04em;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<div class="screens">
+  <button class="on" data-s="dash">Beranda</button>
+  <button data-s="att">Kehadiran</button>
+  <button data-s="salary">Slip Gaji</button>
+</div>
+
+<!-- ══════════════ BERANDA ══════════════ -->
+<section class="screen on" id="dash">
+  <div class="appbar">
+    <div class="row">
+      <div class="brand"><i class="la la-user-clock"></i> Portal Karyawan</div>
+      <div class="appbar-actions">
+        <a class="icon-btn" href="#"><i class="la la-bell"></i><span class="dot">3</span></a>
+        <a class="icon-btn" href="#"><i class="la la-user"></i></a>
+      </div>
+    </div>
+    <div class="greet">Halo, Siti</div>
+  </div>
+
+  <div class="sheet">
+    <a class="cta" href="#">
+      <i class="la la-camera ic"></i>
+      <div><div class="t">Absen Mandiri</div><div class="s">Foto selfie + lokasi dari HP</div></div>
+      <span class="go"><i class="la la-fingerprint"></i> Absen</span>
+    </a>
+
+    <div class="stats">
+      <div class="stat"><div class="lbl">Hadir Bulan Ini</div><div class="val">18</div><div class="sub">hari</div></div>
+      <div class="stat"><div class="lbl">Terlambat</div><div class="val warn">2</div><div class="sub">hari</div></div>
+      <div class="stat"><div class="lbl">Lembur</div><div class="val info">3</div><div class="sub">hari</div></div>
+      <div class="stat"><div class="lbl">Sisa Kasbon</div><div class="val danger">Rp 500.000</div></div>
+    </div>
+
+    <div class="sec-head"><h2>Saldo Cuti 2026</h2><a href="#">Ajukan +</a></div>
+    <div class="list">
+      <div class="item">
+        <div class="kv"><span class="k">Cuti Tahunan</span><span><strong>8</strong> / 12 hari</span></div>
+        <div class="kv"><span class="k">Cuti Sakit</span><span><strong>10</strong> / 12 hari</span></div>
+      </div>
+    </div>
+
+    <div class="sec-head"><h2>Gaji Terakhir</h2><a href="#">Semua slip</a></div>
+    <div class="list">
+      <div class="item">
+        <div class="kv"><span class="k">Periode</span><strong>Agustus 2026</strong></div>
+        <div class="kv"><span class="k">Diterima</span><strong style="color:var(--ok-text)">Rp 7.250.000</strong></div>
+        <div class="kv"><span class="k">Status</span><span class="badge b-ok">Sudah dibayar</span></div>
+        <a class="btn btn-outline btn-block btn-sm" style="margin-top:12px" href="#">Lihat Detail</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ KEHADIRAN ══════════════ -->
+<section class="screen" id="att">
+  <div class="appbar">
+    <div class="row"><div class="brand"><i class="la la-calendar-check"></i> Kehadiran</div>
+      <a class="icon-btn" href="#"><i class="la la-camera"></i></a></div>
+    <div class="greet" style="font-size:1.25rem">Riwayat Kehadiran</div>
+  </div>
+  <div class="sheet">
+    <div class="chips">
+      <span class="chip on">Agustus 2026</span>
+      <span class="chip">Semua</span><span class="chip">Hadir</span>
+      <span class="chip">Telat</span><span class="chip">Lembur</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="lbl">Hadir</div><div class="val ok">18</div></div>
+      <div class="stat"><div class="lbl">Terlambat</div><div class="val warn">2</div></div>
+    </div>
+
+    <div class="day-group">
+      <div class="dh">Kamis, 21 Agu</div>
+      <div class="list">
+        <div class="item">
+          <div class="top">
+            <div><div class="title">08:02 → 17:10</div>
+                 <div class="meta"><i class="la la-camera"></i> Kamera · tepat waktu</div></div>
+            <span class="badge b-ok">Hadir</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="day-group">
+      <div class="dh">Rabu, 20 Agu</div>
+      <div class="list">
+        <div class="item">
+          <div class="top">
+            <div><div class="title">08:19 → 17:05</div>
+                 <div class="meta"><i class="la la-qrcode"></i> QR · telat 19 mnt</div></div>
+            <span class="badge b-warn">Terlambat</span>
+          </div>
+          <div class="foot">
+            <span class="badge b-info">Lembur</span>
+            <a class="btn btn-outline btn-sm" href="#"><i class="la la-eye"></i> Bukti</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="day-group">
+      <div class="dh">Selasa, 19 Agu</div>
+      <div class="list">
+        <div class="item">
+          <div class="top">
+            <div><div class="title">07:58 → 18:40</div>
+                 <div class="meta"><i class="la la-camera"></i> Kamera · di luar radius</div></div>
+            <span class="badge b-danger">Luar Radius</span>
+          </div>
+          <div class="foot">
+            <span class="badge b-warn">Menunggu persetujuan</span>
+            <a class="btn btn-outline btn-sm" href="#"><i class="la la-eye"></i> Bukti</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SLIP GAJI ══════════════ -->
+<section class="screen" id="salary">
+  <div class="appbar">
+    <div class="row"><div class="brand"><i class="la la-money-check"></i> Slip Gaji</div></div>
+    <div class="greet" style="font-size:1.25rem">Slip Gaji</div>
+  </div>
+  <div class="sheet">
+    <div class="list">
+      <div class="item">
+        <div class="top">
+          <div><div class="title">Agustus 2026</div><div class="meta">Pokok Rp 8.000.000 · Potongan Rp 750.000</div></div>
+          <div class="amt"><span class="rcv">Rp 7.250.000</span></div>
+        </div>
+        <div class="foot"><span class="badge b-ok">Dibayar</span>
+          <a class="btn btn-outline btn-sm" href="#">Detail</a></div>
+      </div>
+      <div class="item">
+        <div class="top">
+          <div><div class="title">Juli 2026</div><div class="meta">Pokok Rp 8.000.000 · Potongan Rp 500.000</div></div>
+          <div class="amt"><span class="rcv">Rp 7.500.000</span></div>
+        </div>
+        <div class="foot"><span class="badge b-ok">Dibayar</span>
+          <a class="btn btn-outline btn-sm" href="#">Detail</a></div>
+      </div>
+      <div class="item">
+        <div class="top">
+          <div><div class="title">Juni 2026</div><div class="meta">Pokok Rp 8.000.000 · Potongan Rp 300.000</div></div>
+          <div class="amt"><span class="rcv">Rp 7.700.000</span></div>
+        </div>
+        <div class="foot"><span class="badge b-muted">Belum dibayar</span>
+          <a class="btn btn-outline btn-sm" href="#">Detail</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ BOTTOM TAB BAR ══════════════ -->
+<nav class="tabbar">
+  <a class="tab active" href="#" data-go="dash"><i class="la la-home"></i>Beranda</a>
+  <a class="tab" href="#" data-go="att"><i class="la la-calendar-check"></i>Hadir</a>
+  <a class="tab" href="#" data-go="salary"><i class="la la-money-check"></i>Gaji</a>
+  <a class="tab" href="#"><i class="la la-plane-departure"></i>Cuti</a>
+  <a class="tab" href="#"><i class="la la-ellipsis-h"></i>Lainnya</a>
+</nav>
+
+<script>
+  const show=id=>{
+    document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));
+    document.querySelectorAll('.screens button').forEach(b=>b.classList.toggle('on',b.dataset.s===id));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.go===id));
+    window.scrollTo(0,0);
+  };
+  document.querySelectorAll('.screens button').forEach(b=>b.onclick=()=>show(b.dataset.s));
+  document.querySelectorAll('.tab[data-go]').forEach(t=>t.onclick=e=>{e.preventDefault();show(t.dataset.go)});
+</script>
+</body>
+</html>

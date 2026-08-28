@@ -591,4 +591,140 @@ h4, .h4 { font-size: var(--fs-card);    line-height: var(--lh-card);    letter-s
     border-color: var(--field-border-focus);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE-FIRST (MF-01) — /my portal
+   Ditulis mobile-first: aturan dasar berlaku untuk layar kecil, lalu diperkaya
+   dari `min-width: 992px` (lg) ke atas untuk desktop. Aditif — tidak mengubah
+   komponen lama; hanya menambah primitif baru (.portal-tabbar, .data-card, dst).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Target sentuh: semua kontrol interaktif minimal nyaman dijentik ──────── */
+@media (max-width: 991.98px) {
+    .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-sm { min-height: 38px; }
+    .nav-link, .dropdown-item { min-height: 44px; display: flex; align-items: center; }
+    /* Tombol aksi utama enak ditekan satu tangan: full-width di dalam kartu. */
+    .btn-block-mobile { width: 100%; }
+}
+
+/* ── Bottom tab bar (mobile only) ─────────────────────────────────────────
+   Menggantikan hamburger. Lima menu utama selalu terlihat; sisanya masuk
+   "Lainnya". Disembunyikan di desktop (lg+) di mana top-nav pill dipakai. */
+.portal-tabbar { display: none; }
+
+@media (max-width: 991.98px) {
+    /* Ruang bawah agar konten terakhir tidak tertutup tab bar. */
+    body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+    .portal-tabbar {
+        position: fixed; inset: auto 0 0 0; z-index: 1030;
+        display: grid; grid-template-columns: repeat(5, 1fr);
+        background: rgb(255 255 255 / 0.92);
+        backdrop-filter: blur(16px) saturate(180%);
+        border-top: 1px solid var(--border);
+        padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    }
+    .portal-tabbar .tab {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 2px; min-height: 52px; padding: 4px 0;
+        color: var(--text-muted); text-decoration: none;
+        font-size: 0.66rem; font-weight: 600; letter-spacing: 0;
+    }
+    .portal-tabbar .tab i { font-size: 1.375rem; line-height: 1; }
+    .portal-tabbar .tab.active { color: var(--brand); }
+    .portal-tabbar .tab .tab-badge {
+        position: absolute; transform: translate(14px, -8px);
+        min-width: 16px; height: 16px; padding: 0 4px;
+        background: var(--danger); color: #fff; border-radius: 8px;
+        font-size: 0.6rem; font-weight: 700; line-height: 16px; text-align: center;
+        border: 2px solid #fff;
+    }
+}
+
+/* ── Kartu data: pengganti tabel di mobile ────────────────────────────────
+   Pola: markup tabel TETAP ada untuk desktop; di mobile kita sembunyikan
+   .table-responsive dan tampilkan .data-cards (daftar kartu bertumpuk yang
+   dirender terpisah di Blade). Satu sumber data, dua penyajian. */
+.data-cards { display: none; }
+
+@media (max-width: 991.98px) {
+    /* Tabel di dalam kartu portal disembunyikan; versi kartu yang tampil. */
+    .portal-sheet .card > .card-body > .table-responsive.hide-on-mobile { display: none; }
+    .data-cards { display: flex; flex-direction: column; gap: 10px; }
+
+    .data-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-card);
+        padding: var(--sp-4);
+    }
+    .data-card__top {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+    }
+    .data-card__title { font-weight: 650; color: var(--text-primary); }
+    .data-card__meta { font-size: var(--fs-label); color: var(--text-secondary); margin-top: 2px; }
+    .data-card__amt {
+        font-weight: 700; font-variant-numeric: tabular-nums;
+        text-align: right; white-space: nowrap;
+    }
+    /* Baris label→nilai di dalam kartu (mirip .payslip-row tapi ringkas). */
+    .data-card__row {
+        display: flex; justify-content: space-between; gap: var(--sp-3);
+        padding: 6px 0; border-bottom: 1px solid var(--border); font-size: var(--fs-body);
+    }
+    .data-card__row:last-child { border-bottom: 0; }
+    .data-card__row .k { color: var(--text-secondary); }
+    .data-card__foot {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: var(--sp-2); margin-top: var(--sp-3);
+    }
+    /* Pengelompokan agenda per-hari (kehadiran). */
+    .day-group + .day-group { margin-top: var(--sp-4); }
+    .day-group__head {
+        font-size: var(--fs-label); color: var(--text-muted); font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 6px;
+    }
+}
+
+/* ── App bar mobile: judul + aksi menyatu dengan hero biru ────────────────
+   Di mobile navbar lama disembunyikan, diganti baris aksi ringkas + greeting
+   besar. Di desktop (lg+) tetap memakai .portal-nav pill yang lama. */
+.portal-appbar { display: none; }
+
+@media (max-width: 991.98px) {
+    /* Navbar pill lama disembunyikan di mobile — diganti tab bar + app bar. */
+    .portal-hero .portal-nav { display: none; }
+    .portal-hero { padding-top: var(--sp-3); }
+
+    .portal-appbar { display: block; }
+    .portal-appbar__row {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .portal-appbar__brand {
+        display: flex; align-items: center; gap: 8px;
+        color: #fff; font-weight: 650; font-size: var(--fs-card);
+    }
+    .portal-appbar__actions { display: flex; gap: 6px; }
+    .portal-appbar__btn {
+        position: relative;
+        width: 42px; height: 42px; border-radius: 12px;
+        display: grid; place-items: center;
+        color: #fff; font-size: 1.25rem; text-decoration: none;
+        background: rgb(2 6 23 / 0.20);
+        border: 1px solid rgb(255 255 255 / 0.18);
+    }
+    .portal-appbar__btn .badge {
+        position: absolute; top: 5px; right: 6px;
+        min-width: 16px; height: 16px; padding: 0 4px;
+        background: var(--danger) !important; color: #fff; border: 2px solid #1e3a8a;
+        font-size: 0.6rem; line-height: 12px; border-radius: 8px;
+    }
+}
+
+/* ── Penyesuaian tipografi & kerapatan di layar kecil ─────────────────────── */
+@media (max-width: 575.98px) {
+    .portal-title { font-size: 1.5rem; }
+    /* Grup tombol filter yang tadinya sebaris → boleh membungkus. */
+    .btn-group.flex-wrap-mobile { flex-wrap: wrap; }
+}
 

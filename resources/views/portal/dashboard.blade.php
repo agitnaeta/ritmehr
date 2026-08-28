@@ -12,7 +12,7 @@
                 <div class="fw-bold fs-5"><i class="la la-camera"></i> Absen Mandiri</div>
                 <div class="small opacity-75">Ambil foto selfie + lokasi langsung dari HP Anda.</div>
             </div>
-            <a href="{{ route('portal.attendance.checkin') }}" class="btn btn-light btn-lg fw-semibold">
+            <a href="{{ route('portal.attendance.checkin') }}" class="btn btn-light btn-lg fw-semibold btn-block-mobile">
                 <i class="la la-fingerprint"></i> Absen Sekarang
             </a>
         </div>

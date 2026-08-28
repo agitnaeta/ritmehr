@@ -29,7 +29,7 @@
         </a>
     </div>
     <div class="card-body p-0">
-        <div class="table-responsive">
+        <div class="table-responsive hide-on-mobile">
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
@@ -76,6 +76,48 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Versi kartu untuk mobile (tampil <992px via CSS). --}}
+        <div class="data-cards p-3">
+            @forelse($requests as $req)
+                @php
+                    $badge = match($req->status) {
+                        'approved'  => 'success',
+                        'pending'   => 'warning',
+                        'rejected'  => 'danger',
+                        default     => 'secondary',
+                    };
+                    $reason = $req->status === 'rejected' ? $req->rejection_reason : $req->reason;
+                @endphp
+                <div class="data-card">
+                    <div class="data-card__top">
+                        <div>
+                            <div class="data-card__title">{{ $req->leaveType?->name ?? '—' }}</div>
+                            <div class="data-card__meta">{{ $req->periodLabel() }} · {{ (int) $req->total_days }} hari</div>
+                        </div>
+                        <span class="badge bg-{{ $badge }}">{{ $req->statusLabel() }}</span>
+                    </div>
+                    @if($reason)
+                        <div class="data-card__meta mt-2">{{ $reason }}</div>
+                    @endif
+                    @if(in_array($req->status, ['pending', 'approved'], true))
+                        <div class="data-card__foot">
+                            <span></span>
+                            <form method="POST" action="{{ route('portal.leave.cancel', $req->id) }}"
+                                  onsubmit="return confirm('Batalkan pengajuan ini?')">
+                                @csrf
+                                <button class="btn btn-sm btn-outline-danger">Batalkan</button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="empty-state">
+                    <i class="la la-plane-departure"></i>
+                    Belum ada pengajuan cuti.
+                </div>
+            @endforelse
         </div>
     </div>
 </div>

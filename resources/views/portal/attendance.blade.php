@@ -117,7 +117,7 @@
 {{-- Table view (hidden by default) --}}
 <div class="card" id="viewTable" style="display:none;">
     <div class="card-body p-0">
-        <div class="table-responsive">
+        <div class="table-responsive hide-on-mobile">
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
@@ -176,6 +176,56 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Versi agenda kartu untuk mobile (tampil <992px via CSS). --}}
+        <div class="data-cards p-3">
+            @forelse($presences as $p)
+                <div class="data-card">
+                    <div class="data-card__top">
+                        <div>
+                            <div class="data-card__title">
+                                {{ \Carbon\Carbon::parse($p->in)->format('H:i') }}
+                                @if($p->out)&rarr; {{ \Carbon\Carbon::parse($p->out)->format('H:i') }}@endif
+                            </div>
+                            <div class="data-card__meta">
+                                {{ \Carbon\Carbon::parse($p->in)->translatedFormat('l, d M Y') }} ·
+                                @if($p->source === 'camera')<i class="la la-camera"></i> Kamera @else<i class="la la-qrcode"></i> QR @endif
+                                @if($p->late_minute)· telat {{ $p->late_minute }} mnt @endif
+                            </div>
+                        </div>
+                        @if($p->is_late)
+                            <span class="badge bg-warning text-dark">Terlambat</span>
+                        @else
+                            <span class="badge bg-success">Tepat Waktu</span>
+                        @endif
+                    </div>
+                    @if($p->is_overtime || $p->outside || $p->approval_status === 'pending' || $p->approval_status === 'rejected' || $p->selfie_path || ($p->lat && $p->lng))
+                        <div class="data-card__foot">
+                            <span class="d-flex flex-wrap gap-1">
+                                @if($p->is_overtime)<span class="badge bg-info">Lembur</span>@endif
+                                @if($p->outside)<span class="badge bg-danger">Luar Radius</span>@endif
+                                @if($p->approval_status === 'pending')<span class="badge bg-warning text-dark">Menunggu</span>
+                                @elseif($p->approval_status === 'rejected')<span class="badge bg-dark">Ditolak</span>@endif
+                            </span>
+                            @if($p->selfie_path || ($p->lat && $p->lng))
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-bukti"
+                                        data-selfie="{{ $p->selfieUrl() ?? '' }}"
+                                        data-lat="{{ $p->lat }}" data-lng="{{ $p->lng }}"
+                                        data-date="{{ \Carbon\Carbon::parse($p->in)->format('d/m/Y H:i') }}"
+                                        data-outside="{{ $p->outside ? 1 : 0 }}">
+                                    <i class="la la-eye"></i> Bukti
+                                </button>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div class="empty-state">
+                    <i class="la la-calendar-times"></i>
+                    Belum ada kehadiran tercatat pada bulan ini.
+                </div>
+            @endforelse
         </div>
     </div>
 </div>
@@ -265,7 +315,12 @@
     }
     bCal.addEventListener('click', () => show('calendar'));
     bTbl.addEventListener('click', () => show('table'));
-    try { show(localStorage.getItem(KEY) || 'calendar'); } catch (e) { show('calendar'); }
+    // Di mobile, agenda (tabel) lebih terbaca daripada kalender 7-kolom yang sempit,
+    // jadi jadikan default bila pengguna belum pernah memilih.
+    let saved = null;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    const isMobile = window.matchMedia('(max-width: 991.98px)').matches;
+    show(saved || (isMobile ? 'table' : 'calendar'));
 })();
 </script>
 @endsection
