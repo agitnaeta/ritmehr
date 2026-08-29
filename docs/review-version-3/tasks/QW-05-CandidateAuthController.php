@@ -2,8 +2,9 @@
 
 **Fokus:** SEC-3 — password kuat saat registrasi kandidat
 **Severity:** 🟡 Sedang
-**Status:** [ ] TODO — commit: `______`
-**File (satu-satunya) yang disentuh:** `app/Http/Controllers/Career/CandidateAuthController.php`
+**Status:** [x] DONE — commit: `pending` (terverifikasi 2026-08-29)
+**File utama:** `app/Http/Controllers/Career/CandidateAuthController.php`
+**File pendamping:** `tests/Feature/CareerPortalTest.php` (fixture `password123` tak lolos rule → `Zx9Qm2Lp7Kv`)
 
 ---
 
@@ -31,8 +32,24 @@ use Illuminate\Validation\Rules\Password;   // di atas file
 ---
 
 ## Verifikasi
-- [ ] `php -l app/Http/Controllers/Career/CandidateAuthController.php` bersih (kalau file PHP)
-- [ ] `php -d memory_limit=2G -d xdebug.mode=off vendor/bin/phpunit --no-coverage` → tetap hijau (baseline)
-- [ ] `node tests/browser/crud-suite.mjs` → tetap hijau (baseline 146)
-- [ ] Verifikasi manual di browser sesuai bagian "Cek" di atas
-- [ ] Flip `Status:` ke `[x] DONE` + isi commit SHA setelah semua centang
+- [x] `php -l ...CandidateAuthController.php` → bersih
+- [x] Proof rule: `password123` DITOLAK, `Zx9Qm2Lp7Kv` LOLOS
+- [x] `CareerPortalTest` → **11/11 OK** (throttle QW-03 tak ganggu; cache array reset per test)
+- [x] Full PHPUnit → 424 lulus / 2 baseline time-dependent
+- [x] `crud-suite.mjs` → **146 PASS**
+- [x] Flip `Status:` ke `[x] DONE`
+
+## PROOF (2026-08-29)
+```
+$ Validator dgn rule QW-05:
+password123      -> DITOLAK: must contain at least one uppercase and one lowercase letter
+Zx9Qm2Lp7Kv      -> LOLOS
+
+$ phpunit tests/Feature/CareerPortalTest.php
+OK (11 tests, 44 assertions)
+```
+Rule diselaraskan dgn QW-04 (portal) untuk konsistensi kebijakan. Fixture register test
+diperbarui dari `password123` (fixture lemah) ke `Zx9Qm2Lp7Kv`.
+
+### Regresi
+- crud-suite: **146/146**. PHPUnit: 424 lulus / 2 baseline time-dependent.

@@ -6,6 +6,7 @@ use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * M17 — Candidate account auth (register / login / logout) on the "candidate"
@@ -28,7 +29,7 @@ class CandidateAuthController extends Controller
             'name'     => 'required|string|max:120',
             'email'    => 'required|email|max:150|unique:candidates,email',
             'phone'    => 'nullable|string|max:30',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ], [
             'name.required'     => 'Nama wajib diisi.',
             'email.required'    => 'Email wajib diisi.',

@@ -45,8 +45,8 @@ class CareerPortalTest extends TestCase
         $this->post(route('career.register.submit'), [
             'name'                  => 'Siti Kandidat',
             'email'                 => 'siti.kandidat@example.test',
-            'password'              => 'password123',
-            'password_confirmation' => 'password123',
+            'password'              => 'Zx9Qm2Lp7Kv',
+            'password_confirmation' => 'Zx9Qm2Lp7Kv',
         ])->assertRedirect(route('career.dashboard'));
 
         $this->assertDatabaseHas('candidates', ['email' => 'siti.kandidat@example.test']);

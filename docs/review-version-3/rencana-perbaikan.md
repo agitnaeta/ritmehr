@@ -15,7 +15,7 @@
 | QW-02 | `app/Exports/UserExport.php` | PERF-6 stop dump semua kolom (bocor password) + chunk | 🟠 | [x] DONE |
 | QW-03 | `routes/web.php` | SEC-1 throttle auth kandidat + ganti password portal | 🔴 | [x] DONE |
 | QW-04 | `app/Http/Controllers/Portal/PortalController.php` | SEC-3 password kuat + SEC-4 error konsisten | 🟡 | [x] DONE |
-| QW-05 | `app/Http/Controllers/Career/CandidateAuthController.php` | SEC-3 password kuat registrasi | 🟡 | [ ] TODO |
+| QW-05 | `app/Http/Controllers/Career/CandidateAuthController.php` | SEC-3 password kuat registrasi | 🟡 | [x] DONE |
 | QW-06 | `.env.example` | BP-4 samakan DB_PORT + SEC-2 checklist rilis | 🟢 | [ ] TODO |
 | QW-07 | `config/backpack/base.php` | SEC-1 (bag.2) throttle login Backpack | 🔴 | [x] DONE (no-op: sudah aman bawaan) |
 
