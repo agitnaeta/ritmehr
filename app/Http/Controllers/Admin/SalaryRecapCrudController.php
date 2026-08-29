@@ -254,16 +254,11 @@ class SalaryRecapCrudController extends CrudController
 
     function export(Request $request)
     {
-        $sr =  $request->get('salary_recap');
-        $recaps = SalaryRecap::with(['user.salary'])
-        ->where(function ($q) use ($sr){
-            if($sr != null){
-                $q->where('recap_month', '=', $sr);
-            }
-            return $q;
-        })->get();
+        $sr = $request->get('salary_recap');
 
-        return Excel::download(new SalaryRecapExport($recaps),"recap-$sr.xlsx");
+        // ST-02: FromQuery + chunk — export streaming (filter bulan via constructor),
+        // tidak lagi memuat seluruh Collection ke RAM.
+        return Excel::download(new SalaryRecapExport($sr), "recap-$sr.xlsx");
     }
 
     function print(Request $request)

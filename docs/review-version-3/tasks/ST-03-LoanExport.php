@@ -2,7 +2,7 @@
 
 **Fokus:** PERF-7 — FromQuery + chunk
 **Severity:** 🟡 Sedang
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `pending` (terverifikasi 2026-08-29)
 **File (satu-satunya) yang disentuh:** `app/Exports/LoanExport.php`
 
 ---

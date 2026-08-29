@@ -3,50 +3,38 @@
 namespace App\Exports;
 
 use App\Models\SalaryRecap;
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithFormatData;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting
+/**
+ * ST-02 / PERF-7 — Export rekap gaji dengan FromQuery + chunk (memori rata),
+ * bukan FromCollection yang memuat seluruh hasil ke RAM.
+ *
+ * Difilter per-bulan lewat constructor. Eager-load `user.salary` (sejalan QW-01,
+ * cegah N+1 saat map()).
+ */
+class SalaryRecapExport implements FromQuery, WithHeadings, WithMapping, WithColumnFormatting, WithChunkReading
 {
+    protected ?string $recapMonth;
 
-    protected $recap;
-    public function __construct(Collection $recap)
+    public function __construct(?string $recapMonth = null)
     {
-        $this->recap = $recap;
+        $this->recapMonth = $recapMonth;
     }
 
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
+    public function query()
     {
-        $sum = [
-            'Total',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            $this->recap->sum('salary_amount'),
-            $this->recap->sum('abstain_cut'),
-            $this->recap->sum('late_cut'),
-            $this->recap->sum('loan_cut'),
-            $this->recap->sum('received'),
-            '',
-            '',
-            ''
-        ];
-       return $this->recap->add($sum);
+        return SalaryRecap::query()
+            ->with(['user.salary'])
+            ->when($this->recapMonth, fn ($q) => $q->where('recap_month', $this->recapMonth));
     }
 
     public function headings(): array
     {
-        return[
+        return [
             'Nama Karyawan',
             'Bulan',
             'Jumlah Masuk',
@@ -61,16 +49,17 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
             'Diterima',
             'Status',
             'Keterangan',
-            'Metode Bayar'
+            'Metode Bayar',
         ];
     }
 
     public function map($row): array
     {
-        if(!isset($row->user)){
+        if (! isset($row->user)) {
             return [];
         }
-        return[
+
+        return [
             $row->user->name,
             $row->recap_month,
             $row->work_day,
@@ -83,7 +72,7 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
             $row->late_cut,
             $row->loan_cut,
             $row->received,
-            $row->paid ? 'Ya' :'Tidak',
+            $row->paid ? 'Ya' : 'Tidak',
             $row->desc,
             $row->method,
         ];
@@ -102,5 +91,10 @@ class SalaryRecapExport implements FromCollection, WithHeadings, WithMapping, Wi
             'K' => $fmt,
             'L' => $fmt,
         ];
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }

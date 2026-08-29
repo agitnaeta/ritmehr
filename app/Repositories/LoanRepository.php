@@ -8,9 +8,14 @@ use App\Models\User;
 
 class LoanRepository
 {
-    public static function recap()
+    /**
+     * Query builder rekap kasbon per-user (kasbon, terbayar sebagai subquery
+     * alias). Dipakai bersama oleh recap() (Collection + selisih PHP) dan oleh
+     * LoanExport (FromQuery + chunk) supaya definisi query tidak terduplikasi.
+     */
+    public static function recapQuery()
     {
-        $recap  = User::select('id', 'name')
+        return User::select('id', 'name')
             ->selectSub(function ($query) {
                 $query->selectRaw('COALESCE(SUM(amount),0)')
                     ->from('loans')
@@ -20,8 +25,12 @@ class LoanRepository
                 $query->selectRaw('COALESCE(SUM(amount),0)')
                     ->from('loan_payments')
                     ->whereColumn('user_id', 'users.id');
-            }, 'terbayar')
-            ->get();
+            }, 'terbayar');
+    }
+
+    public static function recap()
+    {
+        $recap = self::recapQuery()->get();
 
         // selisih dihitung dari alias yang sudah diambil (tanpa subquery korelasi ke-3)
         $recap->each(fn ($r) => $r->selisih = (int) $r->kasbon - (int) $r->terbayar);
