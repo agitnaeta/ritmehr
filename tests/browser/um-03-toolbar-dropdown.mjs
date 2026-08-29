@@ -172,16 +172,14 @@ await test('Dropdown z-index di atas tabel & subjudul clamp 2 baris', async () =
     assert(menuInfo && menuInfo.shown, 'Dropdown tidak terbuka');
     assert(menuInfo.z >= 1050, `z-index dropdown terlalu rendah: ${menuInfo.z}`);
 
-    // Subjudul info stack harus mengalir sebagai block (turun ke bawah saat panjang),
-    // bukan inline-flex bawaan yang bikin header melebar.
+    // Subjudul info stack pakai inline-grid → info & "Set ulang" jadi 2 baris,
+    // tanpa memaksa header melebar.
     const infoStyle = await page.evaluate(() => {
         const el = document.getElementById('datatable_info_stack');
         if (!el) return null;
-        const cs = getComputedStyle(el);
-        return { display: cs.display, whiteSpace: cs.whiteSpace };
+        return getComputedStyle(el).display;
     });
-    assert(infoStyle && infoStyle.display === 'block', `Info stack display bukan block: ${infoStyle?.display}`);
-    assert(infoStyle.whiteSpace === 'normal', `Info stack white-space bukan normal: ${infoStyle.whiteSpace}`);
+    assert(infoStyle === 'inline-grid', `Info stack display bukan inline-grid: ${infoStyle}`);
 });
 
 await browser.close();

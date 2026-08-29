@@ -475,18 +475,12 @@ form:has(.la-filter) .btn-sm {
 /* Batasi lebar blok judul agar tools tetap di kanan & subjudul tak mendorong layout.
    flex-shrink aktif + min-width:0 supaya blok mengecil & teks wrap, bukan melebar. */
 .um-header-title { flex: 0 1 auto; min-width: 0; max-width: 32rem; }
-/* Subjudul "Menampilkan 1 … dari N masukan. Set ulang" — buat mengalir sebagai teks
-   biasa (bukan inline-flex bawaan) supaya turun ke baris berikutnya saat panjang,
-   bukan memaksa header melebar. Isi ada <div.dataTables_info> + <a>Set ulang</a>. */
+/* Subjudul "Menampilkan 1 … dari N masukan." + "Set ulang" — inline-grid supaya
+   info & tombol reset otomatis jadi 2 baris (masing-masing item grid), tanpa
+   memaksa header melebar. (usul Capt) */
 .um-header-title #datatable_info_stack {
-    display: block !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
+    display: inline-grid !important;
     line-height: 1.35;
-}
-.um-header-title #datatable_info_stack .dataTables_info,
-.um-header-title #datatable_info_stack > a {
-    display: inline !important;
 }
 .um-header-tools { row-gap: var(--sp-2); }
 

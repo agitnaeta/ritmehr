@@ -187,4 +187,18 @@
 
   {{-- CRUD LIST CONTENT - crud_list_scripts stack --}}
   @stack('crud_list_scripts')
+
+  {{-- UM-03: buang class ms-1 pada tombol "Set ulang" (reset button dirender oleh
+       datatables_logic vendor). Di inline-grid ia jadi baris kedua, indent kiri tak perlu. --}}
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const strip = () => {
+        const el = document.getElementById('crudTable_reset_button');
+        if (el) el.classList.remove('ms-1');
+      };
+      strip();
+      // reset button dibuat ulang tiap DataTables redraw
+      if (window.jQuery) jQuery(document).on('draw.dt', strip);
+    });
+  </script>
 @endsection
