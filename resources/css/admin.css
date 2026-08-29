@@ -462,13 +462,15 @@ form:has(.la-filter) .btn-sm {
 /* Hilangkan border pemisah bawaan Backpack pada wrapper tombol */
 .um-header-actions .with-border { border: 0 !important; padding: 0 !important; }
 
-/* Dropdown ⋯ harus di atas tabel/DataTables (fixedHeader) — cegah tertutup.
-   Beri stacking context + z-index tinggi pada grup & menu-nya. */
-.um-header-actions { position: relative; z-index: 1040; }
+/* Dropdown ⋯ harus di atas tabel/DataTables (fixedHeader) & search box — cegah
+   tertutup. Stacking context + z-index tinggi pada grup & menu; search wrapper
+   ditekan ke z rendah agar tak pernah menimpa menu saat header wrap di layar sempit. */
+.um-header-actions { position: relative; z-index: 1050; }
 .um-header-actions .dropdown-menu {
-    z-index: 1055;               /* di atas fixedHeader DataTables (~1030) */
+    z-index: 1060;               /* di atas fixedHeader DataTables (~1030) & search */
     box-shadow: var(--shadow-lg, 0 8px 24px rgb(15 23 42 / .18));
 }
+.um-header-tools { position: relative; z-index: 1; }
 
 /* Baris 2: heading kiri, tools (search+filter) kanan */
 .um-header-title h1 { font-size: 1.75rem; line-height: 1.15; }
