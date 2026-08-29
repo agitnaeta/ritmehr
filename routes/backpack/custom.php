@@ -65,6 +65,10 @@ Route::group([
         Route::get("/import/template",[UserCrudController::class,'importTemplate'])->name('user.import.template');
         Route::post("/import/preview",[UserCrudController::class,'importPreview'])->name('user.import.preview');
         Route::post("/import",[UserCrudController::class,'importStore'])->name('user.import.store');
+        // UM-09 — status import background
+        Route::get("/import/{importJob}/status",[UserCrudController::class,'importStatus'])->name('user.import.status');
+        Route::get("/import/{importJob}/status.json",[UserCrudController::class,'importStatusJson'])->name('user.import.status.json');
+        Route::get("/import/{importJob}/errors.csv",[UserCrudController::class,'importErrorsCsv'])->name('user.import.errors.csv');
     });
     Route::group(['prefix'=>'presence'],function (){
         Route::get("/scan",[PresenceCrudController::class,'scan'])->name('presence.scan');

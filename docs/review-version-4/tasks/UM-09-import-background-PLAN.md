@@ -3,9 +3,8 @@
 **Poin Capt** · Tipe: Struktural · Urgensi: Tinggi · Risiko: Sedang
 **Status:** [ ] PLAN — menunggu keputusan Capt sebelum eksekusi
 
-Menggantikan sketsa desain lama di `UM-09-import-background-queue.md` dengan
-rencana **actionable per-file** + penanganan **partial error**, berdasarkan
-temuan pengukuran nyata (bukan asumsi).
+**Status:** [x] DONE (2026-08-29) — SEMUA import background (revisi Capt), progress polling, partial error + unduh CSV.
+Test: UserImportJobTest (2) + UserImportBackgroundFlowTest (4) + FASE1 speed; regresi Import/User/Preview/Locale 52 PASS.
 
 ---
 

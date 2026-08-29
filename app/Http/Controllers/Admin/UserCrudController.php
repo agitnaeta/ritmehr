@@ -538,31 +538,110 @@ class UserCrudController extends CrudController
     {
         $this->crud->hasAccessOrFail('create');
 
-        // Dua jalur: konfirmasi dari preview (token) ATAU upload langsung (file).
+        // UM-09 — SELALU background. Pastikan file tersimpan permanen di disk 'local'
+        // supaya worker bisa membacanya setelah request selesai.
         if ($request->filled('token')) {
-            $path = Storage::disk('local')->path('imports/user-' . $request->token . '.xlsx');
-            abort_unless(is_file($path), 404, 'File impor kadaluarsa, unggah ulang.');
+            $relPath = 'imports/user-' . $request->token . '.xlsx';
+            abort_unless(Storage::disk('local')->exists($relPath), 404, 'File impor kadaluarsa, unggah ulang.');
+            $originalName = 'import-' . $request->token . '.xlsx';
         } else {
-            $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:2048']);
-            $path = $request->file('file')->getRealPath();
+            $request->validate(['file' => 'required|file|mimes:xlsx,xls,csv|max:8192']);
+            $token = (string) Str::uuid();
+            $relPath = $request->file('file')->storeAs('imports', "user-$token.xlsx", 'local');
+            $originalName = $request->file('file')->getClientOriginalName();
         }
 
-        $import = new \App\Imports\UserImport;
-        Excel::import($import, $path);
+        // Hitung total baris (ringan; untuk file sangat besar tetap dapat estimasi).
+        $totalRows = $this->countRows(Storage::disk('local')->path($relPath));
 
-        if ($request->filled('token')) {
-            Storage::disk('local')->delete('imports/user-' . $request->token . '.xlsx');
+        $importJob = \App\Models\ImportJob::create([
+            'user_id'       => backpack_user()?->id,
+            'type'          => 'user',
+            'original_name' => $originalName,
+            'file_path'     => $relPath,
+            'status'        => \App\Models\ImportJob::STATUS_QUEUED,
+            'total_rows'    => $totalRows,
+        ]);
+
+        // Dispatch ke queue (driver database) — request langsung balik, tak diblokir.
+        \App\Jobs\ProcessUserImport::dispatch($importJob->id);
+
+        return redirect()->route('user.import.status', $importJob->id);
+    }
+
+    /** Hitung jumlah baris data (tanpa header) dari file Excel/CSV. */
+    private function countRows(string $absPath): int
+    {
+        try {
+            $reader = new class implements \Maatwebsite\Excel\Concerns\ToArray, \Maatwebsite\Excel\Concerns\WithHeadingRow {
+                public int $count = 0;
+                public function array(array $array): void { $this->count = count($array); }
+            };
+            Excel::import($reader, $absPath);
+            return $reader->count;
+        } catch (\Throwable) {
+            return 0;
         }
+    }
 
-        $result = [
-            'imported' => $import->imported,
-            'skipped'  => count($import->failures()),
-            'errors'   => collect($import->failures())
-                ->map(fn ($f) => 'Baris ' . $f->row() . ' — ' . implode(', ', $f->errors()))
-                ->all(),
-        ];
-        Alert::success("{$result['imported']} karyawan berhasil diimpor.")->flash();
+    /** UM-09 — Halaman status import (polling). */
+    public function importStatus(\App\Models\ImportJob $importJob)
+    {
+        $this->crud->hasAccessOrFail('create');
+        $this->authorizeImportJob($importJob);
 
-        return view('admin.import.user', ['preview' => null, 'result' => $result]);
+        return view('admin.import.status', ['job' => $importJob]);
+    }
+
+    /** UM-09 — Status JSON untuk polling. */
+    public function importStatusJson(\App\Models\ImportJob $importJob)
+    {
+        $this->crud->hasAccessOrFail('create');
+        $this->authorizeImportJob($importJob);
+
+        return response()->json([
+            'status'     => $importJob->status,
+            'total'      => $importJob->total_rows,
+            'processed'  => $importJob->processed,
+            'imported'   => $importJob->imported,
+            'skipped'    => $importJob->skipped,
+            'progress'   => $importJob->progress,
+            'message'    => $importJob->message,
+            'errors'     => array_slice($importJob->errors ?? [], 0, 50),
+            'errorTotal' => count($importJob->errors ?? []),
+            'finished'   => $importJob->isFinished(),
+            'startedAt'  => optional($importJob->started_at)->format('d M Y H:i'),
+            'finishedAt' => optional($importJob->finished_at)->format('d M Y H:i'),
+        ]);
+    }
+
+    /** UM-09 — Unduh baris gagal sebagai CSV untuk diperbaiki & di-import ulang. */
+    public function importErrorsCsv(\App\Models\ImportJob $importJob)
+    {
+        $this->crud->hasAccessOrFail('create');
+        $this->authorizeImportJob($importJob);
+
+        $errors = $importJob->errors ?? [];
+        $filename = 'baris-gagal-import-' . $importJob->id . '.csv';
+
+        return response()->streamDownload(function () use ($errors) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['baris', 'kolom', 'nilai', 'alasan']);
+            foreach ($errors as $e) {
+                fputcsv($out, [$e['row'] ?? '', $e['column'] ?? '', $e['value'] ?? '', $e['reason'] ?? '']);
+            }
+            fclose($out);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    /** Pastikan hanya pengunggah (atau yang boleh lihat semua) yang akses status. */
+    private function authorizeImportJob(\App\Models\ImportJob $importJob): void
+    {
+        $me = backpack_user();
+        // Uploader selalu boleh; user dengan view_all boleh lihat semua.
+        if ($importJob->user_id === $me?->id) {
+            return;
+        }
+        abort_unless($me?->can('user.view_all'), 403, 'Anda tidak berhak melihat status import ini.');
     }
 }

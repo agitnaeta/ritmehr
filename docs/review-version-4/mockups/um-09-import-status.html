@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mockup — Status Import Karyawan (UM-09)</title>
+  <style>
+    :root{
+      --brand:#2563eb;--brand-deep:#1e3a8a;--ok:#16a34a;--ok-sub:#f0fdf4;--ok-bd:#bbf7d0;
+      --warn:#d97706;--warn-sub:#fffbeb;--warn-bd:#fde68a;--danger:#dc2626;--danger-sub:#fef2f2;--danger-bd:#fecaca;
+      --n50:#f8fafc;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n500:#64748b;--n700:#334155;--n900:#0f172a;
+      --bg:#fff;--radius:12px;--shadow:0 2px 8px rgb(15 23 42/.08);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--n50);color:var(--n900);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem}
+    .wrap{max-width:900px;margin:0 auto}
+    .breadcrumb{font-size:.75rem;color:var(--n500);margin-bottom:1rem}
+    h1{font-size:1.5rem;letter-spacing:-.02em;margin:0 0 .25rem}
+    .sub{color:var(--n500);margin:0 0 1.5rem}
+    .card{background:var(--bg);border:1px solid var(--n200);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem}
+    .row{display:flex;gap:1rem;flex-wrap:wrap}
+    .stat{flex:1;min-width:130px;background:var(--n50);border:1px solid var(--n200);border-radius:10px;padding:1rem;text-align:center}
+    .stat .num{font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+    .stat .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--n500);margin-top:.25rem}
+    .stat.ok .num{color:var(--ok)} .stat.skip .num{color:var(--warn)} .stat.total .num{color:var(--brand)}
+    /* progress */
+    .pbar{height:14px;background:var(--n200);border-radius:999px;overflow:hidden;margin:.75rem 0}
+    .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-deep));width:62%;transition:width .4s}
+    .pmeta{display:flex;justify-content:space-between;font-size:.8rem;color:var(--n500)}
+    .badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;border:1px solid transparent}
+    .badge.proc{background:#eff6ff;color:var(--brand);border-color:#bfdbfe}
+    .badge.done{background:var(--ok-sub);color:var(--ok);border-color:var(--ok-bd)}
+    .badge.fail{background:var(--danger-sub);color:var(--danger);border-color:var(--danger-bd)}
+    .spinner{width:14px;height:14px;border:2px solid #bfdbfe;border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.82rem}
+    th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--n200)}
+    th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--n500);background:var(--n50)}
+    tr.err td{background:var(--danger-sub)}
+    .code{font-family:ui-monospace,Menlo,monospace;font-size:.78rem;color:var(--danger)}
+    .btn{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;font-size:.85rem;padding:.55rem .9rem;border-radius:9px;border:1px solid var(--n300);background:#fff;color:var(--n700);cursor:pointer;text-decoration:none}
+    .btn.primary{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+    .btn.warn{background:#fff;border-color:var(--warn-bd);color:var(--warn)}
+    .actions{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+    .hint{font-size:.78rem;color:var(--n500);margin-top:.5rem}
+    h3{font-size:1rem;margin:0 0 .25rem}
+    .section-note{font-size:.78rem;color:var(--n500);margin:2.5rem 0 .75rem;text-transform:uppercase;letter-spacing:.05em;border-top:1px dashed var(--n300);padding-top:1rem}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="breadcrumb">Admin / Users / Import / Status</div>
+  <h1>Import Karyawan</h1>
+  <p class="sub">File: <strong>import-1000-users.xlsx</strong> · diunggah oleh Siti Rahayu · 29 Agu 2026 18:40</p>
+
+  <!-- ============ STATE 1: SEDANG DIPROSES ============ -->
+  <p class="section-note">STATE 1 — Sedang diproses (halaman polling tiap 3 detik)</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Memproses import…</h3>
+      <span class="badge proc"><span class="spinner"></span> Sedang berjalan</span>
+    </div>
+    <div class="pbar"><i style="width:62%"></i></div>
+    <div class="pmeta"><span>620 dari 1000 baris</span><span>62%</span></div>
+    <div class="row" style="margin-top:1rem">
+      <div class="stat total"><div class="num">1000</div><div class="lbl">Total Baris</div></div>
+      <div class="stat"><div class="num">620</div><div class="lbl">Diproses</div></div>
+      <div class="stat ok"><div class="num">610</div><div class="lbl">Berhasil</div></div>
+      <div class="stat skip"><div class="num">10</div><div class="lbl">Dilewati</div></div>
+    </div>
+    <p class="hint">Anda boleh menutup halaman ini — proses berjalan di latar. Kembali kapan saja untuk melihat progres.</p>
+  </div>
+
+  <!-- ============ STATE 2: SELESAI DENGAN SEBAGIAN GAGAL ============ -->
+  <p class="section-note">STATE 2 — Selesai (ada baris gagal / partial error)</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Import selesai</h3>
+      <span class="badge done">✓ Selesai</span>
+    </div>
+    <div class="pbar"><i style="width:100%;background:var(--ok)"></i></div>
+    <div class="pmeta"><span>1000 dari 1000 baris</span><span>100%</span></div>
+    <div class="row" style="margin-top:1rem">
+      <div class="stat total"><div class="num">1000</div><div class="lbl">Total Baris</div></div>
+      <div class="stat ok"><div class="num">980</div><div class="lbl">Berhasil</div></div>
+      <div class="stat skip"><div class="num">20</div><div class="lbl">Dilewati</div></div>
+      <div class="stat"><div class="num">2.1s</div><div class="lbl">Durasi</div></div>
+    </div>
+
+    <div class="actions">
+      <a class="btn warn" href="#">⬇ Unduh 20 baris gagal (CSV)</a>
+      <a class="btn" href="#">↻ Import file lain</a>
+      <a class="btn primary" href="#">Lihat daftar karyawan</a>
+    </div>
+    <p class="hint">Perbaiki baris gagal di CSV lalu unggah ulang — hanya baris itu yang perlu diperbaiki (import idempoten by email, tidak akan dobel).</p>
+
+    <h3 style="margin-top:1.5rem">Rincian baris gagal</h3>
+    <table>
+      <thead><tr><th>Baris</th><th>Kolom</th><th>Nilai</th><th>Alasan</th></tr></thead>
+      <tbody>
+        <tr class="err"><td>5</td><td>email</td><td class="code">bukan-email</td><td>Format email tidak valid.</td></tr>
+        <tr class="err"><td>18</td><td>nik</td><td class="code">EMP-004</td><td>NIK sudah dipakai karyawan lain.</td></tr>
+        <tr class="err"><td>23</td><td>nama</td><td class="code">(kosong)</td><td>Kolom nama wajib diisi.</td></tr>
+        <tr class="err"><td>41</td><td>email</td><td class="code">(kosong)</td><td>Kolom email wajib diisi.</td></tr>
+        <tr><td colspan="4" style="text-align:center;color:var(--n500)">… 16 baris gagal lainnya (lihat CSV)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ STATE 3: GAGAL TOTAL ============ -->
+  <p class="section-note">STATE 3 — Gagal total (mis. file rusak / worker error)</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Import gagal</h3>
+      <span class="badge fail">✕ Gagal</span>
+    </div>
+    <p style="color:var(--danger);margin:.75rem 0 0">Gagal memproses import: file tidak dapat dibaca (format tidak dikenali).</p>
+    <div class="actions">
+      <a class="btn primary" href="#">↻ Coba lagi</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
