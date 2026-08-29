@@ -20,6 +20,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * Employee self-service portal (/my/*).
@@ -285,7 +286,7 @@ class PortalController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'password'         => 'required|string|min:8|confirmed',
+            'password'         => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->uncompromised()],
         ], [
             'current_password.required' => 'Password saat ini wajib diisi.',
             'password.min'              => 'Password baru minimal 8 karakter.',
@@ -295,7 +296,7 @@ class PortalController extends Controller
         $user = $this->me();
 
         if (! Hash::check($request->input('current_password'), $user->password)) {
-            return back()->with('error', 'Password saat ini salah.');
+            return back()->withErrors(['current_password' => 'Password saat ini salah.']);
         }
 
         $user->update(['password' => $request->input('password')]);

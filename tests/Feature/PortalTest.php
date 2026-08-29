@@ -263,9 +263,9 @@ class PortalTest extends TestCase
 
         $this->actingAsPortal($user)->post('/my/password', [
             'current_password'      => 'wrong-password',
-            'password'              => 'new-password-123',
-            'password_confirmation' => 'new-password-123',
-        ])->assertSessionHas('error');
+            'password'              => 'Zx9Qm2Lp7Kv',
+            'password_confirmation' => 'Zx9Qm2Lp7Kv',
+        ])->assertSessionHasErrors('current_password');
 
         $this->assertTrue(Hash::check('secret', $user->fresh()->password));
     }
@@ -276,11 +276,11 @@ class PortalTest extends TestCase
 
         $this->actingAsPortal($user)->post('/my/password', [
             'current_password'      => 'secret',
-            'password'              => 'new-password-123',
-            'password_confirmation' => 'new-password-123',
+            'password'              => 'Zx9Qm2Lp7Kv',
+            'password_confirmation' => 'Zx9Qm2Lp7Kv',
         ])->assertSessionHas('success');
 
-        $this->assertTrue(Hash::check('new-password-123', $user->fresh()->password));
+        $this->assertTrue(Hash::check('Zx9Qm2Lp7Kv', $user->fresh()->password));
     }
 
     public function test_password_change_requires_confirmation_to_match(): void
@@ -289,9 +289,23 @@ class PortalTest extends TestCase
 
         $this->actingAsPortal($user)->post('/my/password', [
             'current_password'      => 'secret',
-            'password'              => 'new-password-123',
+            'password'              => 'Zx9Qm2Lp7Kv',
             'password_confirmation' => 'different-password',
         ])->assertSessionHasErrors('password');
+    }
+
+    public function test_password_change_rejects_a_weak_password(): void
+    {
+        $user = $this->user('Staff');
+
+        // Semua huruf kecil, tanpa angka — harus ditolak kebijakan baru (QW-04).
+        $this->actingAsPortal($user)->post('/my/password', [
+            'current_password'      => 'secret',
+            'password'              => 'weakpassword',
+            'password_confirmation' => 'weakpassword',
+        ])->assertSessionHasErrors('password');
+
+        $this->assertTrue(Hash::check('secret', $user->fresh()->password));
     }
 
     // ── Pages render ───────────────────────────────────────
