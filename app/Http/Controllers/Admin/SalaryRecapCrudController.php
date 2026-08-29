@@ -255,7 +255,7 @@ class SalaryRecapCrudController extends CrudController
     function export(Request $request)
     {
         $sr =  $request->get('salary_recap');
-        $recaps = SalaryRecap::with(['user'])
+        $recaps = SalaryRecap::with(['user.salary'])
         ->where(function ($q) use ($sr){
             if($sr != null){
                 $q->where('recap_month', '=', $sr);

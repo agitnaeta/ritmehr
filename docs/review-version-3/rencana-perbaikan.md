@@ -11,7 +11,7 @@
 
 | ID | File | Fokus | Sev | Status |
 |---|---|---|---|---|
-| QW-01 | `app/Http/Controllers/Admin/SalaryRecapCrudController.php` | PERF-5 hilangkan N+1 export gaji (`user.salary`) | 🟠 | [ ] TODO |
+| QW-01 | `app/Http/Controllers/Admin/SalaryRecapCrudController.php` | PERF-5 hilangkan N+1 export gaji (`user.salary`) | 🟠 | [x] DONE |
 | QW-02 | `app/Exports/UserExport.php` | PERF-6 stop dump semua kolom (bocor password) + chunk | 🟠 | [ ] TODO |
 | QW-03 | `routes/web.php` | SEC-1 throttle auth kandidat + ganti password portal | 🔴 | [x] DONE |
 | QW-04 | `app/Http/Controllers/Portal/PortalController.php` | SEC-3 password kuat + SEC-4 error konsisten | 🟡 | [ ] TODO |
