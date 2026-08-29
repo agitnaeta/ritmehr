@@ -452,31 +452,52 @@ form:has(.la-filter) .btn-sm {
 .page-item.active .page-link { background: var(--brand-deep); border-color: var(--brand-deep); }
 
 /* ── UM-03 Toolbar presisi ───────────────────────────────────────────────
-   Tombol Export/Import/Cetak Semua ID digabung jadi dropdown "⋯" (Blade).
-   Tombol "Tambah user" + dropdown dipindah ke header (samping heading, kanan)
-   via override list.blade.php — flow natural, tanpa overlap dengan search.
+   Header 2 baris (override list.blade.php):
+   Baris 1: breadcrumb (kiri) + tombol Tambah user & dropdown ⋯ (kanan)
+   Baris 2: heading "Users" + subjudul (kiri) + Pencarian & filter (kanan)
    Lihat: vendor/backpack/crud/list.blade.php + user_actions_dropdown.blade.php */
 
-/* Header actions: rapikan spacing tombol di kanan heading */
-[bp-section="page-header-actions"] .btn {
-    white-space: nowrap;
+.um-page-header .breadcrumb { margin: 0; }
+.um-header-actions .btn { white-space: nowrap; }
+/* Hilangkan border pemisah bawaan Backpack pada wrapper tombol */
+.um-header-actions .with-border { border: 0 !important; padding: 0 !important; }
+
+/* Baris 2: heading kiri, tools (search+filter) kanan */
+.um-header-title h1 { font-size: 1.75rem; line-height: 1.15; }
+.um-header-tools { row-gap: var(--sp-2); }
+
+/* Search "Pencarian" — samakan tinggi & lebar dengan field filter */
+.um-search { min-width: 12rem; }
+.um-search .input-icon { position: relative; }
+.um-search input[type="search"] {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-strong);
 }
-/* Hilangkan border pemisah bawaan Backpack pada wrapper tombol di header */
-[bp-section="page-header-actions"] .with-border {
-    border: 0 !important;
-    padding: 0 !important;
+.um-search input[type="search"]:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
 }
 
-/* Mobile: tombol pindah ke bawah heading, rata kiri */
-@media (max-width: 768px) {
-    [bp-section="page-header"] {
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-    [bp-section="page-header-actions"] {
-        margin-left: 0 !important;
-        margin-top: var(--sp-2);
-    }
+/* Selaraskan label + field filter dengan search agar rata bawah */
+.um-header-tools form { margin: 0 !important; }
+
+/* Di dalam header, filter tampil flat (tanpa card abu-abu) supaya Pencarian +
+   Departemen/Cabang/Status/Filter/Reset terbaca sebagai satu baris menyatu,
+   sesuai design. Card bernada hanya dipakai bila filter berdiri sendiri. */
+.um-header-tools form:has(.la-filter) {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: var(--sp-2);
+}
+
+/* Mobile: header jadi stack vertikal, tools rata kiri */
+@media (max-width: 992px) {
+    .um-header-actions { margin-left: auto; }
+    .um-header-bottom { flex-direction: column; align-items: stretch !important; }
+    .um-header-tools { margin-left: 0 !important; }
+    .um-search { min-width: 0; width: 100%; }
 }
 
 /* ── Preferensi pengguna ────────────────────────────────────────────────── */

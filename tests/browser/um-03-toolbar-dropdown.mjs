@@ -125,6 +125,32 @@ await test('Mobile: dropdown tetap berfungsi (375px)', async () => {
     await page.setViewportSize({ width: 1280, height: 800 });
 });
 
+// Test 8: Layout header sesuai design — breadcrumb kiri, search di baris tools
+await test('Header 2-baris: breadcrumb kiri, Pencarian + filter satu baris', async () => {
+    await page.goto(`${BASE}/admin/user`);
+    await page.waitForSelector('#crudTable', { timeout: 8000 });
+
+    const bc = await page.$('.um-header-top .breadcrumb');
+    assert(bc, 'Breadcrumb tidak ada di header custom');
+
+    const searchLabel = await page.$('.um-header-tools .um-search label');
+    assert(searchLabel, 'Label Pencarian tidak ditemukan di header tools');
+    const labelText = (await searchLabel.textContent()).trim();
+    assert(labelText === 'Pencarian', `Label search: "${labelText}"`);
+
+    const search = await page.$('.um-header-tools .um-search input[type="search"]');
+    const filterForm = await page.$('.um-header-tools form');
+    assert(search, 'Search box tidak ada di header tools');
+    assert(filterForm, 'Form filter tidak ada di header tools');
+
+    const bg = await filterForm.evaluate(el => getComputedStyle(el).backgroundColor);
+    assert(bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent', `Filter masih punya background card: ${bg}`);
+
+    const sBox = await search.boundingBox();
+    const fBox = await filterForm.boundingBox();
+    assert(Math.abs(sBox.y - fBox.y) < 60, `Search & filter tidak sebaris: search.y=${sBox.y} filter.y=${fBox.y}`);
+});
+
 await browser.close();
 
 // Summary

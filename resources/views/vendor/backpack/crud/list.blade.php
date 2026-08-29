@@ -9,40 +9,56 @@
 
   // if breadcrumbs aren't defined in the CrudController, use the default breadcrumbs
   $breadcrumbs = $breadcrumbs ?? $defaultBreadcrumbs;
+
+  // UM-03: render breadcrumb DI DALAM header (kiri) — matikan breadcrumb bawaan theme
+  $umBreadcrumbs = $breadcrumbs;
+  $breadcrumbs = null;
+
+  // Pisahkan tombol aksi (Tambah user + dropdown ⋯) dari form filter (simple_filters)
+  $umTopButtons   = $crud->buttons()->where('stack', 'top');
+  $umActionButtons = $umTopButtons->filter(fn ($b) => $b->name !== 'simple_filters');
+  $umFilterButtons = $umTopButtons->filter(fn ($b) => $b->name === 'simple_filters');
 @endphp
 
 @section('header')
-    {{-- UM-03: heading + subheading di kiri, tombol aksi (Tambah user + dropdown ⋯) di kanan --}}
-    <section class="header-operation container-fluid animated fadeIn d-flex flex-wrap mb-2 align-items-center d-print-none" bp-section="page-header">
-        <h1 class="text-capitalize mb-0" bp-section="page-heading">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</h1>
-        <p class="ms-2 ml-2 mb-0" id="datatable_info_stack" bp-section="page-subheading">{!! $crud->getSubheading() ?? '' !!}</p>
+  <div class="um-page-header container-fluid animated fadeIn d-print-none" bp-section="page-header">
 
-        @if ( $crud->buttons()->where('stack', 'top')->count() || $crud->exportButtons())
-          <div class="ms-auto d-flex align-items-center gap-2 d-print-none" bp-section="page-header-actions">
-            @include('crud::inc.button_stack', ['stack' => 'top'])
-          </div>
-        @endif
-    </section>
-@endsection
-
-@section('content')
-  {{-- Default box --}}
-  <div class="row" bp-section="crud-operation-list">
-
-    {{-- THE ACTUAL CONTENT --}}
-    <div class="{{ $crud->getListContentClass() }}">
-
-        {{-- UM-03: baris filter + search (tombol aksi sudah dipindah ke header) --}}
-        <div class="row mb-2 align-items-center">
-          <div class="col-sm-9">
-            {{-- Backpack List Filters --}}
-            @if ($crud->filtersEnabled())
-              @include('crud::inc.filters_navbar')
+    {{-- Baris 1: breadcrumb (kiri) + tombol aksi (kanan) --}}
+    <div class="um-header-top d-flex align-items-center flex-wrap mb-3">
+      <nav aria-label="breadcrumb" class="d-none d-lg-block">
+        <ol class="breadcrumb bg-transparent p-0 m-0">
+          @foreach ($umBreadcrumbs as $label => $link)
+            @if ($link)
+              <li class="breadcrumb-item text-capitalize"><a href="{{ $link }}">{{ $label }}</a></li>
+            @else
+              <li class="breadcrumb-item text-capitalize active" aria-current="page">{{ $label }}</li>
             @endif
-          </div>
-          @if($crud->getOperationSetting('searchableTable'))
-          <div class="col-sm-3">
-            <div id="datatable_search_stack" class="mt-sm-0 mt-2 d-print-none">
+          @endforeach
+        </ol>
+      </nav>
+
+      @if ($umActionButtons->count())
+        <div class="um-header-actions ms-auto d-flex align-items-center gap-2" bp-section="page-header-actions">
+          @foreach ($umActionButtons as $button)
+            {!! $button->getHtml($entry ?? null) !!}
+          @endforeach
+        </div>
+      @endif
+    </div>
+
+    {{-- Baris 2: heading + subheading (kiri) + Pencarian & filter (kanan) --}}
+    <div class="um-header-bottom d-flex align-items-end flex-wrap gap-3 mb-2">
+      <div class="um-header-title">
+        <h1 class="text-capitalize mb-0" bp-section="page-heading">{!! $crud->getHeading() ?? $crud->entity_name_plural !!}</h1>
+        <p class="mb-0 text-muted" id="datatable_info_stack" bp-section="page-subheading">{!! $crud->getSubheading() ?? '' !!}</p>
+      </div>
+
+      <div class="um-header-tools ms-auto d-flex align-items-end flex-wrap gap-2">
+        {{-- Pencarian (search) — DataTables akan mengganti input ini via #datatable_search_stack --}}
+        @if($crud->getOperationSetting('searchableTable'))
+          <div class="um-search">
+            <label class="form-label mb-0 small text-muted">Pencarian</label>
+            <div id="datatable_search_stack" class="d-print-none">
               <div class="input-icon">
                 <span class="input-icon-addon">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path><path d="M21 21l-6 -6"></path></svg>
@@ -51,8 +67,24 @@
               </div>
             </div>
           </div>
-          @endif
-        </div>
+        @endif
+
+        {{-- Filter (Departemen, Cabang, Status, Filter, Reset) --}}
+        @foreach ($umFilterButtons as $button)
+          {!! $button->getHtml($entry ?? null) !!}
+        @endforeach
+      </div>
+    </div>
+
+  </div>
+@endsection
+
+@section('content')
+  {{-- Default box --}}
+  <div class="row" bp-section="crud-operation-list">
+
+    {{-- THE ACTUAL CONTENT --}}
+    <div class="{{ $crud->getListContentClass() }}">
 
         <div class="{{ backpack_theme_config('classes.tableWrapper') }}">
             <table
