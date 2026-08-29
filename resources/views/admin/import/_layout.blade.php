@@ -55,10 +55,15 @@
         <div class="card-header"><h3 class="card-title">Pratinjau &amp; validasi</h3></div>
         <div class="card-body">
           <div class="alert {{ $preview['errorCount'] ? 'alert-warning' : 'alert-success' }}">
-            <strong>{{ $preview['validCount'] + $preview['errorCount'] }} baris terbaca.</strong>
+            <strong>{{ $preview['totalCount'] ?? ($preview['validCount'] + $preview['errorCount']) }} baris terbaca.</strong>
             {{ $preview['validCount'] }} valid
             @if($preview['errorCount'])· <span class="text-danger">{{ $preview['errorCount'] }} bermasalah</span>@endif
           </div>
+          @if(($preview['shownCount'] ?? count($preview['rows'])) < ($preview['totalCount'] ?? 0))
+            <div class="text-muted small mb-2">
+              Menampilkan {{ $preview['shownCount'] }} baris pertama dari {{ $preview['totalCount'] }} (pratinjau dibatasi demi performa; seluruh baris tetap akan diimpor).
+            </div>
+          @endif
           <div class="table-responsive">
             <table class="table table-vcenter card-table">
               <thead>

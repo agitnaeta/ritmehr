@@ -19,7 +19,8 @@ class ImportPreview
      * @param  string    $path         path absolut file
      * @param  string[]  $required     kolom wajib (heading snake_case)
      * @param  string[]  $showColumns  kolom yang ditampilkan di tabel
-     * @return array{headings:array,rows:array,validCount:int,errorCount:int}
+     * @param  int       $limit        maksimal baris yang DITAMPILKAN di tabel pratinjau
+     * @return array{headings:array,rows:array,validCount:int,errorCount:int,totalCount:int,shownCount:int}
      */
     public static function build(string $path, array $required, array $showColumns, int $limit = 100): array
     {
@@ -33,18 +34,23 @@ class ImportPreview
         $valid = 0;
         $errors = 0;
 
-        foreach (array_slice($reader->data, 0, $limit) as $row) {
+        // Hitung valid/error dari SELURUH baris (bukan hanya yang ditampilkan),
+        // supaya angka "baris terbaca" & "baris valid" akurat untuk file besar.
+        foreach ($reader->data as $index => $row) {
             $ok = true;
             foreach ($required as $col) {
                 if (blank($row[$col] ?? null)) { $ok = false; break; }
             }
             $ok ? $valid++ : $errors++;
 
-            $cells = [];
-            foreach ($showColumns as $col) {
-                $cells[] = $row[$col] ?? null;
+            // Tabel pratinjau hanya menampilkan $limit baris pertama demi performa.
+            if ($index < $limit) {
+                $cells = [];
+                foreach ($showColumns as $col) {
+                    $cells[] = $row[$col] ?? null;
+                }
+                $rows[] = ['valid' => $ok, 'cells' => $cells];
             }
-            $rows[] = ['valid' => $ok, 'cells' => $cells];
         }
 
         return [
@@ -52,6 +58,8 @@ class ImportPreview
             'rows'       => $rows,
             'validCount' => $valid,
             'errorCount' => $errors,
+            'totalCount' => $valid + $errors,
+            'shownCount' => count($rows),
         ];
     }
 }
