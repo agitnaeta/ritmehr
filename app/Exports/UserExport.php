@@ -21,15 +21,19 @@ class UserExport implements FromQuery, WithHeadings, WithMapping, WithChunkReadi
     /**
      * @param User|null $viewer Pembatas visibilitas (scope visibleTo). Manager
      *        hanya mengekspor bawahannya; super_admin/hr_admin (user.view_all) semua.
+     * @param int|null  $viewerId Alternatif queue-safe: id viewer (dipakai job
+     *        background agar tak perlu serialize objek User).
      */
-    public function __construct(private ?User $viewer = null)
+    public function __construct(private ?User $viewer = null, private ?int $viewerId = null)
     {
     }
 
     public function query()
     {
+        $viewer = $this->viewer ?? ($this->viewerId ? User::find($this->viewerId) : null);
+
         return User::query()
-            ->visibleTo($this->viewer)
+            ->visibleTo($viewer)
             ->select([
                 'id', 'employee_id', 'name', 'email', 'phone', 'address',
                 'employment_status', 'join_date', 'created_at',

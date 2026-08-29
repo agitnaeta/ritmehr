@@ -65,6 +65,10 @@ Route::group([
         Route::get("/print/{printJob}/status.json",[UserCrudController::class,'printStatusJson'])->name('user.print.status.json');
         Route::get("/print/{printJob}/download",[UserCrudController::class,'printDownload'])->name('user.print.download');
         Route::get("/export",[UserCrudController::class,'export'])->name('user.export.all');
+        // UM-10 — status/unduh export background
+        Route::get("/export/{exportJob}/status",[UserCrudController::class,'exportStatus'])->name('user.export.status');
+        Route::get("/export/{exportJob}/status.json",[UserCrudController::class,'exportStatusJson'])->name('user.export.status.json');
+        Route::get("/export/{exportJob}/download",[UserCrudController::class,'exportDownload'])->name('user.export.download');
         // IMP-03 — import karyawan dari Excel
         Route::get("/import",[UserCrudController::class,'importForm'])->name('user.import.form');
         Route::get("/import/template",[UserCrudController::class,'importTemplate'])->name('user.import.template');

@@ -642,8 +642,62 @@ class UserCrudController extends CrudController
     public function export(){
         $me = backpack_user();
         abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mengekspor data karyawan.');
-        // Viewer dilempar ke export agar query di-scope visibleTo (anti bocor lintas-tim).
-        return Excel::download(new UserExport($me),'user-export.xlsx');
+
+        // UM-10 — SELALU background (konsisten dgn import). Buat ExportJob, dispatch,
+        // arahkan ke halaman status; user unduh saat file siap.
+        $total = User::query()->visibleTo($me)->count();
+
+        $exportJob = \App\Models\ExportJob::create([
+            'user_id' => $me?->id,
+            'type'    => 'user',
+            'status'  => \App\Models\ExportJob::STATUS_QUEUED,
+            'total'   => $total,
+        ]);
+        \App\Jobs\ProcessUserExport::dispatch($exportJob->id);
+
+        return redirect()->route('user.export.status', $exportJob->id);
+    }
+
+    /** UM-10 — Halaman status export background. */
+    public function exportStatus(\App\Models\ExportJob $exportJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizeExportJob($exportJob, $me);
+        return view('admin.user.export-status', ['job' => $exportJob]);
+    }
+
+    /** UM-10 — Status JSON polling. */
+    public function exportStatusJson(\App\Models\ExportJob $exportJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizeExportJob($exportJob, $me);
+        return response()->json([
+            'status'   => $exportJob->status,
+            'total'    => $exportJob->total,
+            'message'  => $exportJob->message,
+            'finished' => $exportJob->isFinished(),
+            'ready'    => $exportJob->status === \App\Models\ExportJob::STATUS_DONE
+                && $exportJob->file_path && ! $exportJob->isExpired(),
+            'expired'  => $exportJob->isExpired(),
+        ]);
+    }
+
+    /** UM-10 — Unduh file export hasil background. */
+    public function exportDownload(\App\Models\ExportJob $exportJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizeExportJob($exportJob, $me);
+        abort_unless($exportJob->status === \App\Models\ExportJob::STATUS_DONE && $exportJob->file_path, 404, 'File belum siap.');
+        abort_if($exportJob->isExpired(), 410, 'Tautan unduh sudah kadaluarsa. Silakan export ulang.');
+        $abs = Storage::disk('local')->path($exportJob->file_path);
+        abort_unless(is_file($abs), 404, 'File export tidak ditemukan (mungkin sudah dihapus).');
+        return response()->download($abs, 'user-export-' . $exportJob->id . '.xlsx');
+    }
+
+    private function authorizeExportJob(\App\Models\ExportJob $exportJob, $me): void
+    {
+        if ($exportJob->user_id === $me?->id) return;
+        abort_unless($me?->can('user.view_all'), 403, 'Anda tidak berhak melihat proses export ini.');
     }
 
     // ── IMP-03 — Import karyawan dari Excel ────────────────

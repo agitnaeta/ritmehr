@@ -47,7 +47,7 @@ Kerjakan **satu-per-satu**, dari cepat/aman ke struktural:
 9. **UM-06** — custom Show bertab + foto + pelatihan (struktural → **mockup HTML dulu**) ✅ DONE
 10. **UM-11** — cetak semua ID aman skala (struktural → **mockup HTML dulu**) ✅ DONE
 11. **UM-09** — import background/queue (struktural) ✅ DONE
-12. **UM-10** — export background/queue (struktural)
+12. **UM-10** — export background/queue (struktural) ✅ DONE
 
 > Task struktural (UM-06, UM-09, UM-10, UM-11) → sesuai kebiasaan Capt:
 > **mockup/rancangan HTML atau alur di-approve dulu** sebelum koding.

@@ -1,7 +1,8 @@
 # UM-10 — Export skala besar via background/queue
 
 **Poin Capt #9** · Tipe: Struktural · Urgensi: Sedang · Risiko: Sedang
-**Status:** [ ] TODO · ⚠️ Ada **Keputusan Terbuka** (infra queue) — lihat UM-09
+**Status:** [x] DONE — export SELALU background (queue) + halaman status + unduh, retensi 24 jam. Keamanan (scope visibleTo) sudah dari B2.
+Test UserExportBackgroundTest (5 PASS) + regresi 64 PASS.
 
 ---
 
