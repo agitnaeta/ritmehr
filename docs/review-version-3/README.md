@@ -1,3 +1,9 @@
+> **Catatan:** Folder ini kini memuat dua dokumen:
+> - **[analisis-teknis.md](analisis-teknis.md)** — audit **Keamanan · Optimasi · Best Practice** (build `cd1ba8d`).
+> - Dokumen di bawah — kerja **Mobile-First Portal `/my`**.
+
+---
+
 # Mobile-First Portal `/my` — RitmeHR (Review Version 3)
 
 **Tujuan:** Utamakan pengalaman **mobile** di seluruh portal karyawan (`/my/*`),

@@ -1,0 +1,53 @@
+# ST-05 — `.github/workflows/ci.yml`
+
+**Fokus:** BP-2 — GitHub Actions CI (file BARU)
+**Severity:** 🟠 Tinggi
+**Status:** [ ] TODO — commit: `______`
+**File (satu-satunya) yang disentuh:** `.github/workflows/ci.yml`
+
+---
+
+## Masalah
+Tak ada CI. 51 test PHPUnit + harness browser tak jalan otomatis per-PR → regres lolos.
+
+## Langkah (file baru)
+```yaml
+name: CI
+on: [push, pull_request]
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ matrix.php }}', extensions: gd, pdo_mysql }
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php -d memory_limit=2G -d xdebug.mode=off vendor/bin/phpunit --no-coverage
+  pint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '8.3' }
+      - run: composer install --no-interaction
+      - run: vendor/bin/pint --test
+```
+> Catatan CI: pastikan dependensi runtime yang ada di lokal tapi absen di CI
+> (mis. build Vite `public/build`, `pymupdf` utk CV) di-handle — kalau ~30 test butuh
+> asset, tambahkan `npm ci && npm run build` step.
+
+## Cek per file
+- [ ] Push branch → tab Actions menjalankan `phpunit` (matrix 8.2/8.3) + `pint` dan hijau.
+
+---
+
+## Verifikasi
+- [ ] `php -l .github/workflows/ci.yml` bersih (kalau file PHP)
+- [ ] `php -d memory_limit=2G -d xdebug.mode=off vendor/bin/phpunit --no-coverage` → tetap hijau (baseline)
+- [ ] `node tests/browser/crud-suite.mjs` → tetap hijau (baseline 146)
+- [ ] Verifikasi manual di browser sesuai bagian "Cek" di atas
+- [ ] Flip `Status:` ke `[x] DONE` + isi commit SHA setelah semua centang

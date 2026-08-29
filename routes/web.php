@@ -38,9 +38,11 @@ Route::group(['prefix' => 'karir', 'as' => 'career.', 'middleware' => 'web'], fu
 
     // Candidate auth
     Route::get('/daftar', [CandidateAuthController::class, 'showRegister'])->name('register');
-    Route::post('/daftar', [CandidateAuthController::class, 'register'])->name('register.submit');
+    Route::post('/daftar', [CandidateAuthController::class, 'register'])
+         ->middleware('throttle:5,1')->name('register.submit');
     Route::get('/masuk', [CandidateAuthController::class, 'showLogin'])->name('login');
-    Route::post('/masuk', [CandidateAuthController::class, 'login'])->name('login.submit');
+    Route::post('/masuk', [CandidateAuthController::class, 'login'])
+         ->middleware('throttle:5,1')->name('login.submit');
     Route::post('/keluar', [CandidateAuthController::class, 'logout'])->name('logout');
 
     // Candidate-only
@@ -94,7 +96,8 @@ Route::group([
 
     Route::get('/profile', [PortalController::class, 'profile'])->name('profile');
     Route::post('/profile', [PortalController::class, 'profileUpdate'])->name('profile.update');
-    Route::post('/password', [PortalController::class, 'changePassword'])->name('password.change');
+    Route::post('/password', [PortalController::class, 'changePassword'])
+         ->middleware('throttle:6,1')->name('password.change');
 
     Route::get('/notifications', [PortalController::class, 'notifications'])->name('notifications');
     Route::post('/notifications/{id}/read', [PortalController::class, 'notificationRead'])
