@@ -355,6 +355,38 @@ form:has(.la-filter) .form-control-sm {
     width: auto;
 }
 
+/* UM-02 — Kontras kolom isian di dalam bilah bernada.
+   Bilah filter berlatar --bg-sunken (n-100) dan token --field-bg juga n-100
+   dengan --field-border transparan → field menyatu dengan bilah (abu-di-abu,
+   tanpa batas). Beri latar permukaan putih + garis tegas KHUSUS untuk field di
+   dalam bilah bernada, sama seperti perbaikan yang sudah terbukti di portal.
+   Field di dalam kartu putih biasa tidak terpengaruh. */
+form:has(.la-filter) .form-select,
+form:has(.la-filter) .form-control,
+.dataTables_length select,
+#crudTable_length select,
+.dataTables_filter input,
+#crudTable_filter input {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+}
+
+form:has(.la-filter) .form-select:hover:not(:focus),
+form:has(.la-filter) .form-control:hover:not(:focus),
+.dataTables_length select:hover:not(:focus),
+.dataTables_filter input:hover:not(:focus) {
+    border-color: var(--field-icon);
+    background-color: var(--bg-surface);
+}
+
+form:has(.la-filter) .form-select:focus,
+form:has(.la-filter) .form-control:focus,
+.dataTables_length select:focus,
+.dataTables_filter input:focus {
+    background-color: var(--field-bg-focus);
+    border-color: var(--field-border-focus);
+}
+
 form:has(.la-filter) .form-label {
     display: block;
     margin-bottom: 0.1875rem;

@@ -391,11 +391,18 @@ class UserCrudController extends CrudController
     }
 
     public function print($id){
-        $users = User::where('id',$id)->get();
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mencetak ID karyawan.');
+        // Scope visibilitas: manager hanya boleh mencetak ID bawahannya.
+        $users = User::where('id',$id)->visibleTo($me)->get();
+        abort_if($users->isEmpty(), 404, 'Karyawan tidak ditemukan atau di luar wewenang Anda.');
         return $this->_print($users);
     }
     public function printAll(){
-        $users =  User::all();
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mencetak ID karyawan.');
+        // Scope visibilitas: manager hanya mencetak bawahannya, bukan seluruh karyawan.
+        $users = User::query()->visibleTo($me)->get();
         return $this->_print($users);
     }
     private function _print(Collection $users){
@@ -420,7 +427,10 @@ class UserCrudController extends CrudController
     }
 
     public function export(){
-        return Excel::download(new UserExport,'user-export.xlsx');
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mengekspor data karyawan.');
+        // Viewer dilempar ke export agar query di-scope visibleTo (anti bocor lintas-tim).
+        return Excel::download(new UserExport($me),'user-export.xlsx');
     }
 
     // ── IMP-03 — Import karyawan dari Excel ────────────────

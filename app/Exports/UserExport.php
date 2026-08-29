@@ -18,9 +18,18 @@ use Maatwebsite\Excel\Concerns\WithMapping;
  */
 class UserExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading
 {
+    /**
+     * @param User|null $viewer Pembatas visibilitas (scope visibleTo). Manager
+     *        hanya mengekspor bawahannya; super_admin/hr_admin (user.view_all) semua.
+     */
+    public function __construct(private ?User $viewer = null)
+    {
+    }
+
     public function query()
     {
         return User::query()
+            ->visibleTo($this->viewer)
             ->select([
                 'id', 'employee_id', 'name', 'email', 'phone', 'address',
                 'employment_status', 'join_date', 'created_at',
