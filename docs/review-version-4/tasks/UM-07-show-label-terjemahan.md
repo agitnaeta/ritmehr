@@ -1,7 +1,9 @@
 # UM-07 — Label Show/form masih campur Inggris
 
 **Poin Capt #7** · Tipe: i18n / label · Urgensi: Sedang · Risiko: Rendah
-**Status:** [ ] TODO
+**Status:** [x] DONE — relabel Show + form ke ID, status ter-lokalisasi, Bahasa tampil nama.
+Test `tests/browser/um-07-labels-id.mjs` (3 PASS) + regresi 62 PHPUnit PASS.
+Catatan: dikerjakan mandiri (tanpa nunggu UM-06) via relabel kolom Show + field form.
 
 ---
 

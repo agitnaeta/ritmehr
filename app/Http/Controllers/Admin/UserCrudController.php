@@ -112,6 +112,23 @@ class UserCrudController extends CrudController
            }
         ])->after('email');
 
+        // UM-07 — Relabel kolom Show ke Bahasa Indonesia + lokalisasi nilai
+        // (autoSetupShowOperation menghumanize kolom DB jadi label Inggris).
+        $this->crud->column('name')->label('Nama');
+        $this->crud->column('email')->label('Email');
+        $this->crud->column('locale')->label('Bahasa')
+            ->type('select_from_array')->options(self::LOCALE_OPTIONS);
+        $this->crud->column('employee_id')->label('NIK / NIP');
+        $this->crud->column('join_date')->label('Tanggal Bergabung');
+        $this->crud->column('employment_status')->label('Status Kepegawaian')
+            ->type('closure')
+            ->function(fn (User $entry) => $entry->employmentStatusLabel());
+        $this->crud->column('phone')->label('No. Telepon');
+        $this->crud->column('address')->label('Alamat');
+        $this->crud->column('image')->label('Foto');
+        $this->crud->column('created_at')->label('Dibuat');
+        $this->crud->column('updated_at')->label('Diperbarui');
+
     }
 
     /**
@@ -214,14 +231,20 @@ class UserCrudController extends CrudController
 
     function fieldModification(){
 
+        // UM-07 — Relabel field bawaan setFromDb() ke Bahasa Indonesia.
+        CRUD::field('name')->label('Nama');
+        CRUD::field('email')->label('Email');
+        CRUD::field('password')->label('Kata Sandi');
+
         CRUD::field([
-            'Label'=> "Jadwal",
+            'label'=> "Jadwal",
             'name'=>'schedule_id',
             'type'=>'select',
             'model'     => Schedule::class,
             'attribute'=>'name'
         ]);
         CRUD::field('image')
+            ->label('Foto Karyawan')
             ->type('upload')
             ->withFiles([
                 'disk' => 'public', // the disk where file will be stored
