@@ -504,7 +504,7 @@ class UserCrudController extends CrudController
         $preview = \App\Support\ImportPreview::build(
             Storage::disk('local')->path($path),
             ['email', 'nama'],                 // kolom wajib
-            ['nama', 'email', 'departemen', 'cabang'] // kolom yang ditampilkan
+            ['nama', 'email', 'nik', 'departemen', 'cabang'] // kolom yang ditampilkan
         );
         $preview['token'] = $token;
 

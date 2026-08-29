@@ -4,7 +4,7 @@
     'templateUrl' => route('user.import.template'),
     'previewUrl'  => route('user.import.preview'),
     'storeUrl'    => route('user.import.store'),
-    'columns'     => 'nama, email, tgl_bergabung, departemen, cabang, jabatan, password, status',
+    'columns'     => 'nama, email, nik, tgl_bergabung, departemen, cabang, jabatan, password, status, bahasa',
     'preview'     => $preview ?? null,
     'result'      => $result ?? null,
 ])

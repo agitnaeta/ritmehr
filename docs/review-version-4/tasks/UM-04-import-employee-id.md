@@ -1,7 +1,8 @@
 # UM-04 — Import dukung kolom NIK / `employee_id`
 
 **Poin Capt #4** · Tipe: Import · Urgensi: Sedang · Risiko: Rendah
-**Status:** [ ] TODO
+**Status:** [x] DONE — template+import baca `nik`→employee_id (opsional, unik), preview tampil NIK.
+Test `tests/Feature/UserImportNikTest.php` (6 PASS) + regresi 44 PHPUnit PASS.
 
 ---
 

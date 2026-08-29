@@ -13,13 +13,13 @@ class UserTemplateExport implements FromArray, WithHeadings
 {
     public function headings(): array
     {
-        return ['nama', 'email', 'tgl_bergabung', 'departemen', 'cabang', 'jabatan', 'password', 'status'];
+        return ['nama', 'email', 'nik', 'tgl_bergabung', 'departemen', 'cabang', 'jabatan', 'password', 'status', 'bahasa'];
     }
 
     public function array(): array
     {
         return [
-            ['Budi Santoso', 'budi@contoh.test', '2024-01-15', 'Operasional', 'Kantor Pusat', 'Staff', 'rahasia123', 'aktif'],
+            ['Budi Santoso', 'budi@contoh.test', 'EMP-010', '2024-01-15', 'Operasional', 'Kantor Pusat', 'Staff', 'rahasia123', 'aktif', 'id'],
         ];
     }
 }

@@ -38,6 +38,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
             ['email' => trim($row['email'])],
             [
                 'name'              => trim($row['nama']),
+                'employee_id'       => trim((string) ($row['nik'] ?? '')) ?: null,
                 'join_date'         => $this->date($row['tgl_bergabung'] ?? null),
                 'department_id'     => $this->resolveId(Department::class, $row['departemen'] ?? null),
                 'branch_id'         => $this->resolveId(Branch::class, $row['cabang'] ?? null),
@@ -58,6 +59,11 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
         return [
             'email' => ['required', 'email'],
             'nama'  => ['required', 'string'],
+            // UM-04 — NIK opsional, tapi jika diisi harus unik. Baris duplikat masuk
+            // SkipsOnFailure (dilaporkan), tidak menghentikan seluruh import. Update
+            // user yang sama by email tidak menabrak karena email = key updateOrCreate;
+            // NIK bentrok ke user LAIN tetap ditolak.
+            'nik'   => ['nullable', 'string', 'max:20', 'unique:users,employee_id'],
         ];
     }
 
@@ -67,6 +73,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
             'email.required' => 'Kolom email wajib diisi.',
             'email.email'    => 'Format email tidak valid.',
             'nama.required'  => 'Kolom nama wajib diisi.',
+            'nik.unique'     => 'NIK sudah dipakai karyawan lain.',
         ];
     }
 
