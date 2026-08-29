@@ -1,7 +1,8 @@
 # UM-01 — Tabel responsif & layout mobile
 
 **Poin Capt #1** · Tipe: CSS + konfigurasi kolom · Urgensi: Tinggi · Risiko: Rendah
-**Status:** [ ] TODO
+**Status:** [x] DONE — kolom diringkas ke 5 inti + `responsiveTable(false)`.
+Test `tests/browser/um-01-user-responsive.mjs` (4 PASS) + regresi 68 PHPUnit PASS.
 
 ---
 

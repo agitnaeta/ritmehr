@@ -113,6 +113,12 @@ class UserCrudController extends CrudController
     {
         CRUD::setFromDb(); // set columns from db columns.
 
+        // UM-01 — Matikan auto-collapse DataTables Responsive. Dengan default ON,
+        // ekstensi menyembunyikan kolom di balik ikon ⋮ bahkan saat masih ada ruang
+        // (terlihat di desktop 1280px). Kolom sudah diringkas ke 5 inti di bawah,
+        // jadi cukup muat di semua layar; layar sempit pakai scroll horizontal.
+        $this->crud->setOperationSetting('responsiveTable', false);
+
         /**
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
@@ -132,11 +138,25 @@ class UserCrudController extends CrudController
 
         // QW-03 — setFromDb() meng-humanize kolom DB jadi label Inggris
         // ("Name/Email/Locale/Employee/Join date"). Seragamkan ke Bahasa Indonesia.
-        $this->crud->column('name')->label('Nama');
-        $this->crud->column('email')->label('Email');
-        $this->crud->column('locale')->label('Bahasa');
-        $this->crud->column('employee_id')->label('Karyawan');
-        $this->crud->column('join_date')->label('Tgl Bergabung');
+        // UM-01 — Tabel responsif: hanya kolom INTI yang tampil di tabel
+        // (Nama, Email, Karyawan/NIK, Departemen, Status). Kolom sekunder
+        // di-visibleInTable(false) → tetap ada di export & halaman detail, tapi
+        // tidak memenuhi tabel & memicu collapse responsive DataTables.
+        // `priority` rendah = kolom lebih dipertahankan saat layar menyempit.
+        $this->crud->column('name')->label('Nama')->priority(1);
+        $this->crud->column('email')->label('Email')->priority(3);
+        $this->crud->column('employee_id')->label('Karyawan')->priority(2);
+        $this->crud->column('department_id')->priority(4);   // Departemen (label diset di orgListColumns)
+        $this->crud->column('employment_status')->priority(5); // Status (label diset di orgListColumns)
+
+        // Kolom sekunder — sembunyikan dari tabel (tetap tersedia utk export/detail)
+        $this->crud->column('locale')->label('Bahasa')->visibleInTable(false);
+        $this->crud->column('join_date')->label('Tgl Bergabung')->visibleInTable(false);
+        $this->crud->column('schedule_id')->visibleInTable(false); // Jadwal
+        $this->crud->column('position_id')->visibleInTable(false);  // Jabatan
+        $this->crud->column('branch_id')->visibleInTable(false);    // Cabang
+        $this->crud->column('phone')->visibleInTable(false);
+        $this->crud->column('image')->visibleInTable(false);
 
         $this->crud->addButtonFromView('line','user-print','user-print','end');
         // UM-03: Export, Import, Cetak Semua ID — digabung di dropdown "⋯"

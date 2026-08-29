@@ -39,7 +39,7 @@ Kerjakan **satu-per-satu**, dari cepat/aman ke struktural:
 1. **UM-02** — kontras field (quick, high-visible, low-risk) ✅ DONE
 2. **B2** — keamanan export/print (fix scope+guard) ✅ DONE
 3. **UM-03** — toolbar presisi (dropdown ⋯) ✅ DONE
-4. **UM-01** — tabel responsif & mobile (quick-medium)
+4. **UM-01** — tabel responsif & mobile ✅ DONE
 5. **UM-05** — default locale `id` (fondasi untuk UM-08)
 6. **UM-08** — locale dropdown bahasa (butuh UM-05)
 7. **UM-04** — import `employee_id`
