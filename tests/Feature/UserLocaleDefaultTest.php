@@ -66,4 +66,15 @@ class UserLocaleDefaultTest extends TestCase
 
         $this->assertSame('en', User::where('email', 'importen@demo.test')->value('locale'));
     }
+
+    public function test_locale_options_konstanta_konsisten_i18n(): void
+    {
+        // UM-08 — opsi dropdown harus konsisten dengan bahasa yang didukung.
+        $opts = \App\Http\Controllers\Admin\UserCrudController::LOCALE_OPTIONS;
+
+        $this->assertArrayHasKey('id', $opts);
+        $this->assertArrayHasKey('en', $opts);
+        $this->assertSame('Indonesia', $opts['id']);
+        $this->assertSame('English', $opts['en']);
+    }
 }

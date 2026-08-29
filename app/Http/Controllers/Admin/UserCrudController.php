@@ -36,6 +36,17 @@ class UserCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
     /**
+     * UM-08 — Bahasa yang didukung i18n proyek (lang/id, lang/en).
+     * Dipakai di field dropdown & relabel kolom list.
+     *
+     * @var array<string, string>
+     */
+    public const LOCALE_OPTIONS = [
+        'id' => 'Indonesia',
+        'en' => 'English',
+    ];
+
+    /**
      * Configure the CrudPanel object. Apply settings to all operations.
      *
      * @return void
@@ -150,7 +161,8 @@ class UserCrudController extends CrudController
         $this->crud->column('employment_status')->priority(5); // Status (label diset di orgListColumns)
 
         // Kolom sekunder — sembunyikan dari tabel (tetap tersedia utk export/detail)
-        $this->crud->column('locale')->label('Bahasa')->visibleInTable(false);
+        $this->crud->column('locale')->label('Bahasa')->visibleInTable(false)
+            ->type('select_from_array')->options(self::LOCALE_OPTIONS);
         $this->crud->column('join_date')->label('Tgl Bergabung')->visibleInTable(false);
         $this->crud->column('schedule_id')->visibleInTable(false); // Jadwal
         $this->crud->column('position_id')->visibleInTable(false);  // Jabatan
@@ -217,6 +229,17 @@ class UserCrudController extends CrudController
             ]);
 
         $this->orgFields();
+
+        // UM-08 — Bahasa (locale) sebagai dropdown pilihan, bukan text input.
+        // Opsi konsisten dengan i18n proyek (lang/id, lang/en). Default Indonesia.
+        CRUD::field([
+            'name'        => 'locale',
+            'label'       => 'Bahasa',
+            'type'        => 'select_from_array',
+            'options'     => self::LOCALE_OPTIONS,
+            'allows_null' => false,
+            'default'     => 'id',
+        ]);
     }
 
     /**

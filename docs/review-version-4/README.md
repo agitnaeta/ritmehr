@@ -41,7 +41,7 @@ Kerjakan **satu-per-satu**, dari cepat/aman ke struktural:
 3. **UM-03** — toolbar presisi (dropdown ⋯) ✅ DONE
 4. **UM-01** — tabel responsif & mobile ✅ DONE
 5. **UM-05** — default locale `id` (fondasi untuk UM-08) ✅ DONE
-6. **UM-08** — locale dropdown bahasa (butuh UM-05)
+6. **UM-08** — locale dropdown bahasa (butuh UM-05) ✅ DONE
 7. **UM-04** — import `employee_id`
 8. **UM-07** — sapu label campur (form + hapus auto-show Inggris)
 9. **UM-06** — custom Show bertab + foto + pelatihan (struktural → **mockup HTML dulu**)

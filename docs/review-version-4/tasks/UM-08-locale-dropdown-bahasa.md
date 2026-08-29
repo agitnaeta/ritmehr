@@ -1,7 +1,8 @@
 # UM-08 — `locale` jadi dropdown pilihan bahasa
 
 **Poin Capt #8** · Tipe: Field CRUD · Urgensi: Sedang · Risiko: Rendah
-**Status:** [ ] TODO · Prasyarat: **UM-05**
+**Status:** [x] DONE — dropdown Indonesia/English, default id, kolom list relabel.
+Test `tests/browser/um-08-locale-dropdown.mjs` (3 PASS) + PHPUnit 38 PASS.
 
 ---
 
