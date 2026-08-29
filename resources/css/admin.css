@@ -462,8 +462,29 @@ form:has(.la-filter) .btn-sm {
 /* Hilangkan border pemisah bawaan Backpack pada wrapper tombol */
 .um-header-actions .with-border { border: 0 !important; padding: 0 !important; }
 
+/* Dropdown ⋯ harus di atas tabel/DataTables (fixedHeader) — cegah tertutup.
+   Beri stacking context + z-index tinggi pada grup & menu-nya. */
+.um-header-actions { position: relative; z-index: 1040; }
+.um-header-actions .dropdown-menu {
+    z-index: 1055;               /* di atas fixedHeader DataTables (~1030) */
+    box-shadow: var(--shadow-lg, 0 8px 24px rgb(15 23 42 / .18));
+}
+
 /* Baris 2: heading kiri, tools (search+filter) kanan */
 .um-header-title h1 { font-size: 1.75rem; line-height: 1.15; }
+/* Batasi lebar blok judul agar tools tetap di kanan & subjudul tak mendorong layout */
+.um-header-title { min-width: 0; max-width: 32rem; }
+/* Subjudul "Menampilkan 1 … dari N masukan. Set ulang" — clamp 2 baris bila panjang,
+   cegah teks meluber & merusak perataan baris header. */
+.um-header-title #datatable_info_stack {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.35;
+}
 .um-header-tools { row-gap: var(--sp-2); }
 
 /* Search "Pencarian" — samakan tinggi & lebar dengan field filter */

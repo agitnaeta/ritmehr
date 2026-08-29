@@ -151,6 +151,37 @@ await test('Header 2-baris: breadcrumb kiri, Pencarian + filter satu baris', asy
     assert(Math.abs(sBox.y - fBox.y) < 60, `Search & filter tidak sebaris: search.y=${sBox.y} filter.y=${fBox.y}`);
 });
 
+// Test 9: Dropdown ⋯ z-index di atas tabel (tak tertutup) + info stack clamp 2 baris
+await test('Dropdown z-index di atas tabel & subjudul clamp 2 baris', async () => {
+    await page.goto(`${BASE}/admin/user`);
+    await page.waitForSelector('#crudTable', { timeout: 8000 });
+
+    // Buka dropdown via Bootstrap API (Playwright click tak trigger event Bootstrap).
+    await page.evaluate(() => {
+        const btn = document.getElementById('userActionsDropdownBtn');
+        if (btn && window.bootstrap) new window.bootstrap.Dropdown(btn).show();
+    });
+    await page.waitForTimeout(200);
+
+    const menuInfo = await page.evaluate(() => {
+        const menu = document.querySelector('.um-header-actions .dropdown-menu');
+        if (!menu) return null;
+        const cs = getComputedStyle(menu);
+        return { shown: menu.classList.contains('show'), z: parseInt(cs.zIndex || '0', 10) };
+    });
+    assert(menuInfo && menuInfo.shown, 'Dropdown tidak terbuka');
+    assert(menuInfo.z >= 1050, `z-index dropdown terlalu rendah: ${menuInfo.z}`);
+
+    // Subjudul info stack harus clamp 2 baris (cegah meluber saat "… dari 1,006 masukan").
+    const clamp = await page.evaluate(() => {
+        const el = document.getElementById('datatable_info_stack');
+        if (!el) return null;
+        const cs = getComputedStyle(el);
+        return cs.webkitLineClamp || cs.lineClamp;
+    });
+    assert(clamp === '2', `Info stack tidak clamp 2 baris: ${clamp}`);
+});
+
 await browser.close();
 
 // Summary
