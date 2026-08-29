@@ -28,11 +28,22 @@ await test('Centang 2 baris → tombol muncul dengan count 2', async () => {
     await page.$$eval('.crud_bulk_actions_line_checkbox', els => {
         els.slice(0, 2).forEach(cb => { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); });
     });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(1200);
     const count = await page.$eval('#printSelectedCount', el => el.textContent);
     const disp = await page.$eval('#btnPrintSelected', el => el.style.display);
     assert(count === '2', `count harusnya 2, dapat ${count}`);
     assert(disp !== 'none', 'tombol harus tampil');
+});
+
+// TC2b: id yang terkumpul adalah PK user asli (bukan "on") — guard bug print-selected
+await test('selectedIds ambil primary key asli, bukan "on"', async () => {
+    const ids = await page.evaluate(() =>
+        Array.from(document.querySelectorAll('.crud_bulk_actions_line_checkbox:checked'))
+            .map(cb => cb.getAttribute('data-primary-key-value') || cb.closest('tr')?.getAttribute('data-entry-id'))
+            .filter(id => id && id !== 'on')
+    );
+    assert(ids.length === 2, `harus 2 id valid, dapat ${ids.length}: ${ids}`);
+    assert(ids.every(id => /^\d+$/.test(id)), `id harus numerik, dapat: ${ids}`);
 });
 
 // TC3: uncheck → tombol sembunyi lagi
@@ -40,7 +51,7 @@ await test('Uncheck semua → tombol sembunyi lagi', async () => {
     await page.$$eval('.crud_bulk_actions_line_checkbox', els => {
         els.forEach(cb => { cb.checked = false; cb.dispatchEvent(new Event('change', { bubbles: true })); });
     });
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(1200);
     const disp = await page.$eval('#btnPrintSelected', el => el.style.display);
     assert(disp === 'none', `tombol harusnya sembunyi, display=${disp}`);
 });

@@ -12,11 +12,12 @@
   if (!btn) return;
   const countEl = document.getElementById('printSelectedCount');
 
-  // Backpack bulk: baris terpilih punya checkbox .crud_bulk_actions_line_checkbox
+  // Backpack bulk: id baris ada di atribut data-primary-key-value pada checkbox.
   function selectedIds(){
     return Array.from(document.querySelectorAll('.crud_bulk_actions_line_checkbox:checked'))
-      .map(cb => cb.closest('tr')?.getAttribute('data-entry-id') || cb.value)
-      .filter(Boolean);
+      .map(cb => cb.getAttribute('data-primary-key-value')
+                 || cb.closest('tr')?.getAttribute('data-entry-id'))
+      .filter(id => id && id !== 'on');
   }
 
   function refresh(){
