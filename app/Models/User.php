@@ -39,6 +39,19 @@ class User extends Authenticatable
         'image',
     ];
 
+    /**
+     * Default attribute values.
+     *
+     * UM-05 — Bahasa (locale) default 'id' (Indonesia) untuk record baru via
+     * kode/Eloquent, selaras dengan config('app.locale'). Kolom DB juga di-set
+     * DEFAULT 'id' via migration 2026_08_29_100001.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'locale' => 'id',
+    ];
+
     public const STATUS_ACTIVE = 'active';
     public const STATUS_PROBATION = 'probation';
     public const STATUS_RESIGNED = 'resigned';

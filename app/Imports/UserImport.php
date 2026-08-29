@@ -44,6 +44,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
                 'position_id'       => $this->resolveId(Position::class, $row['jabatan'] ?? null),
                 'password'          => Hash::make((string) ($row['password'] ?? 'password')),
                 'employment_status' => $this->status($row['status'] ?? null),
+                'locale'            => trim((string) ($row['bahasa'] ?? $row['locale'] ?? '')) ?: 'id',
             ]
         );
 

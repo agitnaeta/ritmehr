@@ -1,7 +1,8 @@
 # UM-05 — Default locale karyawan `id`
 
 **Poin Capt #5** · Tipe: Migration + model + import · Urgensi: Sedang · Risiko: Rendah
-**Status:** [ ] TODO
+**Status:** [x] DONE — migration backfill+default, `$attributes`, import locale.
+Test `tests/Feature/UserLocaleDefaultTest.php` (5 PASS) + regresi 37 PHPUnit PASS.
 
 ---
 

@@ -29,7 +29,9 @@ class LocaleSwitchTest extends TestCase
         $user = User::create(['name' => 'U', 'email' => 'u2@example.test', 'password' => bcrypt('x')]);
 
         $this->actingAs($user)->get('/locale/fr')->assertNotFound();
-        $this->assertNull($user->fresh()->locale);
+        // UM-05: locale kini default 'id' (bukan null). Yang penting locale user
+        // TIDAK berubah ke 'fr' yang tak didukung.
+        $this->assertSame('id', $user->fresh()->locale);
     }
 
     public function test_middleware_applies_user_locale(): void
