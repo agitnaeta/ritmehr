@@ -2,8 +2,51 @@
 
 **Fokus:** BP-2 — GitHub Actions CI (file BARU)
 **Severity:** 🟠 Tinggi
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `pending` (terverifikasi 2026-08-29)
 **File (satu-satunya) yang disentuh:** `.github/workflows/ci.yml`
+
+---
+
+## ⚠️ KOREKSI (temuan saat eksekusi)
+
+Ternyata `.github/workflows/ci.yml` **SUDAH ADA** (dari review-2) dan JAUH lebih lengkap
+dari draft awal ST-05 — sudah menangani semua pitfall CI:
+- Matrix PHP **8.2/8.3**, service **MySQL 8.0** + health-check + wait loop.
+- **Vite build** (`npm ci && npm run build`) → view test punya `public/build/manifest.json`.
+- **pymupdf** (`pip install`) → CvExtractionService bisa baca PDF.
+- migrate `--force` + phpunit dgn flag memory (hindari OOM `artisan test`).
+
+Yang KUTAMBAH di ST-05: job **`pint`** sebagai **informational (`continue-on-error: true`)**.
+
+## Keputusan penting (jujur)
+- **Kode belum pint-clean: 290 file punya pelanggaran style** (utang lama, bukan dari
+  Review v3). Menjadikan `pint --test` sebagai gate BLOCKING → CI langsung merah di 290
+  file → CI tak berguna.
+- Maka job pint dibuat **non-blocking** (`continue-on-error: true`): pelanggaran TERLIHAT
+  di tab Actions tapi tak memerahkan CI. Setelah ada inisiatif `pint` repo-wide terpisah,
+  tinggal hapus `continue-on-error`.
+
+## PROOF (2026-08-29)
+```
+$ ruby -ryaml validate .github/workflows/ci.yml
+YAML valid
+jobs: phpunit, pint
+
+$ vendor/bin/pint --test | grep -c "⨯"
+290                     # utang style lama -> alasan job pint non-blocking
+
+$ phpunit (simulasi CI lokal)
+Tests: 427, Assertions: 1111, Failures: 2   # 2 baseline time-dependent
+```
+
+## Catatan risiko CI (untuk ditindak terpisah)
+1. **2 failure baseline `time-dependent`** (`OrgStructureTest` months-of-service,
+   `TaxServiceTest` THR prorata — `subMonths()` off-by-one). Di CI yang jalan pada
+   tanggal berbeda, jumlah failure bisa berubah → CI bisa merah tak terduga. **Perlu
+   di-fix agar CI stabil** (pakai `Carbon::setTestNow()` di test tsb).
+2. **`uncompromised()` (HIBP) di QW-04/05** memanggil API eksternal → di CI perlu internet
+   (runner GitHub punya, tapi menambah latensi/kerapuhan). Pertimbangkan mock/disable rule
+   HIBP di env test.
 
 ---
 

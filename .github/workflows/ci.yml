@@ -104,3 +104,26 @@ jobs:
       - name: Run PHPUnit
         # artisan test OOM di app ini (render menu) — pakai phpunit langsung + flag memory.
         run: php -d memory_limit=2G -d xdebug.mode=off vendor/bin/phpunit --no-coverage
+
+  pint:
+    name: Pint (style, informational)
+    runs-on: ubuntu-latest
+    # Non-blocking: repo masih punya utang style lama (290 file). Job ini
+    # menampilkan pelanggaran tanpa memerahkan CI, sampai ada inisiatif
+    # `pint` repo-wide terpisah. Setelah bersih, hapus continue-on-error.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Check code style (Pint)
+        run: vendor/bin/pint --test

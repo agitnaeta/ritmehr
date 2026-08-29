@@ -39,7 +39,7 @@
 | ST-02 | `app/Exports/SalaryRecapExport.php` | PERF-7 FromQuery + chunk | 🟡 | [x] DONE |
 | ST-03 | `app/Exports/LoanExport.php` | PERF-7 FromQuery + chunk | 🟡 | [x] DONE |
 | ST-04 | `app/Repositories/LoanRepository.php` | PERF-3 buang subquery ganda O(n) | 🟡 | [x] DONE |
-| ST-05 | `.github/workflows/ci.yml` (baru) | BP-2 CI phpunit + pint | 🟠 | [ ] TODO |
+| ST-05 | `.github/workflows/ci.yml` (baru) | BP-2 CI phpunit + pint | 🟠 | [x] DONE (CI phpunit sudah ada dari v2; +job pint non-blocking) |
 
 ---
 
