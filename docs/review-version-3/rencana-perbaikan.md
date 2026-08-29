@@ -17,7 +17,7 @@
 | QW-04 | `app/Http/Controllers/Portal/PortalController.php` | SEC-3 password kuat + SEC-4 error konsisten | 🟡 | [ ] TODO |
 | QW-05 | `app/Http/Controllers/Career/CandidateAuthController.php` | SEC-3 password kuat registrasi | 🟡 | [ ] TODO |
 | QW-06 | `.env.example` | BP-4 samakan DB_PORT + SEC-2 checklist rilis | 🟢 | [ ] TODO |
-| QW-07 | `config/backpack/base.php` | SEC-1 (bag.2) throttle login Backpack | 🔴 | [ ] TODO |
+| QW-07 | `config/backpack/base.php` | SEC-1 (bag.2) throttle login Backpack | 🔴 | [x] DONE (no-op: sudah aman bawaan) |
 
 ## Config / Env Migration (BP-1 / PERF-2 — cegah `config:cache` merusak produksi)
 
