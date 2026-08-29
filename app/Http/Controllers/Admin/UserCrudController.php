@@ -132,6 +132,40 @@ class UserCrudController extends CrudController
     }
 
     /**
+     * UM-06 — Halaman Show custom bertab (Profil + Foto/QR + Riwayat Pelatihan).
+     * Mengganti tampilan key-value mentah autoSetupShowOperation.
+     */
+    public function show($id)
+    {
+        $this->crud->hasAccessOrFail('show');
+
+        $me = backpack_user();
+        // Scope visibilitas: manager hanya boleh lihat bawahannya.
+        $user = User::query()
+            ->visibleTo($me)
+            ->with([
+                'department', 'position', 'branch', 'manager', 'schedule',
+                'trainingEnrollments.training',
+            ])
+            ->find($id);
+
+        abort_if(! $user, 404, 'Karyawan tidak ditemukan atau di luar wewenang Anda.');
+
+        // Pastikan QR ada (dipakai tab Foto & QR).
+        if (! $user->qr) {
+            $user->qr = \Illuminate\Support\Str::uuid();
+            $user->saveQuietly();
+        }
+
+        return view('admin.user.show', [
+            'user'    => $user,
+            'crud'    => $this->crud,
+            'canEdit' => (bool) $me?->can('user.edit'),
+            'canDelete' => (bool) $me?->can('user.delete'),
+        ]);
+    }
+
+    /**
      * Define what happens when the List operation is loaded.
      *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries

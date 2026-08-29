@@ -141,6 +141,12 @@ class User extends Authenticatable
         return $this->hasMany(LeaveRequest::class);
     }
 
+    /** UM-06 — Riwayat pelatihan yang diikuti karyawan. */
+    public function trainingEnrollments()
+    {
+        return $this->hasMany(\App\Models\TrainingEnrollment::class);
+    }
+
     public function leaveBalances()
     {
         return $this->hasMany(LeaveBalance::class);

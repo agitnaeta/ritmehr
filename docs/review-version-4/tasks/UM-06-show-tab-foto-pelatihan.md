@@ -1,7 +1,8 @@
 # UM-06 — Halaman Show bertab: Profil + Foto + Riwayat Pelatihan
 
 **Poin Capt #6** · Tipe: View (struktural) · Urgensi: Sedang · Risiko: Sedang
-**Status:** [ ] TODO · ⚠️ **Mockup HTML dulu sebelum koding**
+**Status:** [x] DONE — mockup di-ACC Capt; Show 3-tab (Profil/Foto&QR/Pelatihan), relasi trainingEnrollments, label ID.
+Test `tests/browser/um-06-user-show-tabs.mjs` (5 PASS) + regresi 86 PHPUnit PASS.
 
 ---
 
