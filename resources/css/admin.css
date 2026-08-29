@@ -463,9 +463,11 @@ form:has(.la-filter) .btn-sm {
 .um-header-actions .with-border { border: 0 !important; padding: 0 !important; }
 
 /* Dropdown ⋯ harus di atas tabel/DataTables (fixedHeader) & search box — cegah
-   tertutup. AKAR: baris 2 (search/filter) ada SETELAH baris 1 (dropdown) di DOM,
-   jadi paint di atasnya. Solusi: angkat SELURUH baris 1 di atas baris 2 via
-   z-index pada masing-masing baris (bukan cuma per-elemen). */
+   tertutup. AKAR: (1) baris 2 (search) ada setelah baris 1 (dropdown) di DOM;
+   (2) tabel DataTables ada di @section('content') terpisah & menimpa menu di
+   layar lebar. Solusi: angkat SELURUH header (.um-page-header) jadi stacking
+   context tinggi di atas konten, lalu urutkan baris di dalamnya. */
+.um-page-header  { position: relative; z-index: 30; }
 .um-header-top    { position: relative; z-index: 20; }
 .um-header-bottom { position: relative; z-index: 10; }
 .um-header-actions { position: relative; z-index: 1050; }
