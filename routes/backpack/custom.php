@@ -59,6 +59,11 @@ Route::group([
     Route::group(['prefix'=>'user'],function (){
         Route::get("/{id}/print",[UserCrudController::class,'print'])->name('user.print');
         Route::get("/print-all",[UserCrudController::class,'printAll'])->name('user.print.all');
+        // UM-11 — cetak terpilih + status/unduh PDF background
+        Route::match(['get','post'],"/print-selected",[UserCrudController::class,'printSelected'])->name('user.print.selected');
+        Route::get("/print/{printJob}/status",[UserCrudController::class,'printStatus'])->name('user.print.status');
+        Route::get("/print/{printJob}/status.json",[UserCrudController::class,'printStatusJson'])->name('user.print.status.json');
+        Route::get("/print/{printJob}/download",[UserCrudController::class,'printDownload'])->name('user.print.download');
         Route::get("/export",[UserCrudController::class,'export'])->name('user.export.all');
         // IMP-03 — import karyawan dari Excel
         Route::get("/import",[UserCrudController::class,'importForm'])->name('user.import.form');

@@ -45,7 +45,7 @@ Kerjakan **satu-per-satu**, dari cepat/aman ke struktural:
 7. **UM-04** — import `employee_id` ✅ DONE
 8. **UM-07** — sapu label campur (form + hapus auto-show Inggris) ✅ DONE
 9. **UM-06** — custom Show bertab + foto + pelatihan (struktural → **mockup HTML dulu**) ✅ DONE
-10. **UM-11** — cetak semua ID aman skala (struktural → **mockup HTML dulu**)
+10. **UM-11** — cetak semua ID aman skala (struktural → **mockup HTML dulu**) ✅ DONE
 11. **UM-09** — import background/queue (struktural) ✅ DONE
 12. **UM-10** — export background/queue (struktural)
 

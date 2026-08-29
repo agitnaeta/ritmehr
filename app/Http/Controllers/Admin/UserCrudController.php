@@ -181,6 +181,10 @@ class UserCrudController extends CrudController
         // jadi cukup muat di semua layar; layar sempit pakai scroll horizontal.
         $this->crud->setOperationSetting('responsiveTable', false);
 
+        // UM-11 — Aktifkan checkbox baris + tombol "Cetak Terpilih" (bulk).
+        $this->crud->enableBulkActions();
+        $this->crud->addButtonFromView('top', 'print_selected', 'print_selected', 'beginning');
+
         /**
          * Columns can be defined using the fluent syntax:
          * - CRUD::column('price')->type('number');
@@ -498,32 +502,141 @@ class UserCrudController extends CrudController
         abort_if($users->isEmpty(), 404, 'Karyawan tidak ditemukan atau di luar wewenang Anda.');
         return $this->_print($users);
     }
-    public function printAll(){
+    public function printAll(\Illuminate\Http\Request $request){
         $me = backpack_user();
         abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mencetak ID karyawan.');
-        // Scope visibilitas: manager hanya mencetak bawahannya, bukan seluruh karyawan.
-        $users = User::query()->visibleTo($me)->get();
-        return $this->_print($users);
+
+        // UM-11 — hormati filter aktif (departemen/cabang/status) + scope visibilitas.
+        $query = User::query()->visibleTo($me);
+        $this->applyPrintFilters($query, $request);
+
+        return $this->dispatchOrPrint($query, $me);
     }
-    private function _print(Collection $users){
+
+    /**
+     * UM-11 — Cetak hanya karyawan terpilih (checkbox di list).
+     * IDs dikirim via query `ids` (comma-separated) atau array.
+     */
+    public function printSelected(\Illuminate\Http\Request $request){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403, 'Anda tidak berhak mencetak ID karyawan.');
+
+        $ids = $request->input('ids');
+        $ids = is_array($ids) ? $ids : array_filter(explode(',', (string) $ids));
+        abort_if(empty($ids), 422, 'Tidak ada karyawan yang dipilih.');
+
+        // Scope: hanya id yang boleh dilihat viewer.
+        $query = User::query()->visibleTo($me)->whereIn('id', $ids);
+
+        return $this->dispatchOrPrint($query, $me);
+    }
+
+    /** Ambang: kecil → render sinkron; besar → background job + redirect status. */
+    private const PRINT_SYNC_THRESHOLD = 200;
+
+    private function dispatchOrPrint($query, $me)
+    {
+        $count = (clone $query)->count();
+        abort_if($count === 0, 404, 'Tidak ada karyawan untuk dicetak.');
+
+        if ($count <= self::PRINT_SYNC_THRESHOLD) {
+            return $this->_print($query->get());
+        }
+
+        // Batch besar → background. Simpan target id, dispatch job.
+        $ids = (clone $query)->pluck('id')->all();
+        $printJob = \App\Models\PrintJob::create([
+            'user_id'    => $me?->id,
+            'type'       => 'id_card',
+            'status'     => \App\Models\PrintJob::STATUS_QUEUED,
+            'total'      => $count,
+            'target_ids' => $ids,
+        ]);
+        \App\Jobs\GenerateIdCardsJob::dispatch($printJob->id);
+
+        return redirect()->route('user.print.status', $printJob->id);
+    }
+
+    /** Terapkan filter query-string yang sama dgn bilah filter list. */
+    private function applyPrintFilters($query, \Illuminate\Http\Request $request): void
+    {
+        if ($v = $request->query('department_id')) $query->where('department_id', $v);
+        if ($v = $request->query('branch_id'))     $query->where('branch_id', $v);
+        if ($v = $request->query('employment_status')) $query->where('employment_status', $v);
+    }
+
+    /**
+     * UM-11 — Bangun PDF kartu ID dari koleksi user. Dipakai jalur sinkron &
+     * background job. Mengembalikan instance PDF (dompdf).
+     */
+    public function buildIdCardPdf(Collection $users)
+    {
         $users->map(function ($user){
-            $user->isUserImage = strlen($user->image) > 0 ;
+            $user->isUserImage = strlen((string) $user->image) > 0 ;
             $user->image = Storage::path("public/$user->image");
             if($user->qr){
                 $user->qr = base64_encode(QrCode::size(150)->generate($user->qr));
             }
         });
         $company = CompanyProfile::find(1);
-        if(!$company->id_card || !$company->image){
-            Alert::error("Silahkan Seting Profile Perusaan Terlebih dahulu!")->flash();
-            return redirect(route('company-profile.index'));
+        if(!$company || !$company->id_card || !$company->image){
+            return null; // caller tangani (redirect/set failed).
         }
         $company->image = Storage::path("public/$company->image");
         $company->id_card = Storage::path("public/$company->id_card");
-//        return view('user.detail',compact('users','company'));
-        $pdf =  Pdf::loadView('user.detail',compact('users','company'))
+
+        return Pdf::loadView('user.detail', compact('users','company'))
             ->setPaper([0,0,300,470],'p');
+    }
+
+    private function _print(Collection $users){
+        $pdf = $this->buildIdCardPdf($users);
+        if (! $pdf) {
+            Alert::error("Silahkan Seting Profile Perusaan Terlebih dahulu!")->flash();
+            return redirect(route('company-profile.index'));
+        }
         return $pdf->stream("sample.pdf");
+    }
+
+    /** UM-11 — Halaman status generate PDF background. */
+    public function printStatus(\App\Models\PrintJob $printJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizePrintJob($printJob, $me);
+        return view('admin.user.print-status', ['job' => $printJob]);
+    }
+
+    /** UM-11 — Status JSON untuk polling. */
+    public function printStatusJson(\App\Models\PrintJob $printJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizePrintJob($printJob, $me);
+        return response()->json([
+            'status'    => $printJob->status,
+            'total'     => $printJob->total,
+            'processed' => $printJob->processed,
+            'progress'  => $printJob->progress,
+            'message'   => $printJob->message,
+            'finished'  => $printJob->isFinished(),
+            'ready'     => $printJob->status === \App\Models\PrintJob::STATUS_DONE && $printJob->file_path,
+        ]);
+    }
+
+    /** UM-11 — Unduh PDF hasil generate background. */
+    public function printDownload(\App\Models\PrintJob $printJob){
+        $me = backpack_user();
+        abort_unless($me?->can('user.view'), 403);
+        $this->authorizePrintJob($printJob, $me);
+        abort_unless($printJob->status === \App\Models\PrintJob::STATUS_DONE && $printJob->file_path, 404, 'PDF belum siap.');
+        $abs = Storage::disk('local')->path($printJob->file_path);
+        abort_unless(is_file($abs), 404, 'File PDF tidak ditemukan (mungkin sudah kadaluarsa).');
+        return response()->download($abs, 'kartu-id-' . $printJob->id . '.pdf');
+    }
+
+    private function authorizePrintJob(\App\Models\PrintJob $printJob, $me): void
+    {
+        if ($printJob->user_id === $me?->id) return;
+        abort_unless($me?->can('user.view_all'), 403, 'Anda tidak berhak melihat proses cetak ini.');
     }
 
     public function export(){

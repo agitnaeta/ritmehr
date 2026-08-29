@@ -1,7 +1,8 @@
 # UM-11 — "Cetak Semua ID" aman untuk 10rb user
 
 **Poin Capt #10** · Tipe: Struktural · Urgensi: Tinggi · Risiko: Sedang
-**Status:** [ ] TODO · ⚠️ **Mockup alur dulu** + Keputusan Terbuka
+**Status:** [x] DONE — cetak terpilih + cetak hasil filter + ambang 200 → background job + unduh.
+Mockup di-ACC Capt. Test browser um-11 (4 PASS) + PHPUnit UserPrintIdCardTest (5 PASS) + regresi 77 PASS.
 
 ---
 

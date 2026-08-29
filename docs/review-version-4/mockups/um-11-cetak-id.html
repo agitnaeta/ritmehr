@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id" data-bs-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup UM-11 — Cetak ID Aman Skala</title>
+<style>
+  :root{--brand:#2563eb;--brand-deep:#1e3a8a;--ok:#16a34a;--ok-sub:#f0fdf4;--ok-bd:#bbf7d0;
+    --warn:#d97706;--warn-sub:#fffbeb;--warn-bd:#fde68a;--danger:#dc2626;
+    --n50:#f8fafc;--n100:#f1f5f9;--n200:#e2e8f0;--n300:#cbd5e1;--n500:#64748b;--n700:#334155;--n900:#0f172a;
+    --radius:12px;--shadow:0 2px 8px rgb(15 23 42/.08)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--n50);color:var(--n900);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:2rem}
+  .wrap{max-width:960px;margin:0 auto}
+  .section-note{font-size:.75rem;color:var(--n500);margin:2rem 0 .5rem;text-transform:uppercase;letter-spacing:.05em;border-top:1px dashed var(--n300);padding-top:1rem}
+  .card{background:#fff;border:1px solid var(--n200);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem;margin-bottom:1rem}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;font-weight:600;font-size:.85rem;padding:.5rem .85rem;border-radius:9px;border:1px solid var(--n300);background:#fff;color:var(--n700);text-decoration:none;cursor:pointer}
+  .btn.primary{background:var(--brand-deep);border-color:var(--brand-deep);color:#fff}
+  .btn.sm{padding:.35rem .6rem;font-size:.8rem}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--n200)}
+  th{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--n500);background:var(--n50)}
+  /* selection bar */
+  .selbar{display:flex;align-items:center;gap:1rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:.6rem 1rem;margin-bottom:1rem}
+  .selbar .count{font-weight:700;color:var(--brand)}
+  .selbar .spacer{margin-left:auto}
+  .toolbar{display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+  .pbar{height:14px;background:var(--n200);border-radius:999px;overflow:hidden;margin:.75rem 0}
+  .pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-deep));width:45%}
+  .pmeta{display:flex;justify-content:space-between;font-size:.8rem;color:var(--n500)}
+  .badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.75rem;font-weight:600;padding:.25rem .6rem;border-radius:999px;border:1px solid transparent}
+  .badge.proc{background:#eff6ff;color:var(--brand);border-color:#bfdbfe}
+  .badge.done{background:var(--ok-sub);color:var(--ok);border-color:var(--ok-bd)}
+  .spinner{width:13px;height:13px;border:2px solid #bfdbfe;border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  h1{font-size:1.4rem;margin:0 0 .25rem}
+  .muted{color:var(--n500);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Users</h1>
+  <p class="muted">Contoh perilaku "Cetak ID" aman untuk data besar (UM-11)</p>
+
+  <!-- ===== STATE A: pilih baris → tombol Cetak Terpilih aktif ===== -->
+  <p class="section-note">STATE A — Cetak Terpilih (checkbox baris)</p>
+
+  <div class="toolbar">
+    <span class="muted">Toolbar: filter Departemen / Cabang / Status + Pencarian (sudah ada)</span>
+    <div class="spacer" style="margin-left:auto"></div>
+    <button class="btn">+ Tambah user</button>
+    <button class="btn">⋯</button>
+  </div>
+
+  <div class="selbar">
+    <input type="checkbox" checked>
+    <span class="count">3 dipilih</span>
+    <span class="muted">dari 6 di halaman ini</span>
+    <div class="spacer"></div>
+    <button class="btn primary sm">🖨 Cetak ID Terpilih (3)</button>
+    <button class="btn sm">Batal pilih</button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <table>
+      <thead><tr><th style="width:36px"><input type="checkbox"></th><th>Nama</th><th>Email</th><th>Karyawan</th><th>Departemen</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr style="background:#eff6ff"><td><input type="checkbox" checked></td><td>Budi Santoso</td><td>budi@demo.test</td><td>EMP-002</td><td>Operasional</td><td>Aktif</td></tr>
+        <tr style="background:#eff6ff"><td><input type="checkbox" checked></td><td>Dewi Lestari</td><td>dewi@demo.test</td><td>EMP-005</td><td>Operasional</td><td>Aktif</td></tr>
+        <tr style="background:#eff6ff"><td><input type="checkbox" checked></td><td>Ahmad Fauzi</td><td>ahmad@demo.test</td><td>EMP-004</td><td>Teknologi</td><td>Aktif</td></tr>
+        <tr><td><input type="checkbox"></td><td>Rina Kartika</td><td>rina@demo.test</td><td>EMP-003</td><td>HRD</td><td>Aktif</td></tr>
+        <tr><td><input type="checkbox"></td><td>Siti Rahayu</td><td>siti@demo.test</td><td>EMP-001</td><td>Head Office</td><td>Aktif</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Dropdown "⋯" juga punya: <strong>Cetak Semua (hasil filter)</strong> — menghormati filter aktif, bukan literal semua.</p>
+
+  <!-- ===== STATE B: konfirmasi ambang ===== -->
+  <p class="section-note">STATE B — Data besar melewati ambang (mis. &gt; 200)</p>
+  <div class="card">
+    <strong>Anda akan mencetak 1.240 kartu ID.</strong>
+    <p class="muted mb-0" style="margin:.5rem 0 1rem">Jumlah besar diproses di latar belakang agar tidak membebani browser. PDF akan tersedia untuk diunduh saat selesai.</p>
+    <button class="btn primary">Proses di latar &amp; buat PDF</button>
+    <button class="btn">Batal</button>
+  </div>
+
+  <!-- ===== STATE C: status background + unduh ===== -->
+  <p class="section-note">STATE C — Proses background (polling) → unduh</p>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">Membuat PDF kartu ID…</h3>
+      <span class="badge proc"><span class="spinner"></span> Sedang berjalan</span>
+    </div>
+    <div class="pbar"><i></i></div>
+    <div class="pmeta"><span>558 dari 1.240 kartu</span><span>45%</span></div>
+    <p class="muted">Anda boleh menutup halaman ini — proses berjalan di latar.</p>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0">PDF siap</h3>
+      <span class="badge done">✓ Selesai</span>
+    </div>
+    <div class="pbar"><i style="width:100%;background:var(--ok)"></i></div>
+    <div class="pmeta"><span>1.240 dari 1.240 kartu</span><span>100%</span></div>
+    <div style="display:flex;gap:.6rem;margin-top:1rem">
+      <a class="btn primary" href="#">⬇ Unduh PDF (1.240 kartu)</a>
+      <a class="btn" href="#">Kembali ke daftar</a>
+    </div>
+    <p class="muted" style="margin-top:.5rem">Tautan unduh berlaku sementara; file dihapus otomatis setelah beberapa jam.</p>
+  </div>
+</div>
+</body>
+</html>
