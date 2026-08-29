@@ -451,6 +451,36 @@ form:has(.la-filter) .btn-sm {
 .page-item .page-link { border-radius: var(--r-control); font-size: var(--fs-body); }
 .page-item.active .page-link { background: var(--brand-deep); border-color: var(--brand-deep); }
 
+/* ── UM-03 Toolbar presisi ───────────────────────────────────────────────
+   Tombol Export/Import/Cetak Semua ID digabung jadi dropdown "⋯" di Blade.
+   Tombol "Tambah user" + dropdown dipindah ke kanan atas sejajar breadcrumb
+   (seperti mockup Capt). Lihat: user_actions_dropdown.blade.php */
+
+/* Container tombol → posisi absolut kanan atas sejajar breadcrumb */
+[bp-section="crud-operation-list"] > .col-md-12 > .row.mb-2 {
+    position: relative;
+}
+[bp-section="crud-operation-list"] .d-print-none.with-border,
+[bp-section="crud-operation-list"] .d-print-none:has(#userActionsDropdownBtn) {
+    position: absolute;
+    right: 0;
+    top: -3.5rem;  /* naik ke level breadcrumb/heading */
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    z-index: 10;
+}
+
+/* Mobile: kembalikan posisi normal (stack vertikal) */
+@media (max-width: 768px) {
+    [bp-section="crud-operation-list"] .d-print-none.with-border,
+    [bp-section="crud-operation-list"] .d-print-none:has(#userActionsDropdownBtn) {
+        position: static;
+        justify-content: flex-start;
+        margin-bottom: var(--sp-3);
+    }
+}
+
 /* ── Preferensi pengguna ────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     .btn:active { transform: none; }

@@ -139,10 +139,10 @@ class UserCrudController extends CrudController
         $this->crud->column('join_date')->label('Tgl Bergabung');
 
         $this->crud->addButtonFromView('line','user-print','user-print','end');
+        // UM-03: Export, Import, Cetak Semua ID — digabung di dropdown "⋯"
         $this->crud->allowAccess("user_export");
-        $this->crud->addButtonFromView('top','user_export','user_export','end');
-        $this->crud->addButtonFromView('top','user_import','user_import','end'); // IMP-03
-        $this->printAllIdCard();
+        $this->crud->allowAccess('print_id_cards');
+        $this->crud->addButtonFromView('top','user_actions_dropdown','user_actions_dropdown','end');
 
 
     }

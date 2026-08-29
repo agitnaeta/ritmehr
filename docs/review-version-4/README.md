@@ -36,17 +36,18 @@ Sumber: laporan analisa Capt (10 poin) + verifikasi langsung ke KODE dan UI.
 
 Kerjakan **satu-per-satu**, dari cepat/aman ke struktural:
 
-1. **UM-02** — kontras field (quick, high-visible, low-risk)
-2. **UM-03** — toolbar presisi (quick)
-3. **UM-01** — tabel responsif & mobile (quick-medium)
-4. **UM-05** — default locale `id` (fondasi untuk UM-08)
-5. **UM-08** — locale dropdown bahasa (butuh UM-05)
-6. **UM-04** — import `employee_id`
-7. **UM-07** — sapu label campur (form + hapus auto-show Inggris)
-8. **UM-06** — custom Show bertab + foto + pelatihan (struktural → **mockup HTML dulu**)
-9. **UM-11** — cetak semua ID aman skala (struktural → **mockup HTML dulu**)
-10. **UM-09** — import background/queue (struktural)
-11. **UM-10** — export background/queue (struktural)
+1. **UM-02** — kontras field (quick, high-visible, low-risk) ✅ DONE
+2. **B2** — keamanan export/print (fix scope+guard) ✅ DONE
+3. **UM-03** — toolbar presisi (dropdown ⋯) ✅ DONE
+4. **UM-01** — tabel responsif & mobile (quick-medium)
+5. **UM-05** — default locale `id` (fondasi untuk UM-08)
+6. **UM-08** — locale dropdown bahasa (butuh UM-05)
+7. **UM-04** — import `employee_id`
+8. **UM-07** — sapu label campur (form + hapus auto-show Inggris)
+9. **UM-06** — custom Show bertab + foto + pelatihan (struktural → **mockup HTML dulu**)
+10. **UM-11** — cetak semua ID aman skala (struktural → **mockup HTML dulu**)
+11. **UM-09** — import background/queue (struktural)
+12. **UM-10** — export background/queue (struktural)
 
 > Task struktural (UM-06, UM-09, UM-10, UM-11) → sesuai kebiasaan Capt:
 > **mockup/rancangan HTML atau alur di-approve dulu** sebelum koding.
