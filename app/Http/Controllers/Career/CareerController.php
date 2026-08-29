@@ -90,7 +90,8 @@ class CareerController extends Controller
 
         // M17-3 — extract CV text for search + AI matching. Graceful: a failure
         // here never blocks the application being recorded.
-        app(\App\Services\CvExtractionService::class)->extractFor($application);
+        // ST-01/PERF-1: dispatch ke queue (inline bila QUEUE_CONNECTION=sync).
+        \App\Jobs\ExtractCvJob::dispatch($application->id);
 
         return redirect()->route('career.dashboard')
             ->with('success', 'Lamaran untuk "' . $opening->title . '" berhasil dikirim.');

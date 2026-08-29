@@ -35,7 +35,7 @@
 
 | ID | File | Fokus | Sev | Status |
 |---|---|---|---|---|
-| ST-01 | `app/Jobs/ExtractCvJob.php` (baru) | PERF-1 ekstraksi CV ke queue | 🟠 | [ ] TODO |
+| ST-01 | `app/Jobs/ExtractCvJob.php` (baru) | PERF-1 ekstraksi CV ke queue | 🟠 | [x] DONE |
 | ST-02 | `app/Exports/SalaryRecapExport.php` | PERF-7 FromQuery + chunk | 🟡 | [x] DONE |
 | ST-03 | `app/Exports/LoanExport.php` | PERF-7 FromQuery + chunk | 🟡 | [x] DONE |
 | ST-04 | `app/Repositories/LoanRepository.php` | PERF-3 buang subquery ganda O(n) | 🟡 | [x] DONE |

@@ -98,6 +98,24 @@ class CvExtractionTest extends TestCase
         $this->assertStringContainsString('Laravel', $app->cv_text);
     }
 
+    public function test_applying_dispatches_the_extraction_job(): void
+    {
+        \Illuminate\Support\Facades\Queue::fake();
+
+        Storage::fake('local');
+        $c = $this->candidate();
+        $o = $this->opening();
+
+        $upload = new UploadedFile($this->fixturePdf, 'cv.pdf', 'application/pdf', null, true);
+
+        $this->actingAs($c, 'candidate')
+            ->post(route('career.apply', $o->slug), ['cv' => $upload])
+            ->assertRedirect(route('career.dashboard'));
+
+        // ST-01/PERF-1: ekstraksi CV kini di-queue (tak blok request lamaran).
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\ExtractCvJob::class);
+    }
+
     public function test_backfill_command_extracts_pending(): void
     {
         Storage::fake('local');
