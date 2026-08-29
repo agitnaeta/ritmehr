@@ -4,16 +4,17 @@ namespace App\Imports;
 
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\ImportJob;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Validators\Failure;
 
 /**
  * IMP-01 — Import karyawan dari Excel.
@@ -36,10 +37,14 @@ use Maatwebsite\Excel\Concerns\WithValidation;
  */
 class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows, SkipsOnFailure, WithChunkReading
 {
-    use SkipsFailures;
-
     /** @var int Jumlah baris yang benar-benar tersimpan. */
     public int $imported = 0;
+
+    /** @var int Jumlah baris yang dilewati karena gagal validasi. */
+    public int $skipped = 0;
+
+    /** @var array<int,array{row:int,column:string,value:mixed,reason:string}> Detail baris gagal. */
+    public array $failureDetails = [];
 
     /** @var array<string,int> Map nama(lower) → id, di-preload sekali (N+1 fix). */
     private array $departmentMap = [];
@@ -51,8 +56,12 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
 
     private bool $lookupsLoaded = false;
 
-    public function __construct()
+    /** UM-09 — bila diisi, progress & error ditulis ke baris status ini. */
+    private ?ImportJob $importJob;
+
+    public function __construct(?ImportJob $importJob = null)
     {
+        $this->importJob = $importJob;
         // Password default paling umum di import massal — hash sekali di depan.
         $this->passwordHashCache['password'] = Hash::make('password');
     }
@@ -102,8 +111,81 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
         );
 
         $this->imported++;
+        $this->bumpProgress();
 
         return $user;
+    }
+
+    /**
+     * UM-09 — Tangani baris gagal validasi (menggantikan trait SkipsFailures).
+     * Baris valid tetap diproses; baris gagal direkam detailnya agar bisa
+     * diperbaiki & di-import ulang.
+     *
+     * @param Failure ...$failures
+     */
+    public function onFailure(Failure ...$failures): void
+    {
+        foreach ($failures as $failure) {
+            foreach ($failure->errors() as $error) {
+                $this->failureDetails[] = [
+                    'row'    => $failure->row(),
+                    'column' => $failure->attribute() ?? '-',
+                    'value'  => $this->stringifyValue($failure->values()[$failure->attribute()] ?? null),
+                    'reason' => $error,
+                ];
+            }
+            $this->skipped++;
+        }
+
+        $this->bumpProgress();
+    }
+
+    /** Tulis progress ke ImportJob (bila ada), di-throttle tiap 50 baris. */
+    private function bumpProgress(bool $force = false): void
+    {
+        if (! $this->importJob) {
+            return;
+        }
+
+        $processed = $this->imported + $this->skipped;
+
+        // Throttle: hindari 1000 UPDATE. Simpan tiap 50 baris atau saat dipaksa.
+        if (! $force && $processed % 50 !== 0) {
+            return;
+        }
+
+        $this->importJob->forceFill([
+            'processed' => $processed,
+            'imported'  => $this->imported,
+            'skipped'   => $this->skipped,
+            'status'    => ImportJob::STATUS_PROCESSING,
+        ])->saveQuietly();
+    }
+
+    /** Flush progress final + detail error ke ImportJob. Dipanggil di akhir import. */
+    public function finalizeJob(): void
+    {
+        if (! $this->importJob) {
+            return;
+        }
+
+        $this->importJob->forceFill([
+            'processed'   => $this->imported + $this->skipped,
+            'imported'    => $this->imported,
+            'skipped'     => $this->skipped,
+            'errors'      => $this->failureDetails,
+            'status'      => ImportJob::STATUS_DONE,
+            'finished_at' => now(),
+        ])->saveQuietly();
+    }
+
+    private function stringifyValue($value): string
+    {
+        if (is_array($value)) {
+            return implode(', ', array_map(fn ($v) => (string) $v, $value));
+        }
+
+        return mb_substr(trim((string) $value), 0, 120);
     }
 
     public function rules(): array
