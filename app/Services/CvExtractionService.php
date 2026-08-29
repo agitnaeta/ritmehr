@@ -91,6 +91,6 @@ class CvExtractionService
      */
     private function pythonBinary(): string
     {
-        return (string) (setting('cv_python_bin', null) ?: env('PYTHON_BIN', 'python3'));
+        return (string) (setting('cv_python_bin', null) ?: config('services.cv.python_bin'));
     }
 }

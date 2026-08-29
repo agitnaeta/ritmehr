@@ -18,8 +18,8 @@ class Acc implements LedgerInterface
     public function __construct()
     {
         // M15: managed via Settings UI, falling back to .env/config.
-        $this->host = setting('acc_host', env('ACC_HOST'));
-        $this->key = setting('acc_key', env('ACC_KEY'));
+        $this->host = setting('acc_host', config('services.acc.host'));
+        $this->key = setting('acc_key', config('services.acc.key'));
     }
 
     private function headers()

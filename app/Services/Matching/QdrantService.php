@@ -15,12 +15,12 @@ class QdrantService
 {
     public function baseUrl(): string
     {
-        return rtrim((string) (setting('qdrant_url') ?: env('QDRANT_URL', 'http://localhost:6333')), '/');
+        return rtrim((string) (setting('qdrant_url') ?: config('services.matching.qdrant_url')), '/');
     }
 
     private function apiKey(): ?string
     {
-        return setting('qdrant_api_key') ?: env('QDRANT_API_KEY');
+        return setting('qdrant_api_key') ?: config('services.matching.qdrant_api_key');
     }
 
     private function http()

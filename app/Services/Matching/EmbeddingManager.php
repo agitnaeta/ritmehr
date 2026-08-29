@@ -31,14 +31,14 @@ class EmbeddingManager
     {
         $default = $this->provider() === 'openai'
             ? 'https://api.openai.com/v1'
-            : (string) (env('EMBEDDING_BASE_URL', 'http://localhost:20128/v1'));
+            : (string) config('services.matching.embedding_base_url');
 
         return rtrim((string) (setting('embedding_base_url') ?: $default), '/');
     }
 
     private function apiKey(): ?string
     {
-        return setting('embedding_api_key') ?: env('EMBEDDING_API_KEY');
+        return setting('embedding_api_key') ?: config('services.matching.embedding_api_key');
     }
 
     /**

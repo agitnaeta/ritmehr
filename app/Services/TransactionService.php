@@ -27,7 +27,7 @@ class TransactionService
         $mode = setting('acc_mode', 'internal');
         $this->active = $mode === 'internal'
             ? true
-            : (bool) setting('acc_active', env('ACC_ACTIVE'));
+            : (bool) setting('acc_active', config('services.acc.active'));
     }
 
     protected function newTransaction(): AccTransaction

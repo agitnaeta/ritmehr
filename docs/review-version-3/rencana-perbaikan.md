@@ -23,13 +23,13 @@
 
 | ID | File | Fokus | Sev | Status |
 |---|---|---|---|---|
-| CFG-01 | `config/services.php` | Destinasi: pusatkan semua key `env()` | 🟠 | [ ] TODO |
-| CFG-02 | `app/Services/Matching/QdrantService.php` | `env()` → `config()` | 🟠 | [ ] TODO |
-| CFG-03 | `app/Services/Matching/LlmScoringManager.php` | `env()` → `config()` | 🟠 | [ ] TODO |
-| CFG-04 | `app/Services/Matching/EmbeddingManager.php` | `env()` → `config()` | 🟠 | [ ] TODO |
-| CFG-05 | `app/Services/CvExtractionService.php` | `env()` → `config()` | 🟠 | [ ] TODO |
-| CFG-06 | `app/Services/TransactionService.php` | `env()` → `config()` | 🟠 | [ ] TODO |
-| CFG-07 | `app/Services/Acc/Acc.php` | `env()` → `config()` | 🟠 | [ ] TODO |
+| CFG-01 | `config/services.php` | Destinasi: pusatkan semua key `env()` | 🟠 | [x] DONE |
+| CFG-02 | `app/Services/Matching/QdrantService.php` | `env()` → `config()` | 🟠 | [x] DONE |
+| CFG-03 | `app/Services/Matching/LlmScoringManager.php` | `env()` → `config()` | 🟠 | [x] DONE |
+| CFG-04 | `app/Services/Matching/EmbeddingManager.php` | `env()` → `config()` | 🟠 | [x] DONE |
+| CFG-05 | `app/Services/CvExtractionService.php` | `env()` → `config()` | 🟠 | [x] DONE |
+| CFG-06 | `app/Services/TransactionService.php` | `env()` → `config()` | 🟠 | [x] DONE |
+| CFG-07 | `app/Services/Acc/Acc.php` | `env()` → `config()` | 🟠 | [x] DONE |
 
 ## Struktural (butuh test + review, file baru/refactor)
 

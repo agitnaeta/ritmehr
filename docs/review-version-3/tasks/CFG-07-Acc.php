@@ -2,7 +2,7 @@
 
 **Fokus:** BP-1/PERF-2 — ganti env() → config() (baris 21,22)
 **Severity:** 🟠 Tinggi
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `pending` (terverifikasi 2026-08-29, config:cache proof)
 **File (satu-satunya) yang disentuh:** `app/Services/Acc/Acc.php`
 
 ---

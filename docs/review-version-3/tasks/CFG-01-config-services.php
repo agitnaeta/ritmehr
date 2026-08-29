@@ -2,8 +2,39 @@
 
 **Fokus:** BP-1/PERF-2 — pusatkan semua key env() ke config (destinasi)
 **Severity:** 🟠 Tinggi
-**Status:** [ ] TODO — commit: `______`
+**Status:** [x] DONE — commit: `pending` (terverifikasi 2026-08-29, config:cache proof)
 **File (satu-satunya) yang disentuh:** `config/services.php`
+
+---
+
+## PROOF BERSAMA CFG-01..07 (2026-08-29)
+
+Semua 7 file diedit; **0 `env()` runtime tersisa di `app/`** (`grep -rn "env(" app/` → 0).
+
+### Bukti kunci — dengan `config:cache` AKTIF (kondisi produksi), nilai TETAP terbaca (bukan null)
+```
+$ QDRANT_URL=http://buktiqdrant:6333 LLM_API_KEY=sk-bukti-llm PYTHON_BIN=/usr/bin/python3.11 \
+  php artisan config:cache        # simulasi produksi
+Configuration cached successfully.
+
+$ php artisan tinker (dengan config CACHED):
+qdrant baseUrl : http://buktiqdrant:6333    ← sebelumnya (env runtime) akan NULL
+llm apiKey     : *** (ada nilai)
+cv python_bin  : /usr/bin/python3.11
+acc.active cfg : true
+```
+→ Inilah bug produksi yang dicegah BP-1/PERF-2: `env()` runtime mengembalikan `null`
+  begitu `config:cache` jalan. Sekarang aman.
+
+### Regresi
+- PHPUnit: kembali ke **baseline 423 lulus / 2 failure time-dependent** (setelah unset env
+  helper `PYTHON_BIN` yang sempat bikin 4 CvExtraction gagal SEMENTARA — itu artefak shell
+  test, bukan kode; begitu di-unset → CvExtraction 5/5 OK).
+- crud-suite: **146/146**.
+
+### Catatan
+`config/services.php` sudah punya blok `acc` sebelumnya → CFG-06/07 memakai
+`config('services.acc.*')` yang ada. Ditambah blok `matching` (Qdrant/LLM/Embedding) + `cv`.
 
 ---
 

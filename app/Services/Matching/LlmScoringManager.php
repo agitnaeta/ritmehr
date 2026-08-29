@@ -37,14 +37,14 @@ class LlmScoringManager
     {
         $default = $this->provider() === 'openai'
             ? 'https://api.openai.com/v1'
-            : (string) (env('LLM_BASE_URL', 'http://localhost:20128/v1'));
+            : (string) config('services.matching.llm_base_url');
 
         return rtrim((string) (setting('llm_base_url') ?: $default), '/');
     }
 
     private function apiKey(): ?string
     {
-        return setting('llm_api_key') ?: env('LLM_API_KEY');
+        return setting('llm_api_key') ?: config('services.matching.llm_api_key');
     }
 
     /**
