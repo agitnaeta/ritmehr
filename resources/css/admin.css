@@ -452,32 +452,30 @@ form:has(.la-filter) .btn-sm {
 .page-item.active .page-link { background: var(--brand-deep); border-color: var(--brand-deep); }
 
 /* ── UM-03 Toolbar presisi ───────────────────────────────────────────────
-   Tombol Export/Import/Cetak Semua ID digabung jadi dropdown "⋯" di Blade.
-   Tombol "Tambah user" + dropdown dipindah ke kanan atas sejajar breadcrumb
-   (seperti mockup Capt). Lihat: user_actions_dropdown.blade.php */
+   Tombol Export/Import/Cetak Semua ID digabung jadi dropdown "⋯" (Blade).
+   Tombol "Tambah user" + dropdown dipindah ke header (samping heading, kanan)
+   via override list.blade.php — flow natural, tanpa overlap dengan search.
+   Lihat: vendor/backpack/crud/list.blade.php + user_actions_dropdown.blade.php */
 
-/* Container tombol → posisi absolut kanan atas sejajar breadcrumb */
-[bp-section="crud-operation-list"] > .col-md-12 > .row.mb-2 {
-    position: relative;
+/* Header actions: rapikan spacing tombol di kanan heading */
+[bp-section="page-header-actions"] .btn {
+    white-space: nowrap;
 }
-[bp-section="crud-operation-list"] .d-print-none.with-border,
-[bp-section="crud-operation-list"] .d-print-none:has(#userActionsDropdownBtn) {
-    position: absolute;
-    right: 0;
-    top: -3.5rem;  /* naik ke level breadcrumb/heading */
-    display: flex;
-    align-items: center;
-    gap: var(--sp-2);
-    z-index: 10;
+/* Hilangkan border pemisah bawaan Backpack pada wrapper tombol di header */
+[bp-section="page-header-actions"] .with-border {
+    border: 0 !important;
+    padding: 0 !important;
 }
 
-/* Mobile: kembalikan posisi normal (stack vertikal) */
+/* Mobile: tombol pindah ke bawah heading, rata kiri */
 @media (max-width: 768px) {
-    [bp-section="crud-operation-list"] .d-print-none.with-border,
-    [bp-section="crud-operation-list"] .d-print-none:has(#userActionsDropdownBtn) {
-        position: static;
-        justify-content: flex-start;
-        margin-bottom: var(--sp-3);
+    [bp-section="page-header"] {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    [bp-section="page-header-actions"] {
+        margin-left: 0 !important;
+        margin-top: var(--sp-2);
     }
 }
 

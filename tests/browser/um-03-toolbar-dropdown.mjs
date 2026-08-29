@@ -93,7 +93,24 @@ await test('Dropdown item hrefs benar', async () => {
     assert(printHref.includes('print'), `Print href: "${printHref}"`);
 });
 
-// Test 6: Mobile viewport — dropdown tetap berfungsi
+// Test 6: Search box tidak overlap dengan tombol/filter (regression UM-03)
+await test('Search box tampil penuh, tidak overlap tombol aksi', async () => {
+    const search = await page.$('input[type="search"]');
+    const addBtn = await page.$('a[href*="/admin/user/create"]');
+    assert(search, 'Search box tidak ditemukan');
+    assert(addBtn, 'Tombol Tambah user tidak ditemukan');
+
+    const sBox = await search.boundingBox();
+    const bBox = await addBtn.boundingBox();
+    assert(sBox && sBox.width > 0 && sBox.height > 0, 'Search box tidak visible');
+
+    // Tidak boleh tumpang tindih secara vertikal DAN horizontal
+    const overlapX = sBox.x < bBox.x + bBox.width && sBox.x + sBox.width > bBox.x;
+    const overlapY = sBox.y < bBox.y + bBox.height && sBox.y + sBox.height > bBox.y;
+    assert(!(overlapX && overlapY), `Search box overlap dengan tombol: search=${JSON.stringify(sBox)} btn=${JSON.stringify(bBox)}`);
+});
+
+// Test 7: Mobile viewport — dropdown tetap berfungsi
 await test('Mobile: dropdown tetap berfungsi (375px)', async () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`${BASE}/admin/user`);
