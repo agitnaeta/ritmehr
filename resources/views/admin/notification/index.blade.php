@@ -1,31 +1,37 @@
 @extends(backpack_view('blank'))
 
 @section('header')
-    <section class="container-fluid">
-        <h2>Notifikasi <small>{{ $unreadCount }} belum dibaca</small></h2>
-    </section>
+    <x-admin.page-header
+        :breadcrumb="['Admin' => backpack_url('dashboard'), 'Notifikasi' => false]"
+        heading="Notifikasi"
+        :subheading="$unreadCount . ' belum dibaca'">
+
+        @if($unreadCount > 0)
+            <x-slot:actions>
+                <form method="POST" action="{{ backpack_url('notification/mark-all-read') }}">
+                    @csrf
+                    <button class="btn btn-outline-primary">
+                        <i class="la la-check-double"></i> Tandai Semua Dibaca
+                    </button>
+                </form>
+            </x-slot:actions>
+        @endif
+
+        <x-slot:tools>
+            <div class="btn-group">
+                <a href="{{ backpack_url('notification') }}"
+                   class="btn {{ $unreadOnly ? 'btn-outline-secondary' : 'btn-secondary' }}">Semua</a>
+                <a href="{{ backpack_url('notification?unread=1') }}"
+                   class="btn {{ $unreadOnly ? 'btn-secondary' : 'btn-outline-secondary' }}">Belum Dibaca</a>
+            </div>
+        </x-slot:tools>
+    </x-admin.page-header>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-md-9">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <a href="{{ backpack_url('notification') }}"
-                       class="btn btn-sm {{ $unreadOnly ? 'btn-outline-secondary' : 'btn-secondary' }}">Semua</a>
-                    <a href="{{ backpack_url('notification?unread=1') }}"
-                       class="btn btn-sm {{ $unreadOnly ? 'btn-secondary' : 'btn-outline-secondary' }}">Belum Dibaca</a>
-                </div>
-                @if($unreadCount > 0)
-                    <form method="POST" action="{{ backpack_url('notification/mark-all-read') }}">
-                        @csrf
-                        <button class="btn btn-sm btn-outline-primary">
-                            <i class="la la-check-double"></i> Tandai Semua Dibaca
-                        </button>
-                    </form>
-                @endif
-            </div>
             <div class="card-body p-0">
                 @forelse($notifications as $notification)
                     <a href="{{ backpack_url('notification/' . $notification->id . '/read') }}"
