@@ -179,7 +179,73 @@ On-prem/VPC, SSO, SLA 99.9%, dedicated support, custom module, audit trail lanju
 
 ---
 
-## 11. Aset yang Perlu Dibuat (minus yang sudah ada)
+## 12. Strategi Komunitas & Jaringan — "Komunitas = Distribution"
+
+> Prinsip: komunitas bukan sekadar marketing — ini jalur **rekrut reseller/konsultan** dan **sumber leads B2B yang hangat**. Anggota yang udah kenal kamu = yang paling gampang diajak jadi mitra.
+
+### 12.1 Manfaat komunitas (kenapa ini jalur terbaik)
+
+| Manfaat | Kenapa |
+|---|---|
+| Trust instan | Orang beli dari orang yang dikenal. Anggota komunitas udah kenal kamu |
+| Rekrut reseller/konsultan | Kamu gak perlu cari mitra dari nol — mereka udah berkumpul |
+| Leads hangat | Rekomendasi dalam komunitas > cold email 10x |
+| Feedback produk | Uji fitur baru sama orang yang paham konteks HR Indonesia |
+| Ownership | Orang yang bantu bangun = orang yang rela promosiin |
+
+### 12.2 Dua lapis komunitas
+
+**Lapis A — Komunitas yang kamu punya / akses (eksisting):**
+- Komunitas offline (HIPMI, Apindo, Kadin, komunitas HR, UMKM lokal)
+- Komunitas online (Telegram/WA/Discord) — kalau ada, ini aset paling cepat
+- **Aksi:** jangan jualan di sini duluan. **Bangun hubungan** — jadi resource (share template, insight, tool gratis). Orang yang kamu bantu akan jadi champion.
+
+**Lapis B — Komunitas baru seputar RitmeHR / open source HRIS:**
+- Punya positioning "open source HRIS Indonesia" → komunitas = tempat ngumpul founder/HR yang pengen lepas dari SaaS mahal
+- Bentuk yang realistis: **Telegram group** dulu (murah, cepat), nanti forum (Discourse) kalau udah besar
+- Ini yang nanti jadi kumpulan calon **reseller & konsultan** — sekaligus tempat beta test fitur baru
+
+### 12.3 Model ekonomi komunitas → partner
+
+```
+Komunitas (trust + knowledge)
+   │
+   ├──► Member yang mau jualan       = RESELLER (referral, komisi dari services)
+   ├──► Member yang mau deliver      = KONSULTAN / implementation partner (fee proyek)
+   └──► Member yang cuma butuh tool  = LEADS / user (trial, pilot, B2B deal)
+```
+
+- **Reseller:** rekomendasiin + closing → komisi dari services (karena lisensi Rp 0, komisi gak dari lisensi)
+- **Konsultan:** install, custom, training, support klien mereka sendiri → fee proyek mereka, kita backstop
+- **Beta tester:** roadmap + feedback, jadi champion komunitas
+
+### 12.4 Program "Komunitas → Mitra" (3 tahap)
+
+| Tahap | Aktivitas | Output |
+|---|---|---|
+| **1. Bangun** (1–3 bulan) | Aktif bantu di komunitas yang ada + buka Telegram RitmeHR; share insight, template, konten | Kenalan, trust, calon mitra kerangkeng (cold list) |
+| **2. Rekrut** (3–6 bulan) | Dari yang aktif, tawari jadi Reseller / Implementation Partner (program 2-tier dari strategi partnership) | 3–5 mitra dari komunitas (bukan cold outreach!) |
+| **3. Scaling** (6–12 bulan) | Mitra bawa leads; komunitas jadi sumber referral terus-menerus | Leads hangat recurring, community as a moat |
+
+### 12.5 Aset yang perlu dibuat
+
+| Aset | Status | Untuk |
+|---|---|---|
+| Telegram community RitmeHR | ❌ buka | Lapis B |
+| Konten value (template, insight, tool) buat dibagi di komunitas | ❌ | Lapis A (hubungan) |
+| One-pager "Jadi Reseller/Konsultan RitmeHR" | ❌ | rekrut mitra |
+| Referral program + kode referral | ❌ | reseller |
+| Beta program (fitur baru dicoba member) | ❌ | engagement + feedback |
+
+### 12.6 Hubungan dengan B2B & partnership
+
+- **B2B direct** = mesin utama (revenue + kontrol) — tetap prioritas
+- **Partnership** (hosting/consultant/software house) = volume + delivery capacity — jalur paralel
+- **Komunitas** = sumber mitra & leads paling hangat — nutrisi semua jalur, effort rendah, compounding
+
+---
+
+## 13. Aset yang Perlu Dibuat (minus yang sudah ada)
 
 | Aset | Status | Untuk |
 |---|---|---|
