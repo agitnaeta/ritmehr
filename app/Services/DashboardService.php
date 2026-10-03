@@ -71,7 +71,7 @@ class DashboardService
 
         $recaps = SalaryRecap::where('recap_month', $recapMonth)->get();
 
-        $borrowed = (int) Loan::sum('amount');
+        $borrowed = (int) Loan::approved()->sum('amount');
         $repaid = (int) LoanPayment::sum('amount');
 
         return [
@@ -241,7 +241,7 @@ class DashboardService
      */
     public function loanReport(): Collection
     {
-        $borrowed = Loan::selectRaw('user_id, SUM(amount) as total')
+        $borrowed = Loan::approved()->selectRaw('user_id, SUM(amount) as total')
             ->groupBy('user_id')->pluck('total', 'user_id');
 
         $repaid = LoanPayment::selectRaw('user_id, SUM(amount) as total')

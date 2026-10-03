@@ -21,6 +21,7 @@ class Notification extends Model
     public const LEAVE_BALANCE_LOW = 'leave_balance_low';
     public const SALARY_PAID = 'salary_paid';
     public const LOAN_CREATED = 'loan_created';
+    public const LOAN_REJECTED = 'loan_rejected';
     public const APPROVAL_PENDING = 'approval_pending';
     public const APPROVAL_DIGEST = 'approval_digest';
     public const DOCUMENT_EXPIRING = 'document_expiring';
@@ -106,7 +107,7 @@ class Notification extends Model
                     ? url("{$prefix}/salary-recap/{$data['salary_recap_id']}/show")
                     : url("{$prefix}/salary-recap"),
 
-            self::LOAN_CREATED =>
+            self::LOAN_CREATED, self::LOAN_REJECTED =>
                 isset($data['loan_id'])
                     ? url("{$prefix}/loan/{$data['loan_id']}/detail")
                     : url("{$prefix}/loan"),
@@ -128,7 +129,7 @@ class Notification extends Model
             self::LEAVE_SUBMITTED, self::LEAVE_APPROVED, self::LEAVE_REJECTED,
             self::LEAVE_BALANCE_LOW => 'la-umbrella-beach',
             self::SALARY_PAID => 'la-money-bill',
-            self::LOAN_CREATED => 'la-hand-holding-usd',
+            self::LOAN_CREATED, self::LOAN_REJECTED => 'la-hand-holding-usd',
             self::APPROVAL_PENDING, self::APPROVAL_DIGEST => 'la-check-double',
             self::DOCUMENT_EXPIRING => 'la-file-alt',
             default => 'la-bell',

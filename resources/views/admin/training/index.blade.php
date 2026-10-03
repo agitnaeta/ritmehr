@@ -3,27 +3,31 @@
 @php use App\Models\Training; @endphp
 
 @section('header')
-    <section class="container-fluid">
-        <h2><i class="la la-graduation-cap"></i> Pelatihan
-            <small>kelola materi & latihan untuk karyawan</small></h2>
-    </section>
+    <x-admin.page-header
+        :breadcrumb="['Admin' => backpack_url('dashboard'), 'Pelatihan' => false]"
+        heading="Pelatihan"
+        subheading="Kelola materi & latihan untuk karyawan">
+
+        @if($canEdit && ! $showArchived)
+            <x-slot:actions>
+                <a href="{{ backpack_url('training/create') }}" class="btn btn-success">
+                    <i class="la la-plus"></i> Buat Pelatihan
+                </a>
+            </x-slot:actions>
+        @endif
+
+        <x-slot:tools>
+            <div class="btn-group">
+                <a href="{{ backpack_url('training') }}"
+                   class="btn {{ ! $showArchived ? 'btn-primary' : 'btn-outline-secondary' }}">Aktif</a>
+                <a href="{{ backpack_url('training') }}?archived=1"
+                   class="btn {{ $showArchived ? 'btn-primary' : 'btn-outline-secondary' }}">Diarsipkan</a>
+            </div>
+        </x-slot:tools>
+    </x-admin.page-header>
 @endsection
 
 @section('content')
-<div class="card mb-3"><div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <div class="btn-group">
-        <a href="{{ backpack_url('training') }}"
-           class="btn btn-sm {{ ! $showArchived ? 'btn-primary' : 'btn-outline-secondary' }}">Aktif</a>
-        <a href="{{ backpack_url('training') }}?archived=1"
-           class="btn btn-sm {{ $showArchived ? 'btn-primary' : 'btn-outline-secondary' }}">Diarsipkan</a>
-    </div>
-    @if($canEdit && ! $showArchived)
-        <a href="{{ backpack_url('training/create') }}" class="btn btn-sm btn-success">
-            <i class="la la-plus"></i> Buat Pelatihan
-        </a>
-    @endif
-</div></div>
-
 <div class="card"><div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
         <thead class="table-light">

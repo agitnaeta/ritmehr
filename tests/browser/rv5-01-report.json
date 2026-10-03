@@ -1,0 +1,1306 @@
+[
+  {
+    "slug": "user",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": true,
+      "searchBox": {
+        "x": 464.125,
+        "y": 189.765625,
+        "w": 208,
+        "h": 36,
+        "r": 672.125,
+        "btm": 225.765625
+      },
+      "btnBox": {
+        "x": 1045.203125,
+        "y": 24,
+        "w": 202.796875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "leave-request",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": false,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 272,
+        "y": 170.90625,
+        "w": 208,
+        "h": 36,
+        "r": 480,
+        "btm": 206.90625
+      },
+      "btnBox": null,
+      "searchBtnOverlap": null,
+      "infoDisplay": "inline-grid",
+      "rows": 2
+    }
+  },
+  {
+    "slug": "account",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1110.25,
+        "y": 24,
+        "w": 137.75,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "applicant",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1088.234375,
+        "y": 24,
+        "w": 159.765625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "approval",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": false,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 761.125,
+        "y": 91.765625,
+        "w": 208,
+        "h": 36,
+        "r": 969.125,
+        "btm": 127.765625
+      },
+      "btnBox": null,
+      "searchBtnOverlap": null,
+      "infoDisplay": "inline-grid",
+      "rows": 2
+    }
+  },
+  {
+    "slug": "approval-flow",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1033.265625,
+        "y": 24,
+        "w": 214.734375,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 2
+    }
+  },
+  {
+    "slug": "approval-flow-step",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1029.375,
+        "y": 24,
+        "w": 218.625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 4
+    }
+  },
+  {
+    "slug": "audit-log",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": false,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 294.125,
+        "y": 170.90625,
+        "w": 208,
+        "h": 36,
+        "r": 502.125,
+        "btm": 206.90625
+      },
+      "btnBox": null,
+      "searchBtnOverlap": null,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "bpjs-rate",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1076.453125,
+        "y": 24,
+        "w": 171.546875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "branch",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1093.28125,
+        "y": 24,
+        "w": 154.71875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "company-profile",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1024.234375,
+        "y": 24,
+        "w": 223.765625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "day",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1118.578125,
+        "y": 24,
+        "w": 129.421875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 2
+    }
+  },
+  {
+    "slug": "department",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1061,
+        "y": 24,
+        "w": 187,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 8
+    }
+  },
+  {
+    "slug": "document-type",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1045.203125,
+        "y": 24,
+        "w": 202.796875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 8
+    }
+  },
+  {
+    "slug": "employee-salary-allowance",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1007.734375,
+        "y": 24,
+        "w": 240.265625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "interview",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1067.296875,
+        "y": 24,
+        "w": 180.703125,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "job-opening",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1078.203125,
+        "y": 24,
+        "w": 169.796875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "kpi",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1120.328125,
+        "y": 24,
+        "w": 127.671875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "leave-balance",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": true,
+      "searchBox": {
+        "x": 443.125,
+        "y": 189.765625,
+        "w": 208,
+        "h": 36,
+        "r": 651.125,
+        "btm": 225.765625
+      },
+      "btnBox": {
+        "x": 905.90625,
+        "y": 24,
+        "w": 342.09375,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "leave-type",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1082.515625,
+        "y": 24,
+        "w": 165.484375,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "loan",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1092.609375,
+        "y": 24,
+        "w": 155.390625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "loan-payment",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1005.328125,
+        "y": 24,
+        "w": 242.671875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "national-holiday",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1046.609375,
+        "y": 24,
+        "w": 201.390625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "permission",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": false,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 91.765625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 127.765625
+      },
+      "btnBox": null,
+      "searchBtnOverlap": null,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "position",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1092.953125,
+        "y": 24,
+        "w": 155.046875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 8
+    }
+  },
+  {
+    "slug": "pph21-bracket",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1045.671875,
+        "y": 24,
+        "w": 202.328125,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "presence",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1075.078125,
+        "y": 24,
+        "w": 172.921875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "ptkp-rate",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1074.71875,
+        "y": 24,
+        "w": 173.28125,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "review-cycle",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1039.6875,
+        "y": 24,
+        "w": 208.3125,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "role",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1117.234375,
+        "y": 24,
+        "w": 130.765625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 4
+    }
+  },
+  {
+    "slug": "salary",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 977.125,
+        "y": 24,
+        "w": 270.875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "salary-allowance-type",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1040.609375,
+        "y": 24,
+        "w": 207.390625,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "salary-recap",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 182.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 218.625
+      },
+      "btnBox": {
+        "x": 888.953125,
+        "y": 24,
+        "w": 359.046875,
+        "h": 108,
+        "r": 1248,
+        "btm": 132
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 6
+    }
+  },
+  {
+    "slug": "schedule",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1095.53125,
+        "y": 24,
+        "w": 152.46875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 1
+    }
+  },
+  {
+    "slug": "schedule-day-off",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1057.3125,
+        "y": 24,
+        "w": 190.6875,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  },
+  {
+    "slug": "tax-profile",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1067.75,
+        "y": 24,
+        "w": 180.25,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 5
+    }
+  },
+  {
+    "slug": "ter-rate",
+    "status": "OK",
+    "issues": [],
+    "meta": {
+      "http": 200,
+      "htmlScrollW": 1280,
+      "clientW": 1280,
+      "horizOverflow": false,
+      "hasBreadcrumb": true,
+      "hasH1": true,
+      "h1text": "RitmeHR",
+      "hasSearch": true,
+      "hasCreateOrBtn": true,
+      "hasDropdown": false,
+      "searchBox": {
+        "x": 1040,
+        "y": 110.625,
+        "w": 208,
+        "h": 36,
+        "r": 1248,
+        "btm": 146.625
+      },
+      "btnBox": {
+        "x": 1084.640625,
+        "y": 24,
+        "w": 163.359375,
+        "h": 36,
+        "r": 1248,
+        "btm": 60
+      },
+      "searchBtnOverlap": false,
+      "infoDisplay": "inline-grid",
+      "rows": 10
+    }
+  }
+]
