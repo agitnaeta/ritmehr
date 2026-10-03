@@ -158,6 +158,9 @@ class PresenceCrudController extends CrudController
     public function store()
     {
 
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
+
         $request = $this->crud->validateRequest();
         $presence  = new Presence();
         $presence->user_id = $request->user_id;
@@ -171,6 +174,9 @@ class PresenceCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest();
         $presence  = $this->crud->getCurrentEntry();
         $presence->user_id = $request->user_id;

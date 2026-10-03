@@ -21,6 +21,9 @@ class EmployeeTaxProfileCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -28,6 +31,9 @@ class EmployeeTaxProfileCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();
@@ -60,6 +66,11 @@ class EmployeeTaxProfileCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/tax-profile');
         CRUD::setEntityNameStrings('profil pajak', 'profil pajak');
         CRUD::addClause('with', 'user');
+
+        // Route middleware only gates `tax.view`; writes need `tax.edit`.
+        if (! backpack_user()->can('tax.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupListOperation()

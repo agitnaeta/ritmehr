@@ -25,6 +25,11 @@ class BranchCrudController extends CrudController
         CRUD::setModel(Branch::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/branch');
         CRUD::setEntityNameStrings('cabang', 'cabang');
+
+        // Route middleware only gates `branch.view`; writes need `branch.edit`.
+        if (! backpack_user()->can('branch.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupListOperation()
@@ -103,6 +108,9 @@ class BranchCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -110,6 +118,9 @@ class BranchCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();

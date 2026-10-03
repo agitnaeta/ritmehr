@@ -134,6 +134,9 @@ class ScheduleCrudController extends CrudController
 
 
     public function store() {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $request = $this->crud->validateRequest();
         $dayOffs = collect($request->get('day_off'));
 
@@ -147,6 +150,9 @@ class ScheduleCrudController extends CrudController
     }
 
     public function update() {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
 
         $request = $this->crud->validateRequest();
 
@@ -165,12 +171,15 @@ class ScheduleCrudController extends CrudController
 
 
     public function viewSchedule(){
+        $this->authoriseMassUpdate();
         $users = User::all();
         $schedules = Schedule::all();
         return view('schedule.set',compact('users','schedules'));
     }
 
     public function massUpdateSchedule(Request $request){
+        $this->authoriseMassUpdate();
+
         $userIds = $request->get('user_ids');
         $schedules = $request->get('schedule_ids');
 
@@ -187,4 +196,12 @@ class ScheduleCrudController extends CrudController
         return redirect(route('schedule.view.update'));
     }
 
+    /**
+     * Mass schedule assignment is a custom route — Backpack's denyAccess does
+     * not cover it, so check the dedicated permission (the menu already does).
+     */
+    private function authoriseMassUpdate(): void
+    {
+        abort_unless(backpack_user()->can('schedule.mass_update'), 403, 'Anda tidak berhak mengubah jadwal karyawan secara massal.');
+    }
 }

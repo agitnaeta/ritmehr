@@ -454,6 +454,9 @@ class UserCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest()->all();
         $user = User::find($request['id']);
         if($request['password']){

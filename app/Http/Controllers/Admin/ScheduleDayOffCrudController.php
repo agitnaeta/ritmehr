@@ -30,6 +30,11 @@ class ScheduleDayOffCrudController extends CrudController
         CRUD::setRoute(config('backpack.base.route_prefix') . '/schedule-day-off');
         CRUD::setEntityNameStrings('Jadwal Libur', 'Jadwal Libur');
         $this->crud->addClause('with','days');
+
+        // Route middleware only gates `schedule.view`; writes need `schedule.edit`.
+        if (! backpack_user()->can('schedule.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     /**

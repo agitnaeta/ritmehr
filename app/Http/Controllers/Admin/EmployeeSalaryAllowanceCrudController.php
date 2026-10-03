@@ -61,6 +61,9 @@ class EmployeeSalaryAllowanceCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         request()->validate([
             'user_id' => 'required|exists:users,id',
             'salary_allowance_type_id' => 'required|exists:salary_allowance_types,id',
@@ -75,6 +78,9 @@ class EmployeeSalaryAllowanceCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         request()->validate([
             'amount' => 'required|integer|min:0',
         ]);

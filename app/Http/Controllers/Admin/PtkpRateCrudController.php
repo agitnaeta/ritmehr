@@ -21,6 +21,9 @@ class PtkpRateCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -28,6 +31,9 @@ class PtkpRateCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();
@@ -61,6 +67,11 @@ class PtkpRateCrudController extends CrudController
         CRUD::setModel(PtkpRate::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/ptkp-rate');
         CRUD::setEntityNameStrings('tarif PTKP', 'tarif PTKP');
+
+        // Route middleware only gates `tax.view`; writes need `tax.edit`.
+        if (! backpack_user()->can('tax.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupListOperation()

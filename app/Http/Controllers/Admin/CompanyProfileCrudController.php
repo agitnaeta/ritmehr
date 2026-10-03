@@ -32,6 +32,11 @@ class CompanyProfileCrudController extends CrudController
         CRUD::setModel(\App\Models\CompanyProfile::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/company-profile');
         CRUD::setEntityNameStrings('Profil Perusahaan', 'Profil Perusahaan');
+
+        // Route middleware only gates `company_profile.view`; writes need `company_profile.edit`.
+        if (! backpack_user()->can('company_profile.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     public function autoSetupShowOperation()
