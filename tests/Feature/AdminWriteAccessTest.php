@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Imports\UserImport;
 use App\Models\Loan;
 use App\Models\Salary;
 use App\Models\Schedule;
@@ -39,8 +40,8 @@ class AdminWriteAccessTest extends TestCase
     private function userWithRole(string $role, string $name): User
     {
         $user = User::create([
-            'name'     => $name,
-            'email'    => str($name)->slug() . '@example.test',
+            'name' => $name,
+            'email' => str($name)->slug().'@example.test',
             'password' => Hash::make('original-secret'),
         ]);
         $user->assignRole($role);
@@ -82,26 +83,26 @@ class AdminWriteAccessTest extends TestCase
     {
         return [
             // Reported: route gate only, no controller write gate.
-            'day store'               => ['POST',   'day', ['name' => 'X']],
-            'day update'              => ['PUT',    'day/1', ['id' => 1, 'name' => 'X']],
-            'day delete'              => ['DELETE', 'day/1'],
-            'day-off store'           => ['POST',   'schedule-day-off', ['name' => 'X']],
-            'day-off update'          => ['PUT',    'schedule-day-off/1', ['id' => 1]],
-            'day-off delete'          => ['DELETE', 'schedule-day-off/1'],
+            'day store' => ['POST',   'day', ['name' => 'X']],
+            'day update' => ['PUT',    'day/1', ['id' => 1, 'name' => 'X']],
+            'day delete' => ['DELETE', 'day/1'],
+            'day-off store' => ['POST',   'schedule-day-off', ['name' => 'X']],
+            'day-off update' => ['PUT',    'schedule-day-off/1', ['id' => 1]],
+            'day-off delete' => ['DELETE', 'schedule-day-off/1'],
             // Not reported: denyAccess is set, but an overridden store()/update()
             // never calls hasAccessOrFail(), so the denial is never enforced.
-            'loan store'              => ['POST', 'loan', ['amount' => 1, 'date' => '2026-01-01']],
-            'loan update'             => ['PUT',  'loan/1', ['id' => 1, 'amount' => 1, 'date' => '2026-01-01']],
-            'loan-payment store'      => ['POST', 'loan-payment', ['amount' => 1, 'date' => '2026-01-01']],
-            'loan-payment update'     => ['PUT',  'loan-payment/1', ['id' => 1, 'amount' => 1]],
-            'presence store'          => ['POST', 'presence', []],
-            'presence update'         => ['PUT',  'presence/1', ['id' => 1]],
-            'salary store'            => ['POST', 'salary', []],
-            'salary-recap store'      => ['POST', 'salary-recap', []],
-            'salary-recap update'     => ['PUT',  'salary-recap/1', ['id' => 1]],
-            'schedule store'          => ['POST', 'schedule', []],
+            'loan store' => ['POST', 'loan', ['amount' => 1, 'date' => '2026-01-01']],
+            'loan update' => ['PUT',  'loan/1', ['id' => 1, 'amount' => 1, 'date' => '2026-01-01']],
+            'loan-payment store' => ['POST', 'loan-payment', ['amount' => 1, 'date' => '2026-01-01']],
+            'loan-payment update' => ['PUT',  'loan-payment/1', ['id' => 1, 'amount' => 1]],
+            'presence store' => ['POST', 'presence', []],
+            'presence update' => ['PUT',  'presence/1', ['id' => 1]],
+            'salary store' => ['POST', 'salary', []],
+            'salary-recap store' => ['POST', 'salary-recap', []],
+            'salary-recap update' => ['PUT',  'salary-recap/1', ['id' => 1]],
+            'schedule store' => ['POST', 'schedule', []],
             // Custom route outside Backpack's operations — needs its own check.
-            'schedule mass-update'    => ['POST', 'schedule/mass-update', ['user_ids' => [1], 'schedule_ids' => [1]]],
+            'schedule mass-update' => ['POST', 'schedule/mass-update', ['user_ids' => [1], 'schedule_ids' => [1]]],
             'schedule mass-update form' => ['GET', 'schedule/view-update'],
         ];
     }
@@ -118,9 +119,9 @@ class AdminWriteAccessTest extends TestCase
         $manager = $this->manager();
 
         $response = $this->send($manager, 'PUT', "user/{$admin->id}", [
-            'id'       => $admin->id,
-            'name'     => 'Boss',
-            'email'    => $admin->email,
+            'id' => $admin->id,
+            'name' => 'Boss',
+            'email' => $admin->email,
             'password' => 'attacker-chosen',
             'password_confirmation' => 'attacker-chosen',
         ]);
@@ -181,16 +182,16 @@ class AdminWriteAccessTest extends TestCase
     {
         $cases = [];
         foreach (['tax-profile', 'ptkp-rate', 'pph21-bracket', 'ter-rate', 'bpjs-rate',
-                  'document-type', 'national-holiday', 'company-profile', 'branch'] as $crud) {
+            'document-type', 'national-holiday', 'company-profile', 'branch'] as $crud) {
             $cases["$crud create form"] = ['GET',    "$crud/create"];
-            $cases["$crud store"]       = ['POST',   $crud, ['name' => 'X']];
-            $cases["$crud update"]      = ['PUT',    "$crud/1", ['id' => 1]];
-            $cases["$crud delete"]      = ['DELETE', "$crud/1"];
+            $cases["$crud store"] = ['POST',   $crud, ['name' => 'X']];
+            $cases["$crud update"] = ['PUT',    "$crud/1", ['id' => 1]];
+            $cases["$crud delete"] = ['DELETE', "$crud/1"];
         }
 
-        $cases['tax recalculate']        = ['POST', 'tax-report/recalculate', ['month' => '01-2026']];
+        $cases['tax recalculate'] = ['POST', 'tax-report/recalculate', ['month' => '01-2026']];
         $cases['employee-document form'] = ['GET',  'employee-document/create'];
-        $cases['employee-document store']  = ['POST', 'employee-document', []];
+        $cases['employee-document store'] = ['POST', 'employee-document', []];
         $cases['employee-document delete'] = ['POST', 'employee-document/1/delete'];
 
         return $cases;
@@ -221,8 +222,8 @@ class AdminWriteAccessTest extends TestCase
     public static function writeButtons(): array
     {
         return [
-            'document upload'   => ['employee-document', 'employee-document/create'],
-            'tax recalculate'   => ['tax-report/bpjs', 'tax-report/recalculate'],
+            'document upload' => ['employee-document', 'employee-document/create'],
+            'tax recalculate' => ['tax-report/bpjs', 'tax-report/recalculate'],
             'day add (backpack)' => ['day', 'day/create'],
         ];
     }
@@ -249,7 +250,7 @@ class AdminWriteAccessTest extends TestCase
     {
         // Staff created through the admin UI / import carry no role.
         return User::create([
-            'name' => $name, 'email' => str($name)->slug() . '@example.test',
+            'name' => $name, 'email' => str($name)->slug().'@example.test',
             'password' => Hash::make('original-secret'),
         ]);
     }
@@ -338,7 +339,7 @@ class AdminWriteAccessTest extends TestCase
         $staff = $this->employee();
         $hr = $this->userWithRole('hr_admin', 'HR');
 
-        $import = new \App\Imports\UserImport(null, $hr);
+        $import = new UserImport(null, $hr);
         $import->model(['email' => $super->email, 'nama' => 'Pwned', 'password' => 'attacker-chosen']);
         $import->model(['email' => $staff->email, 'nama' => 'Staff Updated', 'password' => 'new-pass']);
 
@@ -355,7 +356,7 @@ class AdminWriteAccessTest extends TestCase
     {
         $hr = $this->userWithRole('hr_admin', 'HR');
 
-        $import = new \App\Imports\UserImport();
+        $import = new UserImport;
         $import->model(['email' => $hr->email, 'nama' => 'Pwned', 'password' => 'attacker-chosen']);
 
         $this->assertSame('HR', $hr->fresh()->name);
@@ -367,7 +368,7 @@ class AdminWriteAccessTest extends TestCase
     public static function leaveOnBehalf(): array
     {
         return [
-            'form'  => ['GET',  'leave-request/create-form'],
+            'form' => ['GET',  'leave-request/create-form'],
             'store' => ['POST', 'leave-request/store-form', ['user_id' => 1, 'leave_type_id' => 1, 'start_date' => '2026-01-05', 'end_date' => '2026-01-05']],
         ];
     }

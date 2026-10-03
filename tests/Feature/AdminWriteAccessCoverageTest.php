@@ -23,21 +23,21 @@ class AdminWriteAccessCoverageTest extends TestCase
      */
     private const ALLOWED = [
         // Auth flows act on the requester's own credentials.
-        'LoginController@login'                         => 'authentication',
-        'LoginController@logout'                        => 'authentication',
-        'RegisterController@register'                   => 'authentication (registration is disabled in config)',
-        'ForgotPasswordController@sendResetLinkEmail'   => 'authentication',
-        'ResetPasswordController@reset'                 => 'authentication',
-        'MyAccountController@postAccountInfoForm'       => "edits the requester's own account",
-        'MyAccountController@postChangePasswordForm'    => "changes the requester's own password",
+        'LoginController@login' => 'authentication',
+        'LoginController@logout' => 'authentication',
+        'RegisterController@register' => 'authentication (registration is disabled in config)',
+        'ForgotPasswordController@sendResetLinkEmail' => 'authentication',
+        'ResetPasswordController@reset' => 'authentication',
+        'MyAccountController@postAccountInfoForm' => "edits the requester's own account",
+        'MyAccountController@postChangePasswordForm' => "changes the requester's own password",
         // Backpack list/search endpoints are reads sent as POST.
-        '*@search'                                      => 'list data (read) sent as POST',
-        'NotificationController@markAllRead'            => "marks the requester's own notifications",
+        '*@search' => 'list data (read) sent as POST',
+        'NotificationController@markAllRead' => "marks the requester's own notifications",
         // Authorised per record in the service layer.
-        'ApprovalCrudController@approve'                => 'ApprovalService::lockAndAuthorise — only the current step approver',
-        'ApprovalCrudController@reject'                 => 'ApprovalService::lockAndAuthorise — only the current step approver',
-        'ApprovalCrudController@cancel'                 => 'ApprovalService::cancel — only the requester',
-        'LeaveRequestCrudController@cancel'             => 'LeaveService::cancel — only the requester',
+        'ApprovalCrudController@approve' => 'ApprovalService::lockAndAuthorise — only the current step approver',
+        'ApprovalCrudController@reject' => 'ApprovalService::lockAndAuthorise — only the current step approver',
+        'ApprovalCrudController@cancel' => 'ApprovalService::cancel — only the requester',
+        'LeaveRequestCrudController@cancel' => 'LeaveService::cancel — only the requester',
     ];
 
     /**
@@ -67,9 +67,9 @@ class AdminWriteAccessCoverageTest extends TestCase
             }
 
             [$class, $method] = explode('@', $action);
-            $key = class_basename($class) . '@' . $method;
+            $key = class_basename($class).'@'.$method;
 
-            if (isset(self::ALLOWED[$key]) || isset(self::ALLOWED['*@' . $method])) {
+            if (isset(self::ALLOWED[$key]) || isset(self::ALLOWED['*@'.$method])) {
                 continue;
             }
 
@@ -78,14 +78,14 @@ class AdminWriteAccessCoverageTest extends TestCase
             }
 
             if (! $this->isGuarded($class, $method)) {
-                $missing[] = implode('|', $route->methods()) . ' ' . $route->uri() . "  →  {$key}";
+                $missing[] = implode('|', $route->methods()).' '.$route->uri()."  →  {$key}";
             }
         }
 
         $this->assertSame([], $missing, "Admin write routes without a write-permission check:\n  "
-            . implode("\n  ", $missing)
-            . "\n\nAdd a denyAccess/hasAccessOrFail/abort_unless(can(...)) check, or — if it is"
-            . " genuinely safe — an entry in AdminWriteAccessCoverageTest::ALLOWED with the reason.");
+            .implode("\n  ", $missing)
+            ."\n\nAdd a denyAccess/hasAccessOrFail/abort_unless(can(...)) check, or — if it is"
+            .' genuinely safe — an entry in AdminWriteAccessCoverageTest::ALLOWED with the reason.');
     }
 
     /** A `permission:` middleware that names anything other than a `.view` permission. */
