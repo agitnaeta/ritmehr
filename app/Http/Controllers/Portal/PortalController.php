@@ -349,7 +349,7 @@ class PortalController extends Controller
      */
     private function outstandingLoan(User $user): int
     {
-        $borrowed = (int) Loan::where('user_id', $user->id)->sum('amount');
+        $borrowed = (int) Loan::approved()->where('user_id', $user->id)->sum('amount');
         $repaid = (int) LoanPayment::where('user_id', $user->id)->sum('amount');
 
         return max(0, $borrowed - $repaid);

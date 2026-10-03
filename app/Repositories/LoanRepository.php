@@ -19,6 +19,7 @@ class LoanRepository
             ->selectSub(function ($query) {
                 $query->selectRaw('COALESCE(SUM(amount),0)')
                     ->from('loans')
+                    ->where('status', Loan::STATUS_APPROVED)
                     ->whereColumn('user_id', 'users.id');
             }, 'kasbon')
             ->selectSub(function ($query) {
@@ -39,7 +40,7 @@ class LoanRepository
     }
 
     public static function detail(User $user){
-        $loan = Loan::where('user_id',$user->id)->get();
+        $loan = Loan::approved()->where('user_id',$user->id)->get();
         $loanPayment = LoanPayment::where('user_id',$user->id)->get();
         $total = $loan->sum('amount') - $loanPayment->sum('amount');
         return compact('loan','loanPayment','total');

@@ -46,7 +46,7 @@ class LoanPaymentRequest extends FormRequest
                 return;
             }
 
-            $kasbon  = (int) \App\Models\Loan::where('user_id', $userId)->sum('amount');
+            $kasbon  = (int) \App\Models\Loan::approved()->where('user_id', $userId)->sum('amount');
             $dibayar = (int) \App\Models\LoanPayment::where('user_id', $userId)
                 ->when($this->input('id'), fn ($q, $id) => $q->where('id', '!=', $id))
                 ->sum('amount');

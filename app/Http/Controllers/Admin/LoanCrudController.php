@@ -207,7 +207,7 @@ class LoanCrudController extends CrudController
         // buku pembayaran karyawan menggantung: sisanya jadi negatif, dan
         // validasi pembayaran (BUG-009) akan menolak setiap setoran berikutnya
         // sehingga karyawan terjebak tidak bisa membayar apa pun lagi.
-        $kasbonLain = (int) Loan::where('user_id', $loan->user_id)
+        $kasbonLain = (int) Loan::approved()->where('user_id', $loan->user_id)
             ->where('id', '!=', $loan->id)
             ->sum('amount');
         $dibayar = (int) LoanPayment::where('user_id', $loan->user_id)->sum('amount');

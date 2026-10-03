@@ -8,7 +8,7 @@
         <div class="card stat-card">
             <div class="card-body">
                 <div class="text-muted small">Total Pinjaman</div>
-                <div class="value">@rupiah($loans->sum('amount'))</div>
+                <div class="value">@rupiah($loans->where('status', 'approved')->sum('amount'))</div>
             </div>
         </div>
     </div>
