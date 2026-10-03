@@ -93,6 +93,10 @@ Route::group([
          ->whereNumber('id')->name('leave.cancel');
 
     Route::get('/loan', [PortalController::class, 'loanIndex'])->name('loan.index');
+    Route::get('/loan/create', [PortalController::class, 'loanCreate'])->name('loan.create');
+    Route::post('/loan', [PortalController::class, 'loanStore'])->name('loan.store');
+    Route::post('/loan/{id}/cancel', [PortalController::class, 'loanCancel'])
+         ->whereNumber('id')->name('loan.cancel');
 
     Route::get('/profile', [PortalController::class, 'profile'])->name('profile');
     Route::post('/profile', [PortalController::class, 'profileUpdate'])->name('profile.update');

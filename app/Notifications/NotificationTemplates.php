@@ -40,6 +40,7 @@ class NotificationTemplates
             Notification::LEAVE_BALANCE_LOW  => 'Saldo Cuti Menipis',
             Notification::SALARY_PAID        => 'Gaji Dibayarkan',
             Notification::LOAN_CREATED       => 'Kasbon Dibuat',
+            Notification::LOAN_REJECTED      => 'Kasbon Ditolak',
             Notification::APPROVAL_PENDING   => 'Persetujuan Menunggu',
             Notification::APPROVAL_DIGEST    => 'Ringkasan Persetujuan',
             Notification::DOCUMENT_EXPIRING  => 'Dokumen Akan Kedaluwarsa',
@@ -113,6 +114,14 @@ class NotificationTemplates
                 'body'  => 'Kasbon sebesar '
                            . money((float) ($d['amount'] ?? 0))
                            . ' telah dicatat atas nama Anda.',
+            ],
+
+            Notification::LOAN_REJECTED => fn ($d) => [
+                'title' => 'Pengajuan Kasbon Ditolak',
+                'body'  => 'Pengajuan kasbon sebesar '
+                           . money((float) ($d['amount'] ?? 0))
+                           . ' ditolak.'
+                           . (isset($d['reason']) ? ' Alasan: ' . $d['reason'] : ''),
             ],
 
             Notification::APPROVAL_PENDING => fn ($d) => [

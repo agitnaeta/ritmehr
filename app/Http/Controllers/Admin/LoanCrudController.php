@@ -97,6 +97,10 @@ class LoanCrudController extends CrudController
         $this->crud->removeColumn('user_id');
         $this->crud->addColumn($this->entityField)->beforeColumn('amount');
         $this->fieldModification();
+        $this->crud->removeColumns(['reason', 'rejection_reason']);
+        $this->crud->column('status')->label('Status')
+            ->type('closure')
+            ->function(fn (Loan $loan) => $loan->statusLabel());
 
     }
 
@@ -119,6 +123,9 @@ class LoanCrudController extends CrudController
         $this->crud->field($this->entityField);
         $this->fieldModification();
 
+        // Status is driven by the approval flow; HR direct entry is always
+        // approved (column default), so none of these are editable here.
+        $this->crud->removeFields(['status', 'reason', 'rejection_reason']);
     }
 
     public function autoSetupShowOperation()
@@ -161,7 +168,11 @@ class LoanCrudController extends CrudController
         $loan->date = $request->date;
 
         $loan->save();
-        $this->transactionService->updateRecordLoanACC($loan);
+
+        // A pending request is not debt yet — it is booked on final approval.
+        if ($loan->status === Loan::STATUS_APPROVED) {
+            $this->transactionService->updateRecordLoanACC($loan);
+        }
         Alert::add('success', 'Berhasil update data')->flash();
         return redirect(route('loan.index'));
     }
@@ -207,7 +218,7 @@ class LoanCrudController extends CrudController
         // buku pembayaran karyawan menggantung: sisanya jadi negatif, dan
         // validasi pembayaran (BUG-009) akan menolak setiap setoran berikutnya
         // sehingga karyawan terjebak tidak bisa membayar apa pun lagi.
-        $kasbonLain = (int) Loan::where('user_id', $loan->user_id)
+        $kasbonLain = (int) Loan::approved()->where('user_id', $loan->user_id)
             ->where('id', '!=', $loan->id)
             ->sum('amount');
         $dibayar = (int) LoanPayment::where('user_id', $loan->user_id)->sum('amount');
@@ -223,6 +234,11 @@ class LoanCrudController extends CrudController
         }
 
         $this->transactionService->deleteRecordLoanACC($loan);
+
+        // Don't leave an approval waiting on a record that no longer exists.
+        if ($loan->approval && $loan->approval->isPending()) {
+            $loan->approval->forceFill(['status' => \App\Models\Approval::STATUS_CANCELLED])->save();
+        }
 
         return CRUD::delete($id);
     }

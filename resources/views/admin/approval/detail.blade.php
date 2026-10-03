@@ -26,6 +26,10 @@
                     <tr><th style="width:35%">Modul</th><td>{{ $flow?->module ?? '—' }}</td></tr>
                     <tr><th>Alur</th><td>{{ $flow?->name ?? '—' }}</td></tr>
                     <tr><th>Dokumen</th><td>{{ class_basename($approval->approvable_type) }} #{{ $approval->approvable_id }}</td></tr>
+                    @if($approval->approvable instanceof \App\Models\Loan)
+                        <tr><th>Jumlah Kasbon</th><td>@rupiah($approval->approvable->amount)</td></tr>
+                        <tr><th>Keperluan</th><td>{{ $approval->approvable->reason ?: '—' }}</td></tr>
+                    @endif
                     <tr><th>Pemohon</th><td>{{ $approval->requester?->name ?? '—' }}</td></tr>
                     <tr><th>Diajukan</th><td>{{ $approval->created_at }}</td></tr>
                     <tr>
