@@ -100,7 +100,6 @@ class AdminWriteAccessTest extends TestCase
             'salary-recap store'      => ['POST', 'salary-recap', []],
             'salary-recap update'     => ['PUT',  'salary-recap/1', ['id' => 1]],
             'schedule store'          => ['POST', 'schedule', []],
-            'user update'             => ['PUT',  'user/1', ['id' => 1]],
             // Custom route outside Backpack's operations — needs its own check.
             'schedule mass-update'    => ['POST', 'schedule/mass-update', ['user_ids' => [1], 'schedule_ids' => [1]]],
             'schedule mass-update form' => ['GET', 'schedule/view-update'],
@@ -118,13 +117,16 @@ class AdminWriteAccessTest extends TestCase
         $admin = $this->userWithRole('super_admin', 'Boss');
         $manager = $this->manager();
 
-        $this->send($manager, 'PUT', "user/{$admin->id}", [
+        $response = $this->send($manager, 'PUT', "user/{$admin->id}", [
             'id'       => $admin->id,
             'name'     => 'Boss',
             'email'    => $admin->email,
             'password' => 'attacker-chosen',
             'password_confirmation' => 'attacker-chosen',
-        ])->assertForbidden();
+        ]);
+
+        // 404 when the target is outside the manager's visible team, 403 otherwise.
+        $this->assertContains($response->status(), [403, 404]);
 
         $this->assertTrue(Hash::check('original-secret', $admin->fresh()->password));
     }
@@ -239,6 +241,146 @@ class AdminWriteAccessTest extends TestCase
         $this->send($this->userWithRole('hr_admin', 'HR'), 'GET', $page)
             ->assertOk()
             ->assertSee(backpack_url($writeUrl), false);
+    }
+
+    // ── No taking over a more privileged account ───────────
+
+    private function employee(string $name = 'Staff'): User
+    {
+        // Staff created through the admin UI / import carry no role.
+        return User::create([
+            'name' => $name, 'email' => str($name)->slug() . '@example.test',
+            'password' => Hash::make('original-secret'),
+        ]);
+    }
+
+    public function test_account_management_follows_permission_superset(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+        $hr = $this->userWithRole('hr_admin', 'HR');
+        $manager = $this->manager();
+        $staff = $this->employee();
+
+        $this->assertTrue($super->canManageAccountOf($hr));
+        $this->assertTrue($hr->canManageAccountOf($manager));
+        $this->assertTrue($hr->canManageAccountOf($staff));
+        $this->assertTrue($hr->canManageAccountOf($hr), 'self');
+        $this->assertFalse($hr->canManageAccountOf($super));
+        $this->assertFalse($manager->canManageAccountOf($hr));
+    }
+
+    public function test_hr_admin_cannot_open_a_super_admins_edit_form(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+
+        $this->send($this->userWithRole('hr_admin', 'HR'), 'GET', "user/{$super->id}/edit")->assertForbidden();
+    }
+
+    public function test_hr_admin_cannot_reset_a_super_admins_password(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+
+        $this->send($this->userWithRole('hr_admin', 'HR'), 'PUT', "user/{$super->id}", [
+            'id' => $super->id, 'name' => 'Boss', 'email' => $super->email, 'password' => 'attacker-chosen',
+        ])->assertForbidden();
+
+        $this->assertTrue(Hash::check('original-secret', $super->fresh()->password));
+    }
+
+    public function test_hr_admin_cannot_delete_a_super_admin(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+        $hr = $this->userWithRole('hr_admin', 'HR');
+        $hr->givePermissionTo('user.delete');
+
+        $this->send($hr, 'DELETE', "user/{$super->id}")->assertForbidden();
+
+        $this->assertNotNull($super->fresh());
+    }
+
+    public function test_hr_admin_can_still_edit_staff(): void
+    {
+        $staff = $this->employee();
+
+        $this->send($this->userWithRole('hr_admin', 'HR'), 'PUT', "user/{$staff->id}", [
+            'id' => $staff->id, 'name' => 'Staff Renamed', 'email' => $staff->email,
+        ])->assertRedirect();
+
+        $this->assertSame('Staff Renamed', $staff->fresh()->name);
+    }
+
+    public function test_body_id_cannot_redirect_an_update_to_another_account(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+        $staff = $this->employee();
+
+        // Form for an editable staff member, but the body names the super admin.
+        $this->send($this->userWithRole('hr_admin', 'HR'), 'PUT', "user/{$staff->id}", [
+            // A fresh email passes validation, so the old code would really
+            // have written all of this onto the super admin.
+            'id' => $super->id, 'name' => 'Pwned', 'email' => 'fresh@example.test', 'password' => 'attacker-chosen',
+        ]);
+
+        $this->assertSame('Boss', $super->fresh()->name);
+        $this->assertTrue(Hash::check('original-secret', $super->fresh()->password));
+    }
+
+    public function test_super_admin_can_edit_an_hr_admin(): void
+    {
+        $hr = $this->userWithRole('hr_admin', 'HR');
+
+        $this->send($this->userWithRole('super_admin', 'Boss'), 'GET', "user/{$hr->id}/edit")->assertOk();
+    }
+
+    public function test_import_cannot_overwrite_a_more_privileged_account(): void
+    {
+        $super = $this->userWithRole('super_admin', 'Boss');
+        $staff = $this->employee();
+        $hr = $this->userWithRole('hr_admin', 'HR');
+
+        $import = new \App\Imports\UserImport(null, $hr);
+        $import->model(['email' => $super->email, 'nama' => 'Pwned', 'password' => 'attacker-chosen']);
+        $import->model(['email' => $staff->email, 'nama' => 'Staff Updated', 'password' => 'new-pass']);
+
+        $this->assertTrue(Hash::check('original-secret', $super->fresh()->password));
+        $this->assertSame('Boss', $super->fresh()->name);
+        $this->assertSame(1, $import->skipped);
+        $this->assertSame('email', $import->failureDetails[0]['column']);
+
+        $this->assertSame('Staff Updated', $staff->fresh()->name);
+        $this->assertSame(1, $import->imported);
+    }
+
+    public function test_import_without_a_known_importer_only_touches_plain_staff(): void
+    {
+        $hr = $this->userWithRole('hr_admin', 'HR');
+
+        $import = new \App\Imports\UserImport();
+        $import->model(['email' => $hr->email, 'nama' => 'Pwned', 'password' => 'attacker-chosen']);
+
+        $this->assertSame('HR', $hr->fresh()->name);
+        $this->assertSame(1, $import->skipped);
+    }
+
+    // ── Leave filed on behalf of others ────────────────────
+
+    public static function leaveOnBehalf(): array
+    {
+        return [
+            'form'  => ['GET',  'leave-request/create-form'],
+            'store' => ['POST', 'leave-request/store-form', ['user_id' => 1, 'leave_type_id' => 1, 'start_date' => '2026-01-05', 'end_date' => '2026-01-05']],
+        ];
+    }
+
+    #[DataProvider('leaveOnBehalf')]
+    public function test_manager_cannot_file_leave_on_behalf_of_others(string $method, string $path, array $data = []): void
+    {
+        $this->send($this->manager(), $method, $path, $data)->assertForbidden();
+    }
+
+    public function test_hr_admin_can_open_the_leave_on_behalf_form(): void
+    {
+        $this->send($this->userWithRole('hr_admin', 'HR'), 'GET', 'leave-request/create-form')->assertOk();
     }
 
     // ── Editors keep write access ──────────────────────────

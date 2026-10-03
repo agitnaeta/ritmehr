@@ -38,16 +38,14 @@ class AdminWriteAccessCoverageTest extends TestCase
         'ApprovalCrudController@reject'                 => 'ApprovalService::lockAndAuthorise — only the current step approver',
         'ApprovalCrudController@cancel'                 => 'ApprovalService::cancel — only the requester',
         'LeaveRequestCrudController@cancel'             => 'LeaveService::cancel — only the requester',
-        // OPEN: any admin-panel user can file leave on behalf of any employee.
-        // It still goes through approval. Which permission should gate it is a
-        // product decision (managers do not hold `leave.request` today).
-        'LeaveRequestCrudController@storeForm'          => 'OPEN — filed on behalf of others, goes through approval',
     ];
 
-    /** Patterns that count as an explicit write check inside a method body. */
+    /**
+     * Patterns that count as an explicit permission/role check inside a method
+     * body. A bare abort_unless() is NOT enough — it is also used for 404s.
+     */
     private const METHOD_CHECKS = [
-        'hasAccessOrFail(', 'abort_unless(', 'abort_if(', 'abort(403', '->can(',
-        'hasRole(', 'hasAnyRole(', '$this->authori', 'Gate::',
+        'hasAccessOrFail(', '->can(', '->canAny(', 'hasPermissionTo(', 'hasAnyPermission(', 'hasRole(', 'hasAnyRole(', 'Gate::',
     ];
 
     public function test_every_admin_write_route_has_a_write_check(): void

@@ -131,6 +131,8 @@ class LeaveRequestCrudController extends CrudController
 
     public function createForm()
     {
+        $this->authoriseFileOnBehalf();
+
         return view('admin.leave.create', [
             'users'      => User::employed()->orderBy('name')->get(),
             'leaveTypes' => LeaveType::active()->orderBy('name')->get(),
@@ -139,6 +141,8 @@ class LeaveRequestCrudController extends CrudController
 
     public function storeForm(Request $request)
     {
+        $this->authoriseFileOnBehalf();
+
         $data = $request->validate([
             'user_id'       => 'required|exists:users,id',
             'leave_type_id' => 'required|exists:leave_types,id',
@@ -266,5 +270,14 @@ class LeaveRequestCrudController extends CrudController
             'departmentId' => $departmentId,
             'types'        => LeaveType::orderBy('name')->pluck('name'),
         ]);
+    }
+
+    /**
+     * Filing leave on behalf of any employee — the menu already shows this
+     * only to `leave.request` holders; the endpoint has to agree.
+     */
+    private function authoriseFileOnBehalf(): void
+    {
+        abort_unless(backpack_user()->can('leave.request'), 403, 'Anda tidak berhak mengajukan cuti atas nama karyawan.');
     }
 }
