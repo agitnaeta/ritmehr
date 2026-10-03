@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Support\Facades\DB;
 
 class Loan extends Model
 {
@@ -43,22 +42,10 @@ class Loan extends Model
 
     /**
      * Final approval reached — commit the loan and book it to accounting.
-     * Locked and guarded so a double-fire cannot post KASBON twice.
      */
     public function onApprovalApproved(Approval $approval): void
     {
-        DB::transaction(function () {
-            $fresh = static::whereKey($this->getKey())->lockForUpdate()->firstOrFail();
-
-            if ($fresh->status === self::STATUS_APPROVED) {
-                return;
-            }
-
-            $fresh->forceFill(['status' => self::STATUS_APPROVED])->save();
-            app(\App\Services\TransactionService::class)->recordLoanACC($fresh);
-
-            $this->setRawAttributes($fresh->getAttributes(), true);
-        });
+        app(\App\Services\LoanService::class)->finaliseApproval($this, $approval);
     }
 
     public function onApprovalRejected(Approval $approval): void
@@ -75,11 +62,24 @@ class Loan extends Model
             'status'           => self::STATUS_REJECTED,
             'rejection_reason' => $lastAction?->notes,
         ])->save();
+
+        app(\App\Services\LoanService::class)->notifyOutcome($this, false);
     }
 
     public function onApprovalCancelled(Approval $approval): void
     {
         $this->forceFill(['status' => self::STATUS_CANCELLED])->save();
+    }
+
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_PENDING   => 'Menunggu',
+            self::STATUS_APPROVED  => 'Disetujui',
+            self::STATUS_REJECTED  => 'Ditolak',
+            self::STATUS_CANCELLED => 'Dibatalkan',
+            default                => (string) $this->status,
+        };
     }
 
     // ── Scopes ─────────────────────────────────────────────

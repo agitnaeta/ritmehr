@@ -12,6 +12,7 @@ use App\Models\Presence;
 use App\Models\SalaryRecap;
 use App\Models\User;
 use App\Services\LeaveService;
+use App\Services\LoanService;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -32,6 +33,7 @@ class PortalController extends Controller
 {
     public function __construct(
         private readonly LeaveService $leaveService,
+        private readonly LoanService $loanService,
         private readonly NotificationService $notifications,
     ) {
     }
@@ -237,7 +239,64 @@ class PortalController extends Controller
             'loans'       => Loan::where('user_id', $user->id)->orderByDesc('id')->get(),
             'payments'    => LoanPayment::where('user_id', $user->id)->orderByDesc('id')->get(),
             'outstanding' => $this->outstandingLoan($user),
+            'hasPending'  => Loan::pending()->where('user_id', $user->id)->exists(),
         ]);
+    }
+
+    public function loanCreate()
+    {
+        $user = $this->me();
+
+        if (Loan::pending()->where('user_id', $user->id)->exists()) {
+            return redirect()->route('portal.loan.index')
+                ->with('error', 'Anda masih punya pengajuan kasbon yang menunggu persetujuan.');
+        }
+
+        return view('portal.loan_create', [
+            'outstanding' => $this->outstandingLoan($user),
+        ]);
+    }
+
+    public function loanStore(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'amount' => 'required|integer|min:1',
+            'date'   => 'required|date',
+            'reason' => 'nullable|string|max:1000',
+        ], [
+            'amount.required' => 'Jumlah kasbon wajib diisi.',
+            'amount.min'      => 'Jumlah kasbon harus lebih dari 0.',
+            'date.required'   => 'Tanggal wajib diisi.',
+        ]);
+
+        try {
+            $this->loanService->requestLoan(
+                $this->me(),
+                (int) $data['amount'],
+                $data['date'],
+                $data['reason'] ?? null
+            );
+        } catch (\DomainException | \RuntimeException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+
+        return redirect()->route('portal.loan.index')
+            ->with('success', 'Pengajuan kasbon terkirim dan menunggu persetujuan.');
+    }
+
+    public function loanCancel(int $id): RedirectResponse
+    {
+        $loan = Loan::where('id', $id)
+            ->where('user_id', $this->me()->id)
+            ->firstOrFail();
+
+        try {
+            $this->loanService->cancel($loan, $this->me());
+        } catch (\DomainException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Pengajuan kasbon dibatalkan.');
     }
 
     // ── Profile ────────────────────────────────────────────
