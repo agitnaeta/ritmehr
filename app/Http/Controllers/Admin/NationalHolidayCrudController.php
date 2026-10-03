@@ -40,6 +40,11 @@ class NationalHolidayCrudController extends CrudController
         CRUD::setModel(\App\Models\NationalHoliday::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/national-holiday');
         CRUD::setEntityNameStrings('Libur Nasional', 'Libur Nasional');
+
+        // Route middleware only gates `national_holiday.view`; writes need `national_holiday.edit`.
+        if (! backpack_user()->can('national_holiday.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     /**

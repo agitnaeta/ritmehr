@@ -136,6 +136,9 @@ class ApprovalFlowStepCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
         $this->normaliseApproverColumns();
         $response = $this->traitStore();
@@ -146,6 +149,9 @@ class ApprovalFlowStepCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
         $this->normaliseApproverColumns();
         $response = $this->traitUpdate();

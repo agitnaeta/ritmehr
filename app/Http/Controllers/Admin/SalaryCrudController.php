@@ -336,6 +336,9 @@ HTML,
     }
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         //  'user_id', 'amount', 'overtime_amount', 'overtime_type',
 
         $request = $this->crud->validateRequest();
@@ -347,6 +350,9 @@ HTML,
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest();
         $salary = Salary::find($this->crud->getCurrentEntryId());
         $salary->update($request->except('allowance'));

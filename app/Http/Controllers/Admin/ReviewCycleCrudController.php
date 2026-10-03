@@ -82,6 +82,9 @@ class ReviewCycleCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -89,6 +92,9 @@ class ReviewCycleCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();

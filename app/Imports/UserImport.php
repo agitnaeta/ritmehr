@@ -8,6 +8,7 @@ use App\Models\ImportJob;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Concerns\RemembersRowNumber;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -37,6 +38,8 @@ use Maatwebsite\Excel\Validators\Failure;
  */
 class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyRows, SkipsOnFailure, WithChunkReading
 {
+    use RemembersRowNumber;
+
     /** @var int Jumlah baris yang benar-benar tersimpan. */
     public int $imported = 0;
 
@@ -59,9 +62,13 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
     /** UM-09 — bila diisi, progress & error ditulis ke baris status ini. */
     private ?ImportJob $importJob;
 
-    public function __construct(?ImportJob $importJob = null)
+    /** Who is importing — rows may not overwrite accounts above them. */
+    private ?User $importer;
+
+    public function __construct(?ImportJob $importJob = null, ?User $importer = null)
     {
         $this->importJob = $importJob;
+        $this->importer = $importer ?? $importJob?->user ?? backpack_user();
         // Password default paling umum di import massal — hash sekali di depan.
         $this->passwordHashCache['password'] = Hash::make('password');
     }
@@ -94,6 +101,22 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
     public function model(array $row)
     {
         $this->loadLookups();
+
+        // Rows match existing accounts by email and reset their password, so
+        // an import must not be a way to take over a more privileged account.
+        $existing = User::where('email', trim($row['email']))->first();
+        if ($existing && ! $this->mayOverwrite($existing)) {
+            $this->failureDetails[] = [
+                'row'    => $this->getRowNumber(),
+                'column' => 'email',
+                'value'  => $this->stringifyValue($row['email']),
+                'reason' => 'Akun ini memiliki hak akses lebih tinggi dari pengimpor; tidak boleh ditimpa lewat import.',
+            ];
+            $this->skipped++;
+            $this->bumpProgress();
+
+            return null;
+        }
 
         $user = User::updateOrCreate(
             ['email' => trim($row['email'])],
@@ -138,6 +161,16 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, SkipsEmptyR
         }
 
         $this->bumpProgress();
+    }
+
+    private function mayOverwrite(User $existing): bool
+    {
+        // No known importer (e.g. a console run): only plain staff accounts.
+        if (! $this->importer) {
+            return $existing->getAllPermissions()->isEmpty();
+        }
+
+        return $this->importer->canManageAccountOf($existing);
     }
 
     /** Tulis progress ke ImportJob (bila ada), di-throttle tiap 50 baris. */

@@ -109,9 +109,11 @@ Route::group([
 
 
     // Modul di bawah ini tertutup bagi role yang tidak punya izinnya.
-    // Untuk modul yang boleh DIBACA tapi tidak boleh DITULIS oleh sebagian role
-    // (user, presence, salary, loan, jadwal, organisasi), pembatasannya ada di
-    // controller lewat denyAccess — middleware hanya menjaga pintu masuk.
+    // Middleware `permission:*.view` hanya menjaga pintu masuk (BACA). Izin
+    // TULIS (`*.edit`) wajib dicek di controller: denyAccess di setup(), dan
+    // hasAccessOrFail() di store()/update() yang di-override (override melewati
+    // pengecekan bawaan Backpack). Route custom di luar operasi CRUD butuh cek
+    // sendiri. AdminWriteAccessCoverageTest gagal bila ada route tulis tanpa cek.
     Route::group(['middleware' => 'permission:schedule.view'], function () {
         Route::crud('day', 'DayCrudController');
         Route::crud('schedule-day-off', 'ScheduleDayOffCrudController');

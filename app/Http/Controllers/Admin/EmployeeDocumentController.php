@@ -47,6 +47,8 @@ class EmployeeDocumentController extends Controller
 
     public function create()
     {
+        $this->authoriseWrite();
+
         return view('admin.document.create', [
             'users' => User::employed()->orderBy('name')->get(),
             'types' => DocumentType::orderBy('name')->get(),
@@ -55,6 +57,8 @@ class EmployeeDocumentController extends Controller
 
     public function store(Request $request)
     {
+        $this->authoriseWrite();
+
         $data = $request->validate([
             'user_id'          => 'required|exists:users,id',
             'document_type_id' => 'required|exists:document_types,id',
@@ -118,6 +122,8 @@ class EmployeeDocumentController extends Controller
 
     public function destroy(int $id)
     {
+        $this->authoriseWrite();
+
         $document = EmployeeDocument::findOrFail($id);
 
         $this->documents->delete($document);
@@ -137,6 +143,15 @@ class EmployeeDocumentController extends Controller
     /**
      * HR sees everything; anyone else only their own documents.
      */
+    /**
+     * The route group only gates `document.view`; uploading or deleting
+     * employee documents needs `document.edit`.
+     */
+    private function authoriseWrite(): void
+    {
+        abort_unless(backpack_user()->can('document.edit'), 403, 'Anda tidak berhak mengubah dokumen karyawan.');
+    }
+
     private function authoriseAccess(EmployeeDocument $document): void
     {
         $user = backpack_user();

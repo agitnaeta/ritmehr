@@ -62,6 +62,9 @@ class KpiCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         request()->validate([
             'name'   => 'required|string|max:150',
             'weight' => 'required|integer|min:1|max:100',
@@ -72,6 +75,9 @@ class KpiCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         request()->validate([
             'name'   => 'required|string|max:150',
             'weight' => 'required|integer|min:1|max:100',

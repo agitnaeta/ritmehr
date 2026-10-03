@@ -206,6 +206,25 @@ class User extends Authenticatable
 
     // ── Helpers ────────────────────────────────────────────
 
+    /**
+     * May this user change (or delete) $target's account? Only if $target is
+     * themselves, or holds no permission this user lacks — nobody can take
+     * over an account that is more privileged than their own (e.g. hr_admin
+     * resetting a super_admin's password). Role-less staff hold nothing, so
+     * anyone with user.edit may manage them.
+     */
+    public function canManageAccountOf(self $target): bool
+    {
+        if ($target->is($this)) {
+            return true;
+        }
+
+        $mine = $this->getAllPermissions()->pluck('name');
+
+        return $target->getAllPermissions()->pluck('name')->diff($mine)->isEmpty();
+    }
+
+
     public function isEmployed(): bool
     {
         return in_array($this->employment_status, self::EMPLOYED_STATUSES, true);

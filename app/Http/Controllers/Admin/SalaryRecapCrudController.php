@@ -237,6 +237,9 @@ class SalaryRecapCrudController extends CrudController
     }
 
     public function store(){
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $request = $this->crud->validateRequest();
         SalaryRecap::create($request->validated());
         Alert::success('Berhasil Update data')->flash();
@@ -245,6 +248,9 @@ class SalaryRecapCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest();
         $salaryRecap   = $this->crud->getCurrentEntry();
         $salaryRecap->update($request->validated());

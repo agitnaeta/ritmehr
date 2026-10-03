@@ -147,6 +147,9 @@ class LoanCrudController extends CrudController
     public function store()
     {
 
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
+
         $request = $this->crud->validateRequest();
         $loan  = new Loan();
         $loan->user_id = $request->user_id;
@@ -161,6 +164,9 @@ class LoanCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest();
         $loan  = Loan::find($request->id);
         $loan->user_id = $request->user_id;

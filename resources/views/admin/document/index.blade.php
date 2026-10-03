@@ -10,9 +10,11 @@
             <a href="{{ backpack_url('employee-document/completeness') }}" class="btn btn-outline-secondary">
                 <i class="la la-clipboard-check"></i> Kelengkapan
             </a>
+            @if(backpack_user()?->can('document.edit'))
             <a href="{{ backpack_url('employee-document/create') }}" class="btn btn-primary">
                 <i class="la la-upload"></i> Unggah Dokumen
             </a>
+            @endif
         </x-slot:actions>
 
         <x-slot:tools>
@@ -98,12 +100,14 @@
                             <td class="text-end text-nowrap">
                                 <a href="{{ backpack_url('employee-document/' . $doc->id . '/download') }}"
                                    class="btn btn-sm btn-link"><i class="la la-download"></i></a>
+                                @if(backpack_user()?->can('document.edit'))
                                 <form method="POST" class="d-inline"
                                       action="{{ backpack_url('employee-document/' . $doc->id . '/delete') }}"
                                       onsubmit="return confirm('Hapus dokumen ini beserta berkasnya?')">
                                     @csrf
                                     <button class="btn btn-sm btn-link text-danger"><i class="la la-trash"></i></button>
                                 </form>
+                                @endif
                             </td>
                         </tr>
                     @empty

@@ -19,6 +19,9 @@ class Pph21BracketCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -26,6 +29,9 @@ class Pph21BracketCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();
@@ -53,6 +59,11 @@ class Pph21BracketCrudController extends CrudController
         CRUD::setModel(Pph21Bracket::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/pph21-bracket');
         CRUD::setEntityNameStrings('lapisan PPh 21', 'lapisan PPh 21');
+
+        // Route middleware only gates `tax.view`; writes need `tax.edit`.
+        if (! backpack_user()->can('tax.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupListOperation()

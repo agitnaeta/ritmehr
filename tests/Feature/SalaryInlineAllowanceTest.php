@@ -56,7 +56,9 @@ class SalaryInlineAllowanceTest extends TestCase
     private function adminWithSalaryEdit(): User
     {
         $user = User::factory()->create();
-        $guard = $user->guard_name ?? config('auth.defaults.guard', 'web');
+        // actingAs(..., backpack) makes `backpack` the default guard, so the
+        // permission must live on that guard for can() to find it.
+        $guard = config('backpack.base.guard');
         $perms = collect(['salary.view', 'salary.edit'])->map(fn ($p) =>
             Permission::firstOrCreate(['name' => $p, 'guard_name' => $guard]));
         $user->givePermissionTo($perms);

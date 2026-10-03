@@ -22,6 +22,11 @@ class DocumentTypeCrudController extends CrudController
         CRUD::setModel(DocumentType::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/document-type');
         CRUD::setEntityNameStrings('jenis dokumen', 'jenis dokumen');
+
+        // Route middleware only gates `document.view`; writes need `document.edit`.
+        if (! backpack_user()->can('document.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     protected function setupListOperation()
@@ -60,6 +65,9 @@ class DocumentTypeCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         $this->validatePayload();
 
         return $this->traitStore();
@@ -67,6 +75,9 @@ class DocumentTypeCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $this->validatePayload();
 
         return $this->traitUpdate();

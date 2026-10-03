@@ -29,6 +29,11 @@ class DayCrudController extends CrudController
         CRUD::setModel(\App\Models\Day::class);
         CRUD::setRoute(config('backpack.base.route_prefix') . '/day');
         CRUD::setEntityNameStrings('day', 'days');
+
+        // Route middleware only gates `schedule.view`; writes need `schedule.edit`.
+        if (! backpack_user()->can('schedule.edit')) {
+            CRUD::denyAccess(['create', 'update', 'delete']);
+        }
     }
 
     /**

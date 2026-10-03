@@ -18,6 +18,7 @@
                     <div class="col-auto"><button class="btn btn-sm btn-primary">Tampilkan</button></div>
                 </form>
             </div>
+            @if(backpack_user()?->can('tax.edit'))
             <div class="col-auto">
                 <form method="POST" action="{{ backpack_url('tax-report/recalculate') }}">
                     @csrf
@@ -28,6 +29,7 @@
                     </button>
                 </form>
             </div>
+            @endif
         </div>
     </div>
 

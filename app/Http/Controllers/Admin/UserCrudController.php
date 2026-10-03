@@ -257,14 +257,33 @@ class UserCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
+        $this->authoriseAccountChange();
 
         $userReq = $this->crud->validateRequest();
         $this->crud->setValidation(
-            (new UserRequest())->updateRules($userReq->get('id')),
+            // The record being edited is the one in the URL, never a body field.
+            (new UserRequest())->updateRules($this->crud->getCurrentEntryId()),
             (new UserRequest())->messages(),
         );
         CRUD::setFromDb(); // set fields from db columns.
         $this->fieldModification();
+    }
+
+    protected function setupDeleteOperation()
+    {
+        $this->authoriseAccountChange();
+    }
+
+    /** Refuse to edit/delete an account more privileged than your own. */
+    private function authoriseAccountChange(): void
+    {
+        $target = $this->crud->getCurrentEntry();
+
+        abort_unless(
+            $target && backpack_user()->canManageAccountOf($target),
+            403,
+            'Anda tidak berhak mengubah akun dengan hak akses lebih tinggi dari Anda.'
+        );
     }
 
     function fieldModification(){
@@ -454,9 +473,15 @@ class UserCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         $request = $this->crud->validateRequest()->all();
-        $user = User::find($request['id']);
-        if($request['password']){
+        // The URL decides which account is updated — a body `id` used to let
+        // the form for one user overwrite another.
+        $user = $this->crud->getCurrentEntry();
+        unset($request['id']);
+        if(! empty($request['password'])){
             $user->password = Hash::make($request['password']);
         }
         else{

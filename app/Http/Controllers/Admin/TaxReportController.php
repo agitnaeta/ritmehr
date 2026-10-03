@@ -40,6 +40,9 @@ class TaxReportController extends Controller
      */
     public function recalculate(Request $request)
     {
+        // The route group only gates `tax.view`; rewriting payroll tax is a write.
+        abort_unless(backpack_user()->can('tax.edit'), 403, 'Anda tidak berhak menghitung ulang pajak.');
+
         $month = $request->input('month');
 
         if (! $month) {

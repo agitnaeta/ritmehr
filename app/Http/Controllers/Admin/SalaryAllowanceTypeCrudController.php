@@ -34,6 +34,9 @@ class SalaryAllowanceTypeCrudController extends CrudController
 
     public function store()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('create');
         request()->validate(['label' => 'required|string|max:255']);
         $this->traitStore();
         Alert::success('Jenis tunjangan berhasil disimpan.')->flash();
@@ -43,6 +46,9 @@ class SalaryAllowanceTypeCrudController extends CrudController
 
     public function update()
     {
+
+        // Overriding the operation skips Backpack's own access check.
+        $this->crud->hasAccessOrFail('update');
         request()->validate(['label' => 'required|string|max:255']);
         $this->traitUpdate();
         Alert::success('Jenis tunjangan berhasil diperbarui.')->flash();
